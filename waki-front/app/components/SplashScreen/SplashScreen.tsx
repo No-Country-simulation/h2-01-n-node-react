@@ -16,7 +16,7 @@ const SplashScreen = () => {
 
   return (
     <div className='component-splash'>
-      <h1 className='title-waki'>WAKI</h1>
+      <h1 className='title-waki text-white'>WAKI</h1>
     </div>
   )
 }
