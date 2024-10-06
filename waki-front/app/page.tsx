@@ -1,11 +1,11 @@
-import Header from "./components/Navbar/Navbar";
+import SplashScreen from './components/SplashScreen/SplashScreen';
 
-export default function Home() {
- 
+const Home = () => {
   return (
-    <div>
-      <Header />
-    </div>
+      <div>
+          <SplashScreen />
+      </div>
   );
-
 }
+
+export default Home;
