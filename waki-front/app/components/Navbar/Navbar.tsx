@@ -55,7 +55,6 @@ export default function Header({ tabs, onTabChange }: HeaderProps) {
             </li>
           ))}
         </ul>
-        {/* Línea activa que se mueve */}
         <div
           className="active-line"
           style={{
