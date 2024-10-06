@@ -43,7 +43,9 @@ export default function Header({ tabs, onTabChange }: HeaderProps) {
               <a
                 href="#"
                 onClick={() => handleTabClick(tab.id)}
-                ref={(el) => (tabRefs.current[index] = el)}
+                ref={(el) => {
+                  tabRefs.current[index] = el;
+                }}
                 className={`inline-block p-4 border-b-4 ${
                   activeTab === tab.id
                     ? "tab-active"
