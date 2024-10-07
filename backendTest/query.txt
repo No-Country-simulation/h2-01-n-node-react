@@ -1,0 +1,86 @@
+-- Tabla de usuarios
+create table wakidb.usuarios (
+  id bigint primary key auto_increment,
+  nombre varchar(255) not null,
+  email varchar(255) unique not null,
+  password varchar(255) not null,
+  puntos int default 0,
+  division_id bigint,
+  predicciones int default 0,
+  foreign key (division_id) references division(id)
+);
+
+-- Tabla de partidos
+create table wakidb.partidos (
+  id bigint primary key auto_increment,
+  equipo1_id bigint not null,
+  equipo2_id bigint not null,
+  fecha timestamp not null,
+  resultado varchar(255),
+  multiplicador decimal(5, 2) default 1.0,
+  foreign key (equipo1_id) references club(id),
+  foreign key (equipo2_id) references club(id)
+);
+
+-- Tabla de predicciones
+create table wakidb.predicciones (
+  id bigint primary key auto_increment,
+  user_id bigint not null,
+  match_id bigint not null,
+  prediccion varchar(255) not null,
+  resultado_correcto boolean default false,
+  foreign key (user_id) references usuarios(id),
+  foreign key (match_id) references partidos(id)
+);
+
+-- Tabla de tokens
+create table wakidb.tokens (
+  id bigint primary key auto_increment,
+  jugador_id bigint not null,
+  nombre varchar(255) not null,
+  tokens_liberados int default 0,
+  foreign key (jugador_id) references jugador(id)
+);
+
+-- Tabla de jugador
+create table wakidb.jugador (
+  id bigint primary key auto_increment,
+  nombre varchar(255) not null,
+  nacionalidad varchar(255),
+  edad int,
+  posicion varchar(255),
+  goles int default 0,
+  partidos int default 0,
+  minutos int default 0,
+  asistencias int default 0,
+  logros text,
+  club_id bigint,
+  foreign key (club_id) references club(id)
+);
+
+-- Tabla de club
+create table wakidb.club (
+  id bigint primary key auto_increment,
+  nombre varchar(255) not null unique,
+  liga_id bigint,
+  escudo varchar(255),
+  puntos int default 0,
+  goles int default 0,
+  camisetas varchar(255),
+  foreign key (liga_id) references liga(id)
+);
+
+ALTER TABLE wakidb.club
+MODIFY COLUMN camisetas varchar(255);
+
+-- Tabla de liga
+create table wakidb.liga (
+  id bigint primary key auto_increment,
+  nombre varchar(255) not null
+);
+
+-- Tabla de division
+create table wakidb.division (
+  id bigint primary key auto_increment,
+  nombre varchar(255) not null unique
+);
