@@ -9,7 +9,7 @@ const SplashScreen = () => {
 
     useEffect(()=>{
         const timer =setTimeout(()=>{
-            router.push('/inicio-temp')
+            router.push('/auth')
         }, 3000)
         return () => clearTimeout(timer);
     }, [router])
