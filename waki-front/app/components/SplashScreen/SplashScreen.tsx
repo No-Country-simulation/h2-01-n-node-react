@@ -1,24 +1,30 @@
 "use client";
-import React from 'react'
-import './splashScreen.css'
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import React, { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import LogoWaki from "../../assets/waki-logo.png";
+import './splashScreen.css';
 
 const SplashScreen = () => {
     const router = useRouter();
 
-    useEffect(()=>{
-        const timer =setTimeout(()=>{
-            router.push('/auth')
-        }, 3000)
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            router.push('/auth');
+        }, 3000);
         return () => clearTimeout(timer);
-    }, [router])
+    }, [router]);
 
-  return (
-    <div className='component-splash'>
-      <h1 className='title-waki text-white'>WAKI</h1>
-    </div>
-  )
+    return (
+        <div className="splash-container">
+            <Image 
+                priority={true}
+                src={LogoWaki} 
+                alt="Logo Waki" 
+                className="logo-image"
+            />
+        </div>
+    );
 }
 
-export default SplashScreen
+export default SplashScreen;

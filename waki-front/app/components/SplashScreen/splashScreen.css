@@ -4,11 +4,17 @@ body{
     background: linear-gradient(90deg, rgba(49,126,244,1) 35%, rgba(142,43,255,1) 100%);
 }
 
-.SplashScreen{
+.splash-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    
+    height: 100vh;
+    width: 100vw; 
+}
+
+.logo-image {
+    width: 150px;
+    height: auto; 
 }
 
 .title-waki{
