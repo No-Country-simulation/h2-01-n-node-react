@@ -266,7 +266,7 @@ export default function AuthTabs() {
 
               <div className="flex items-center justify-center mt-5">
                 <button
-                  className="bg-[#8E2BFF] hover:bg-[#6c22cc] text-white py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline"
+                  className="bg-[#8E2BFF] hover:bg-[#6c22cc] text-white py-2 px-4 border-box w-full focus:outline-none focus:shadow-outline"
                   type="submit"
                 >
                   Iniciar sesión
@@ -287,7 +287,7 @@ export default function AuthTabs() {
 
               <div className="flex items-center justify-center">
                 <button
-                  className="bg-gray-200 hover:bg-gray-300 text-[#060606] py-2 px-4 rounded-full mt-2 flex items-center justify-center"
+                  className="bg-white hover:bg-gray-300 text-[#060606] py-2 px-4 rounded-full mt-2 flex items-center justify-center border border-gray-300"
                   type="button"
                   onClick={handleGoogleSignIn}
                 >
@@ -411,7 +411,7 @@ export default function AuthTabs() {
               </div>
               <div className="flex items-center justify-center">
                 <button
-                  className="bg-[#8E2BFF] hover:bg-[#6c22cc] text-white py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline"
+                  className="bg-[#8E2BFF] hover:bg-[#6c22cc] w-full border-box text-white py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline"
                   type="submit"
                 >
                   Registrate
@@ -431,7 +431,7 @@ export default function AuthTabs() {
 
               <div className="flex items-center justify-center">
                 <button
-                  className="bg-gray-200 hover:bg-gray-300 text-[#060606] py-2 px-4 rounded-full mt-2 flex items-center justify-center"
+                  className="bg-white hover:bg-gray-300 text-[#060606] py-2 px-4 rounded-full mt-2 flex items-center justify-center border border-gray-300"
                   type="button"
                   onClick={handleGoogleSignIn}
                 >

@@ -9,3 +9,7 @@ body {
     top: 45px;
     transform: translateY(-50%);
   }
+
+  .border-box{
+    border-radius: 20px;
+  }
