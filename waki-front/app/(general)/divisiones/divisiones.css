@@ -1,7 +1,41 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
 body{
     background: white;
 }
 
 #table-divisiones{
     background-color: white;
+}
+
+.titulo-divisiones{
+    display: flex;
+    justify-content: center;
+    color: #317EF4;
+    font-weight: bold;
+    font-size: 22px;
+    font-family: "Poppins", sans-serif;
+    justify-content: center;
+}
+
+.division-var{
+    color: black;
+    display: flex;
+    justify-content: center;
+    font-size: 18px;
+    font-family: "Poppins", sans-serif;
+    margin-top: 20px;
+}
+
+.divisiones-imagen{
+    display: flex;
+    justify-content: center;
+    width: 60px;  
+    height: 80px;
+    margin-left: 155px;
+    
+}
+
+.custom-margin{
+    margin-top: 50px;
 }
