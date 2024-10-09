@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable react/jsx-no-undef */
 "use client";
 
 import { useState } from "react";
@@ -10,19 +8,39 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import "./auth.css";
 import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../../../firebase/config";
-import { useRouter } from 'next/navigation';
-
+import { useRouter } from "next/navigation";
 
 export default function AuthTabs() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [activeTab, setActiveTab] = useState("InicioSesion");
+  const [loginFormValues, setLoginFormValues] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [registerFormValues, setRegisterFormValues] = useState({
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const [loginFormErrors, setLoginFormErrors] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [registerFormErrors, setRegisterFormErrors] = useState({
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
   const router = useRouter();
 
-
   const tabs = [
-    { id: "InicioSesion", label: "Iniciar Sesion" },
-    { id: "Registrate", label: "Registrate" },
+    { id: "InicioSesion", label: "Iniciar Sesión" },
+    { id: "Registrate", label: "Regístrate" },
   ];
 
   const handleTabChange = (tabId: string) => {
@@ -37,14 +55,140 @@ export default function AuthTabs() {
     setShowConfirmPassword(!showConfirmPassword);
   };
 
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePassword = (password: string) => {
+    return password.length >= 6;
+  };
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    formType: string
+  ) => {
+    const { id, value } = e.target;
+
+    if (formType === "login") {
+      setLoginFormValues({ ...loginFormValues, [id]: value });
+
+      if (id === "email" && !validateEmail(value)) {
+        setLoginFormErrors({
+          ...loginFormErrors,
+          email: "El formato del correo es incorrecto.",
+        });
+      } else if (id === "email") {
+        setLoginFormErrors({ ...loginFormErrors, email: "" });
+      }
+
+      if (id === "password" && !validatePassword(value)) {
+        setLoginFormErrors({
+          ...loginFormErrors,
+          password: "La contraseña debe tener al menos 6 caracteres.",
+        });
+      } else if (id === "password") {
+        setLoginFormErrors({ ...loginFormErrors, password: "" });
+      }
+    } else if (formType === "register") {
+      setRegisterFormValues({ ...registerFormValues, [id]: value });
+
+      if (id === "email" && !validateEmail(value)) {
+        setRegisterFormErrors({
+          ...registerFormErrors,
+          email: "El formato del correo es incorrecto.",
+        });
+      } else if (id === "email") {
+        setRegisterFormErrors({ ...registerFormErrors, email: "" });
+      }
+
+      if (id === "password" && !validatePassword(value)) {
+        setRegisterFormErrors({
+          ...registerFormErrors,
+          password: "La contraseña debe tener al menos 6 caracteres.",
+        });
+      } else if (id === "password") {
+        setRegisterFormErrors({ ...registerFormErrors, password: "" });
+      }
+
+      if (id === "confirmPassword" && value !== registerFormValues.password) {
+        setRegisterFormErrors({
+          ...registerFormErrors,
+          confirmPassword: "Las contraseñas no coinciden.",
+        });
+      } else if (id === "confirmPassword") {
+        setRegisterFormErrors({ ...registerFormErrors, confirmPassword: "" });
+      }
+    }
+  };
+
   // Función para manejar la autenticación con Google
   const handleGoogleSignIn = async () => {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const result = await signInWithPopup(auth, googleProvider);
-      router.push('/home');
-
+      router.push("/home");
     } catch (error) {
       console.error("Error durante la autenticación con Google:", error);
+    }
+  };
+
+  // Manejo de envío para el formulario de registro
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validateEmail(registerFormValues.email)) {
+      setRegisterFormErrors({
+        ...registerFormErrors,
+        email: "Por favor ingresa un correo válido.",
+      });
+    }
+
+    if (!validatePassword(registerFormValues.password)) {
+      setRegisterFormErrors({
+        ...registerFormErrors,
+        password: "La contraseña debe tener al menos 6 caracteres.",
+      });
+    }
+
+    if (registerFormValues.password !== registerFormValues.confirmPassword) {
+      setRegisterFormErrors({
+        ...registerFormErrors,
+        confirmPassword: "Las contraseñas no coinciden.",
+      });
+    }
+
+    if (
+      !registerFormErrors.email &&
+      !registerFormErrors.password &&
+      !registerFormErrors.confirmPassword
+    ) {
+      console.log("Formulario válido. Procesando envío...");
+      // Aquí puedes añadir la lógica de envío de datos
+    }
+  };
+
+  // Manejo de envío para el formulario de inicio de sesión
+  const handleSubmitLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validateEmail(loginFormValues.email)) {
+      setLoginFormErrors({
+        ...loginFormErrors,
+        email: "Por favor ingresa un correo válido.",
+      });
+    }
+
+    if (!validatePassword(loginFormValues.password)) {
+      setLoginFormErrors({
+        ...loginFormErrors,
+        password: "La contraseña debe tener al menos 6 caracteres.",
+      });
+    }
+
+    if (!loginFormErrors.email && !loginFormErrors.password) {
+      console.log("Formulario de inicio de sesión válido. Procesando...");
+      // Aquí puedes añadir la lógica de inicio de sesión
     }
   };
 
@@ -64,7 +208,7 @@ export default function AuthTabs() {
             <p className="text-gray-600 mb-4 text-center">
               Inicie sesión para disfrutar de todas las funciones
             </p>
-            <form>
+            <form onSubmit={handleSubmitLogin}>
               <div className="mb-4">
                 <label
                   htmlFor="email"
@@ -75,9 +219,16 @@ export default function AuthTabs() {
                 <input
                   type="email"
                   id="email"
+                  value={loginFormValues.email}
+                  onChange={(e) => handleInputChange(e, "login")}
                   className="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                   placeholder="Email o teléfono"
                 />
+                {loginFormErrors.email && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {loginFormErrors.email}
+                  </p>
+                )}
               </div>
               <div className="mb-4 relative">
                 <label
@@ -89,6 +240,8 @@ export default function AuthTabs() {
                 <input
                   type={showPassword ? "text" : "password"}
                   id="password"
+                  value={loginFormValues.password}
+                  onChange={(e) => handleInputChange(e, "login")}
                   className="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                   placeholder="******************"
                 />
@@ -99,16 +252,22 @@ export default function AuthTabs() {
                 >
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
-                <div className="flex justify-center mt-3">
-                  <span className="text-blue-500 text-xs">
-                    ¿Olvidaste tu contraseña?
-                  </span>
-                </div>
+                {loginFormErrors.password && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {loginFormErrors.password}
+                  </p>
+                )}
               </div>
-              <div className="flex items-center justify-center">
+              <div className="flex justify-center mt-3">
+                <span className="text-blue-500 text-xs">
+                  ¿Olvidaste tu contraseña?
+                </span>
+              </div>
+
+              <div className="flex items-center justify-center mt-5">
                 <button
                   className="bg-[#8E2BFF] hover:bg-[#6c22cc] text-white py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline"
-                  type="button"
+                  type="submit"
                 >
                   Iniciar sesión
                 </button>
@@ -158,7 +317,7 @@ export default function AuthTabs() {
             <p className="text-gray-600 mb-4 text-center">
               Crea tu cuenta completando los datos
             </p>
-            <form>
+            <form onSubmit={handleSubmit}>
               <div className="mb-4">
                 <label
                   htmlFor="username"
@@ -183,9 +342,16 @@ export default function AuthTabs() {
                 <input
                   type="email"
                   id="email"
+                  value={registerFormValues.email}
+                  onChange={(e) => handleInputChange(e, "register")}
                   className="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                   placeholder="Email o teléfono"
                 />
+                {registerFormErrors.email && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {registerFormErrors.email}
+                  </p>
+                )}
               </div>
               <div className="mb-4 relative">
                 <label
@@ -197,6 +363,8 @@ export default function AuthTabs() {
                 <input
                   type={showPassword ? "text" : "password"}
                   id="password"
+                  value={registerFormValues.password}
+                  onChange={(e) => handleInputChange(e, "register")}
                   className="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                   placeholder="******************"
                 />
@@ -207,6 +375,11 @@ export default function AuthTabs() {
                 >
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
+                {registerFormErrors.password && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {registerFormErrors.password}
+                  </p>
+                )}
               </div>
               <div className="mb-4 relative">
                 <label
@@ -218,6 +391,8 @@ export default function AuthTabs() {
                 <input
                   type={showConfirmPassword ? "text" : "password"}
                   id="confirmPassword"
+                  value={registerFormValues.confirmPassword}
+                  onChange={(e) => handleInputChange(e, "register")}
                   className="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                   placeholder="******************"
                 />
@@ -228,11 +403,16 @@ export default function AuthTabs() {
                 >
                   {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
+                {registerFormErrors.confirmPassword && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {registerFormErrors.confirmPassword}
+                  </p>
+                )}
               </div>
               <div className="flex items-center justify-center">
                 <button
                   className="bg-[#8E2BFF] hover:bg-[#6c22cc] text-white py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline"
-                  type="button"
+                  type="submit"
                 >
                   Registrate
                 </button>
