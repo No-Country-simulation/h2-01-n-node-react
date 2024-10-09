@@ -1,4 +1,5 @@
-
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react/jsx-no-undef */
 "use client";
 
 import { useState } from "react";
@@ -11,11 +12,13 @@ import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../../../firebase/config";
 import { useRouter } from 'next/navigation';
 
+
 export default function AuthTabs() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [activeTab, setActiveTab] = useState("InicioSesion");
   const router = useRouter();
+
 
   const tabs = [
     { id: "InicioSesion", label: "Iniciar Sesion" },
@@ -34,16 +37,13 @@ export default function AuthTabs() {
     setShowConfirmPassword(!showConfirmPassword);
   };
 
+  // Función para manejar la autenticación con Google
   const handleGoogleSignIn = async () => {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const result = await signInWithPopup(auth, googleProvider);
-      
-     if(result.user){
+      router.push('/home');
 
-       router.push('/home');    
-     }
-    }  catch (error) {
+    } catch (error) {
       console.error("Error durante la autenticación con Google:", error);
     }
   };
