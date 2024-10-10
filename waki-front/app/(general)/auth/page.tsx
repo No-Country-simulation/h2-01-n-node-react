@@ -127,7 +127,7 @@ export default function AuthTabs() {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const result = await signInWithPopup(auth, googleProvider);
-      router.push("/home");
+      router.push("/ligas");
     } catch (error) {
       console.error("Error durante la autenticación con Google:", error);
     }
