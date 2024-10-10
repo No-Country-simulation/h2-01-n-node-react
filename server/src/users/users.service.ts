@@ -8,7 +8,6 @@ import { Repository } from 'typeorm';
 import { Users } from './users.entity';
 import { RegisterUserDTO } from 'src/auth/dto/register.dto';
 import * as bcrypt from 'bcrypt';
-import { LoginUserDTO } from 'src/auth/dto/login.dto';
 import { plainToInstance } from 'class-transformer';
 
 @Injectable()
@@ -34,19 +33,22 @@ export class UsersService {
     return plainToInstance(Users, user);
   }
 
-  async login(loginUserDto: LoginUserDTO) {
+  async findOneByEmail(email: string) {
     const user = await this.usersRepository.findOneBy({
-      email: loginUserDto.email,
+      email,
     });
 
     if (!user) throw new UnauthorizedException('User not found');
 
-    const passwordMatches = await bcrypt.compare(
-      loginUserDto.password,
-      user.password,
-    );
-    if (!passwordMatches)
-      throw new UnauthorizedException('Invalid email/password');
+    return user;
+  }
+
+  async findOneById(id: number) {
+    const user = await this.usersRepository.findOneBy({
+      id,
+    });
+
+    if (!user) throw new UnauthorizedException('User not found');
 
     return user;
   }

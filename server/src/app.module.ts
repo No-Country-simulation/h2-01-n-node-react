@@ -10,8 +10,9 @@ import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
+      isGlobal: true,
       load: [envConfig],
-      validationSchema: configSchema,
+      // validationSchema: configSchema,
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -30,7 +31,5 @@ import { AuthModule } from './auth/auth.module';
     UsersModule,
     AuthModule,
   ],
-  controllers: [],
-  providers: [],
 })
 export class AppModule {}
