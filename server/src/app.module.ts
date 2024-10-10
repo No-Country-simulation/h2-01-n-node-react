@@ -25,7 +25,7 @@ import { AuthModule } from './auth/auth.module';
         password: configService.get<string>('postgresPassword'),
         database: configService.get<string>('postgresDb'),
         autoLoadEntities: true,
-        synchronize: configService.get<string>('NODE_ENV') !== 'prod', // synchronize se establece en true solo si NODE_ENV no es 'prod'
+        synchronize: configService.get<string>('environment') !== 'prod', // synchronize se establece en true solo si NODE_ENV no es 'prod'
       }),
     }),
     UsersModule,

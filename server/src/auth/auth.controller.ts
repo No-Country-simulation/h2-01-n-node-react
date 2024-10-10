@@ -1,31 +1,39 @@
-import {
-  Body,
-  ClassSerializerInterceptor,
-  Controller,
-  Post,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Body, Controller, Post, Res } from '@nestjs/common';
 import { RegisterUserDTO } from './dto/register.dto';
 import { UsersService } from 'src/users/users.service';
 import { LoginUserDTO } from './dto/login.dto';
 import { AuthService } from './auth.service';
+import { Response } from 'express';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private authService: AuthService,
     private usersService: UsersService,
+    private configService: ConfigService,
   ) {}
 
   @Post('register')
-  @UseInterceptors(ClassSerializerInterceptor)
-  register(@Body() registerUserDto: RegisterUserDTO) {
-    return this.usersService.create(registerUserDto);
+  async register(
+    @Body() registerUserDto: RegisterUserDTO,
+    @Res() res: Response,
+  ) {
+    await this.usersService.create(registerUserDto);
+
+    return res.json({ message: 'Register successful' });
   }
 
   @Post('login')
-  @UseInterceptors(ClassSerializerInterceptor)
-  login(@Body() loginUserDto: LoginUserDTO) {
-    return this.authService.login(loginUserDto);
+  async login(@Body() loginUserDto: LoginUserDTO, @Res() res: Response) {
+    const user = await this.authService.login(loginUserDto);
+
+    res.cookie('access_token', user.accessToken, {
+      httpOnly: true,
+      secure: this.configService.get<string>('environment') === 'prod',
+      maxAge: this.configService.get<number>('cookieTtl'),
+    });
+
+    return res.json({ message: 'Login successful' });
   }
 }
