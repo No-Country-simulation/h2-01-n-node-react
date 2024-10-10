@@ -33,7 +33,7 @@ export default function Home() {
 
   const tabs = [
     { id: "Ayer", label: `${formatDate(yesterday)}` },
-    { id: "Hoy", label: `${formatDate(today)}` },
+    { id: "Hoy", label: `Hoy` },
     { id: "Manana", label: `${formatDate(tomorrow)}` },
   ];
 
