@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 
-const CollapseItem: React.FC<{ title: string; content: string }> = ({ title, content }) => {
+const CollapseItem: React.FC<{ title: string; content: string }> = ({
+  title,
+  content,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleCollapse = () => {
@@ -14,14 +17,14 @@ const CollapseItem: React.FC<{ title: string; content: string }> = ({ title, con
         onClick={toggleCollapse}
         className="flex items-center justify-between w-full px-4 py-2 text-left text-xl font-medium bg-white rounded-t-md"
       >
-        <span>{title}</span>
-        {/* Cambia el color de los íconos aquí */}
+        <span className="text-sm">{title}</span>
         {isOpen ? (
-          <FaChevronUp style={{ color: '#317EF4' }} />
+          <FaChevronUp style={{ color: "#317EF4", fontSize: "12px" }} />
         ) : (
-          <FaChevronDown style={{ color: '#317EF4' }} />
+          <FaChevronDown style={{ color: "#317EF4", fontSize: "12px" }} />
         )}
       </button>
+
       <div
         className={`overflow-hidden transition-all duration-300 ${
           isOpen ? "max-h-screen" : "max-h-0"
@@ -35,7 +38,7 @@ const CollapseItem: React.FC<{ title: string; content: string }> = ({ title, con
 
 export default function SimpleCollapses() {
   return (
-    <div className="max-w-md mx-auto bg-white border w-80 border-gray-300 rounded-md shadow-md">
+    <div className="max-w-md mx-auto bg-white border w-60 border-gray-300 rounded-md shadow-md text-sm">
       <CollapseItem
         title="Collapse 1"
         content="Este es el contenido del primer collapse."
@@ -51,4 +54,3 @@ export default function SimpleCollapses() {
     </div>
   );
 }
-
