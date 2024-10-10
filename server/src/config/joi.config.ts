@@ -1,13 +1,14 @@
 import * as Joi from 'joi';
 
 export const configSchema = Joi.object({
-  environment: Joi.string().valid('dev', 'prod').optional(),
-  port: Joi.number().integer().optional().default(3000),
-  jwtSecret: Joi.string().required(),
-  jwtExpiry: Joi.string().required(),
-  postgresUser: Joi.string().required(),
-  postgresPassword: Joi.string().required(),
-  postgresDb: Joi.string().required(),
-  postgresPort: Joi.number().integer().required(),
-  postgresHost: Joi.string().required(),
+  NODE_ENV: Joi.string().valid('dev', 'prod').optional(),
+  PORT: Joi.number().integer().optional().default(3000),
+  JWT_SECRET: Joi.string().required(),
+  JWT_EXPIRY: Joi.string().required(),
+  COOKIE_TTL: Joi.number().integer().optional().default(3600000),
+  POSTGRES_USER: Joi.string().required(),
+  POSTGRES_PASSWORD: Joi.string().required(),
+  POSTGRES_DB: Joi.string().required(),
+  POSTGRES_PORT: Joi.number().integer().required(),
+  DB_HOST: Joi.string().required(),
 });
