@@ -13,13 +13,13 @@ import { LoginUserDTO } from './dto/login.dto';
 export class AuthController {
   constructor(private usersService: UsersService) {}
 
-  @UseInterceptors(ClassSerializerInterceptor)
   @Post('register')
+  @UseInterceptors(ClassSerializerInterceptor)
   register(@Body() registerUserDto: RegisterUserDTO) {
     return this.usersService.create(registerUserDto);
   }
-  @UseInterceptors(ClassSerializerInterceptor)
   @Post('login')
+  @UseInterceptors(ClassSerializerInterceptor)
   login(@Body() loginUserDto: LoginUserDTO) {
     return this.usersService.login(loginUserDto);
   }

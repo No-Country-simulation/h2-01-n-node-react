@@ -9,6 +9,7 @@ import { Users } from './users.entity';
 import { RegisterUserDTO } from 'src/auth/dto/register.dto';
 import * as bcrypt from 'bcrypt';
 import { LoginUserDTO } from 'src/auth/dto/login.dto';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class UsersService {
@@ -30,8 +31,7 @@ export class UsersService {
     );
     const user = await this.usersRepository.save(registerUserDto);
 
-    // delete user.password;
-    return user;
+    return plainToInstance(Users, user);
   }
 
   async login(loginUserDto: LoginUserDTO) {
@@ -47,10 +47,7 @@ export class UsersService {
     );
     if (!passwordMatches)
       throw new UnauthorizedException('Invalid email/password');
-    // const formattedUser = new UserResponseDTO(user);
-    // console.log(formattedUser);
-    // delete user.password;
-    console.log({ user });
+
     return user;
   }
 }
