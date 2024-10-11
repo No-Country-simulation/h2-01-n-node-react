@@ -18,7 +18,6 @@ async function bootstrap() {
   );
 
   const config = new DocumentBuilder()
-    // .addBearerAuth()
     .setTitle('Waki API')
     .setDescription('The Waki API')
     .setVersion('1.0')
