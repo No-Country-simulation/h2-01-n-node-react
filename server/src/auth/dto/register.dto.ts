@@ -46,6 +46,7 @@ export class RegisterUserDTO {
     example: USER_ROLE.USER,
     description: 'User role',
     default: USER_ROLE.USER,
+    required: false,
   })
   @IsEnum(USER_ROLE)
   @IsOptional()
@@ -55,6 +56,7 @@ export class RegisterUserDTO {
     example: USER_RANK.BRONZE,
     description: 'User rank',
     default: USER_RANK.BRONZE,
+    required: false,
   })
   @IsEnum(USER_RANK)
   @IsOptional()
@@ -64,6 +66,7 @@ export class RegisterUserDTO {
     example: 100,
     description: 'User points',
     default: 0,
+    required: false,
   })
   @IsNumber()
   @IsOptional()
@@ -72,6 +75,7 @@ export class RegisterUserDTO {
   @ApiProperty({
     example: 'https://pbs.twimg.com/media/FzRfDUNXwAA838Z.jpg',
     description: 'User image',
+    required: false,
   })
   @IsString()
   @IsOptional()
