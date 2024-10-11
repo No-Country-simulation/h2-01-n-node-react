@@ -33,7 +33,7 @@ export default function Home() {
 
   const tabs = [
     { id: "Ayer", label: `${formatDate(yesterday)}` },
-    { id: "Hoy", label: `${formatDate(today)}` },
+    { id: "Hoy", label: `Hoy` },
     { id: "Manana", label: `${formatDate(tomorrow)}` },
   ];
 
@@ -58,7 +58,12 @@ export default function Home() {
 
       <div className="flex justify-between items-center mt-6 px-4">
         <div className="flex items-center space-x-2">
-          <FormControl variant="outlined" size="small">
+          <FormControl
+            variant="outlined"
+            size="small"
+            sx={{ minWidth: 120 }}
+            className="mr-4" 
+          >
             <InputLabel id="filter-label" sx={{ fontWeight: "bold" }}>
               Ordenar por
             </InputLabel>
@@ -68,11 +73,14 @@ export default function Home() {
               value={filter}
               onChange={handleFilterChange}
               label="Ordenar por"
+              autoWidth
               sx={{
                 fontFamily: "Poppins",
                 borderRadius: "20px",
+                fontSize: "12px",
                 "& .MuiSelect-select": {
                   borderRadius: "20px",
+                  padding: "8px",
                 },
               }}
               MenuProps={{
@@ -84,24 +92,42 @@ export default function Home() {
                 },
               }}
             >
-              <MenuItem style={{ fontFamily: "Poppins" }} value="tendencias">
+              <MenuItem
+                style={{ fontFamily: "Poppins", fontSize: "12px" }}
+                value="ligas"
+              >
+                Ligas
+              </MenuItem>
+              <MenuItem
+                style={{ fontFamily: "Poppins", fontSize: "12px" }}
+                value="tendencias"
+              >
                 Tendencias
               </MenuItem>
-              <MenuItem style={{ fontFamily: "Poppins" }} value="partidos">
+              <MenuItem
+                style={{ fontFamily: "Poppins", fontSize: "12px" }}
+                value="partidos"
+              >
                 Partidos
+              </MenuItem>
+              <MenuItem
+                style={{ fontFamily: "Poppins", fontSize: "12px" }}
+                value="horarios"
+              >
+                Horarios
               </MenuItem>
             </Select>
           </FormControl>
         </div>
 
-        <button className="bg-[#8E2BFF] text-white px-6 py-2 rounded-[8px]">
+        <button className="bg-[#8E2BFF] text-white px-4 py-2 rounded-[8px] text-sm">
           Mis predicciones
         </button>
       </div>
 
       <div
         className="flex h-screen items-center justify-center"
-        style={{ marginTop: "-160px" }} 
+        style={{ marginTop: "-160px" }}
       >
         {activeTab === "Hoy" && <Collapse />}
         {activeTab === "Ayer" && (
