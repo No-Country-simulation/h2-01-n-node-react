@@ -19,6 +19,6 @@ export class UsersController {
   @UseInterceptors(ClassSerializerInterceptor)
   @Get('profile')
   getProfile(@Request() req) {
-    return this.usersService.findOneById(req.userId);
+    return this.usersService.findOneById(req.user.userId);
   }
 }
