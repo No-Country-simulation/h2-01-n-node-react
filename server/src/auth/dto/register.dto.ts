@@ -8,23 +8,16 @@ import {
   IsString,
 } from 'class-validator';
 import { USER_RANK, USER_ROLE } from 'src/users/users.entity';
+import { Match } from '../decorators/match.decorator';
 
 export class RegisterUserDTO {
   @ApiProperty({
-    example: 'John',
-    description: 'Name',
+    example: 'johndoe',
+    description: 'Username',
   })
   @IsString()
   @IsNotEmpty()
-  firstName: string;
-
-  @ApiProperty({
-    example: 'Doe',
-    description: 'Last name',
-  })
-  @IsString()
-  @IsNotEmpty()
-  lastName: string;
+  username: string;
 
   @ApiProperty({
     example: 'example@mail.com',
@@ -41,6 +34,15 @@ export class RegisterUserDTO {
   @IsString()
   @IsNotEmpty()
   password: string;
+
+  @ApiProperty({
+    example: 'password',
+    description: 'Confirm password',
+  })
+  @IsString()
+  @IsNotEmpty()
+  @Match('password', { message: 'Confirm password must match the password' })
+  confirmPassword: string;
 
   @ApiProperty({
     example: USER_ROLE.USER,
