@@ -1,11 +1,11 @@
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { CountriesService } from './countries.service';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { CountryNameDTO } from './dto/name.dto';
+import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
+import { CountryNameDTO } from 'src/dtos/country-name.dto';
 
 @ApiTags('Countries')
-@ApiBearerAuth()
+@ApiCookieAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('countries')
 export class CountriesController {

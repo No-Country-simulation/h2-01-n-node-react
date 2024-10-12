@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { AppController } from './app.controller';
 import { CountriesModule } from './countries/countries.module';
+import { VenuesModule } from './venues/venues.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { CountriesModule } from './countries/countries.module';
     UsersModule,
     AuthModule,
     CountriesModule,
+    VenuesModule,
   ],
   controllers: [AppController],
 })
