@@ -13,3 +13,30 @@ body {
   .border-box{
     border-radius: 20px;
   }
+
+  .btn-box-shadow {
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px #5000AC;
+    transition: all 0.3s ease;
+    font-size: 16px;
+  }
+  
+  .btn-box-shadow:active {
+    box-shadow: inset 0px 2px 5px rgba(0, 0, 0, 0.5);
+    transform: translateY(2px); 
+  }
+  
+  .btn-disabled {
+    background-color: #D7D6E0; 
+    box-shadow: 0 4px 6px rgba(143, 151, 171, 0.5); 
+    color: #A9A9A9; 
+    cursor: not-allowed; 
+  }
+  
+  .btn-disabled:hover {
+    background-color: #D7D6E0; 
+  }
+  
