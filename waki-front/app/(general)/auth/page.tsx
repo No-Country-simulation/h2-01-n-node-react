@@ -1,10 +1,11 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Header from "../../components/Navbar/Navbar";
 import ImgGoogle from "../../assets/icon-google.png";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaCheckCircle, FaEye, FaEyeSlash } from "react-icons/fa";
 import "./auth.css";
 import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../../../firebase/config";
@@ -14,6 +15,13 @@ export default function AuthTabs() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [activeTab, setActiveTab] = useState("InicioSesion");
+  const [isDisabledLogin, setIsDisabledLogin] = useState(true);
+  const [isDisabledRegister, setIsDisabledRegister] = useState(true);
+  const [passwordsMatch, setPasswordsMatch] = useState({
+    password: "",
+    confirmPassword: "",
+  });
+
   const [loginFormValues, setLoginFormValues] = useState({
     email: "",
     password: "",
@@ -32,6 +40,7 @@ export default function AuthTabs() {
   });
 
   const [registerFormErrors, setRegisterFormErrors] = useState({
+    username: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -61,7 +70,15 @@ export default function AuthTabs() {
     return emailRegex.test(email);
   };
 
+  const validateUsername = (username: string) => {
+    const usernameRegex = /^[a-zA-Z0-9 ]{3,20}$/;
+    return usernameRegex.test(username);
+  };
   const validatePassword = (password: string) => {
+    return password.length >= 6;
+  };
+
+  const validateConfirmPassword = (password: string) => {
     return password.length >= 6;
   };
 
@@ -94,6 +111,15 @@ export default function AuthTabs() {
     } else if (formType === "register") {
       setRegisterFormValues({ ...registerFormValues, [id]: value });
 
+      if (id === "username" && !validateUsername(value)) {
+        setRegisterFormErrors({
+          ...registerFormErrors,
+          username: "El formato del usuario es incorrecto.",
+        });
+      } else if (id === "username") {
+        setRegisterFormErrors({ ...registerFormErrors, username: "" });
+      }
+
       if (id === "email" && !validateEmail(value)) {
         setRegisterFormErrors({
           ...registerFormErrors,
@@ -112,18 +138,48 @@ export default function AuthTabs() {
         setRegisterFormErrors({ ...registerFormErrors, password: "" });
       }
 
-      if (id === "confirmPassword" && value !== registerFormValues.password) {
+      if (id === "confirmPassword" && !validateConfirmPassword(value)) {
         setRegisterFormErrors({
           ...registerFormErrors,
-          confirmPassword: "Las contraseñas no coinciden.",
+          confirmPassword: "La contraseña debe tener al menos 6 caracteres.",
         });
       } else if (id === "confirmPassword") {
-        setRegisterFormErrors({ ...registerFormErrors, confirmPassword: "" });
+        setPasswordsMatch({
+          ...passwordsMatch,
+          confirmPassword: "Coinciden las contraseñas.",
+        });
+        setRegisterFormErrors({
+          ...registerFormErrors,
+          confirmPassword: "",
+        });
       }
     }
   };
 
-  // Función para manejar la autenticación con Google
+  const isFormValidLogin = () => {
+    const { email, password } = loginFormValues;
+    return validateEmail(email) && validatePassword(password);
+  };
+
+  const isFormValidRegister = () => {
+    const { email, password, confirmPassword, username } = registerFormValues;
+    return (
+      validateUsername(username) &&
+      validateEmail(email) &&
+      validatePassword(password) &&
+      validateConfirmPassword(confirmPassword) &&
+      password === confirmPassword
+    );
+  };
+
+  useEffect(() => {
+    setIsDisabledRegister(!isFormValidRegister());
+  }, [registerFormValues, registerFormErrors, isFormValidRegister]);
+
+  useEffect(() => {
+    setIsDisabledLogin(!isFormValidLogin());
+  }, [loginFormValues, loginFormErrors, isFormValidLogin]);
+
   const handleGoogleSignIn = async () => {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -134,41 +190,48 @@ export default function AuthTabs() {
     }
   };
 
-  // Manejo de envío para el formulario de registro
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
-    if (!validateEmail(registerFormValues.username)) {
+
+    if (!validateUsername(registerFormValues.username)) {
       setRegisterFormErrors({
         ...registerFormErrors,
-        email: "Por favor ingresa un correo válido.",
+        username: "El formato del usuario es incorrecto.",
       });
     }
-  
+
+    if (!validateEmail(registerFormValues.email)) {
+      setRegisterFormErrors({
+        ...registerFormErrors,
+        email: "El formato del email es incorrecto.",
+      });
+    }
+
     if (!validatePassword(registerFormValues.password)) {
       setRegisterFormErrors({
         ...registerFormErrors,
         password: "La contraseña debe tener al menos 6 caracteres.",
       });
     }
-  
+
     if (registerFormValues.password !== registerFormValues.confirmPassword) {
       setRegisterFormErrors({
         ...registerFormErrors,
         confirmPassword: "Las contraseñas no coinciden.",
       });
     }
-  
-    if (
-      !registerFormErrors.email &&
-      !registerFormErrors.password &&
-      !registerFormErrors.confirmPassword
-    ) {
-      console.log("Formulario válido. Procesando envío...");
-  
-      const API_BASE_URL = "https://waki.onrender.com/api"; 
+
+    if (!validateConfirmPassword(registerFormValues.confirmPassword)) {
+      setRegisterFormErrors({
+        ...registerFormErrors,
+        confirmPassword: "La contraseña debe tener al menos 6 caracteres.",
+      });
+    }
+
+    {
+      const API_BASE_URL = "https://waki.onrender.com/api";
       const REGISTER_API_URL = `${API_BASE_URL}/auth/register`;
-  
+
       try {
         const response = await fetch(REGISTER_API_URL, {
           method: "POST",
@@ -182,7 +245,7 @@ export default function AuthTabs() {
             confirmPassword: registerFormValues.confirmPassword,
           }),
         });
-  
+
         if (response.ok) {
           router.push("/ligas");
         } else {
@@ -194,7 +257,7 @@ export default function AuthTabs() {
       }
     }
   };
-  
+
   const handleSubmitLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -212,7 +275,7 @@ export default function AuthTabs() {
       });
     }
 
-    const API_BASE_URL = "https://waki.onrender.com/api"; 
+    const API_BASE_URL = "https://waki.onrender.com/api";
     const REGISTER_API_URL = `${API_BASE_URL}/auth/login`;
 
     try {
@@ -312,8 +375,11 @@ export default function AuthTabs() {
 
               <div className="flex items-center justify-center mt-5">
                 <button
-                  className="bg-[#8E2BFF] hover:bg-[#6c22cc] text-white py-2 px-4 border-box w-full focus:outline-none focus:shadow-outline"
+                  className={`bg-[#8E2BFF] btn-box-shadow hover:bg-[#6c22cc] text-white py-2 px-4 border-box w-full focus:outline-none focus:shadow-outline ${
+                    isDisabledLogin ? "btn-disabled" : ""
+                  }`}
                   type="submit"
+                  disabled={isDisabledLogin}
                 >
                   Iniciar sesión
                 </button>
@@ -324,7 +390,7 @@ export default function AuthTabs() {
                   className="flex-grow border-t border-black"
                   style={{ height: "2px" }}
                 ></div>
-                <span className="mx-4 text-gray-600">O inicia sesión con</span>
+                <span className="mx-4 text-gray-600">O</span>
                 <div
                   className="flex-grow border-t border-black"
                   style={{ height: "2px" }}
@@ -379,6 +445,11 @@ export default function AuthTabs() {
                   className="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                   placeholder="Nombre de usuario"
                 />
+                {registerFormErrors.username && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {registerFormErrors.username}
+                  </p>
+                )}
               </div>
               <div className="mb-4">
                 <label
@@ -456,11 +527,20 @@ export default function AuthTabs() {
                     {registerFormErrors.confirmPassword}
                   </p>
                 )}
+                {passwordsMatch.confirmPassword && (
+                  <p className="text-[#279F41] text-xs mt-1 flex items-center">
+                    <FaCheckCircle className="mr-1 text-white border border-[#279F41] bg-[#279F41] rounded-full w-4 h-4" />
+                    {passwordsMatch.confirmPassword}
+                  </p>
+                )}
               </div>
               <div className="flex items-center justify-center">
                 <button
-                  className="bg-[#8E2BFF] hover:bg-[#6c22cc] w-full border-box text-white py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline"
+                  className={`bg-[#8E2BFF] btn-box-shadow hover:bg-[#6c22cc] text-white py-2 px-4 border-box w-full focus:outline-none focus:shadow-outline ${
+                    isDisabledRegister ? "btn-disabled" : ""
+                  }`}
                   type="submit"
+                  disabled={isDisabledRegister}
                 >
                   Registrate
                 </button>
@@ -470,7 +550,7 @@ export default function AuthTabs() {
                   className="flex-grow border-t border-black"
                   style={{ height: "2px" }}
                 ></div>
-                <span className="mx-4 text-gray-600">O registrate con</span>
+                <span className="mx-4 text-gray-600">O</span>
                 <div
                   className="flex-grow border-t border-black"
                   style={{ height: "2px" }}
@@ -494,6 +574,16 @@ export default function AuthTabs() {
                     Continuar con Google
                   </span>
                 </button>
+              </div>
+              <div className="flex items-center justify-center mt-3">
+                <p className="mt-2 text-black text-sm">
+                  Al crear una cuenta, estás aceptando los{" "}
+                  <span className="text-[#288CE9]">Términos de uso</span> y la{" "}
+                  <span className="text-[#288CE9]">
+                    Política de privacidad de la empresa
+                  </span>
+                  .
+                </p>
               </div>
             </form>
           </div>
