@@ -9,6 +9,7 @@ export default function page() {
       {/*<MenuInferior/>*/}
       {/*<SplashScreen/>*/}
       <TopView/>
+      <h1>TEST</h1>
     </div>
   )
 }
