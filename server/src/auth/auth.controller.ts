@@ -1,7 +1,7 @@
 import { Body, Controller, Post, Res } from '@nestjs/common';
-import { RegisterUserDTO } from './dto/register.dto';
+import { RegisterUserDTO } from './dtos/register.dto';
 import { UsersService } from 'src/users/users.service';
-import { LoginUserDTO } from './dto/login.dto';
+import { LoginUserDTO } from './dtos/login.dto';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
