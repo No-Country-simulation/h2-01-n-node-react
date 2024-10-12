@@ -1,0 +1,156 @@
+/* Estilos generales */
+#container-carrusel {
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .carousel {
+    position: relative;
+  }
+  
+  .carousel-content {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none; /* Para Firefox */
+    -ms-overflow-style: none; /* Para Internet Explorer y Edge */
+    -webkit-overflow-scrolling: touch; /* Para un desplazamiento suave en iOS */
+    padding-bottom: 1rem; /* Espacio para el scrollbar */
+    gap: 1rem; /* Espacio entre tarjetas */
+  }
+  
+  .carousel-content::-webkit-scrollbar {
+    display: none; /* Para Chrome, Safari y Opera */
+  }
+  
+  .carousel-item {
+    flex: 0 0 auto;
+    width: calc(100% - 2rem); /* Pantalla completa en móviles menos el padding */
+    scroll-snap-align: center;
+    height: 15rem; /* equivalente a h-96 */
+    background-color: #3b82f6; /* bg-blue-500 */
+    color: white;
+    border-radius: 1rem; /* rounded-2xl */
+    display: flex;
+    flex-direction: column;
+    /*justify-content: center;*/
+    align-items: center;
+  }
+  
+  @media (min-width: 768px) {
+    .carousel-item {
+      width: calc(50% - 1rem); /* md:basis-1/2 con espacio entre tarjetas */
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .carousel-item {
+      width: calc(33.333333% - 1rem); /* lg:basis-1/3 con espacio entre tarjetas */
+    }
+  }
+  
+  @media (min-width: 768px) {
+    .carousel-item {
+      width: calc(50% - 0.5rem); /* md:basis-1/2 con espacio entre tarjetas */
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .carousel-item {
+      width: calc(33.333333% - 0.67rem); /* lg:basis-1/3 con espacio entre tarjetas */
+    }
+  }
+  
+  .card-content {
+    padding: 0;
+    width: 100%;
+    position: relative;
+}
+
+#topview-card {
+    background-color: #af3030; /* Color para la barra superior */
+    text-align: center;
+    padding: 8px 0; /* Ajusta el padding según tu preferencia */
+    font-weight: 600; /* Seminegrita */
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    color: white;
+}
+
+.match-date-time {
+    text-align: center;
+    color: white; /* Color del texto */
+    font-weight: 600; /* Negrita */
+}
+
+.match-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    flex-grow: 1;
+    background-color: #3b82f6; /* Color azul para la parte inferior */
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+    margin-top: 50px;
+}
+
+.team-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%; /* Asegura que los equipos se alineen correctamente */
+}
+
+.team-logo {
+    width: 4rem;
+    height: 4rem;
+    object-fit: contain; /* Asegura que las imágenes no se deformen */
+}
+
+.team-name {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: white; /* Mantén el color blanco para la visibilidad */
+    text-align: center;
+}
+
+.vsImage {
+    
+    
+    height: 100px;
+    width: 100px;
+  
+}
+
+
+
+  /* Añadir un indicador visual de scroll */
+.carousel::after {
+    content: '→';
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 2rem;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 0.5rem;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  
+  @keyframes pulse {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+ 
