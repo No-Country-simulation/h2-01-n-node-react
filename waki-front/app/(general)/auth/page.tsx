@@ -20,6 +20,7 @@ export default function AuthTabs() {
   });
 
   const [registerFormValues, setRegisterFormValues] = useState({
+    username: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -134,42 +135,67 @@ export default function AuthTabs() {
   };
 
   // Manejo de envío para el formulario de registro
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!validateEmail(registerFormValues.email)) {
+  
+    if (!validateEmail(registerFormValues.username)) {
       setRegisterFormErrors({
         ...registerFormErrors,
         email: "Por favor ingresa un correo válido.",
       });
     }
-
+  
     if (!validatePassword(registerFormValues.password)) {
       setRegisterFormErrors({
         ...registerFormErrors,
         password: "La contraseña debe tener al menos 6 caracteres.",
       });
     }
-
+  
     if (registerFormValues.password !== registerFormValues.confirmPassword) {
       setRegisterFormErrors({
         ...registerFormErrors,
         confirmPassword: "Las contraseñas no coinciden.",
       });
     }
-
+  
     if (
       !registerFormErrors.email &&
       !registerFormErrors.password &&
       !registerFormErrors.confirmPassword
     ) {
       console.log("Formulario válido. Procesando envío...");
-      // Aquí puedes añadir la lógica de envío de datos
+  
+      const API_BASE_URL = "https://waki.onrender.com/api"; 
+      const REGISTER_API_URL = `${API_BASE_URL}/auth/register`;
+  
+      try {
+        const response = await fetch(REGISTER_API_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: registerFormValues.username,
+            email: registerFormValues.email,
+            password: registerFormValues.password,
+            confirmPassword: registerFormValues.confirmPassword,
+          }),
+        });
+  
+        if (response.ok) {
+          router.push("/ligas");
+        } else {
+          const errorData = await response.json();
+          console.error("Error en el registro:", errorData);
+        }
+      } catch (error) {
+        console.error("Error en la solicitud de registro:", error);
+      }
     }
   };
-
-  // Manejo de envío para el formulario de inicio de sesión
-  const handleSubmitLogin = (e: React.FormEvent) => {
+  
+  const handleSubmitLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validateEmail(loginFormValues.email)) {
@@ -186,9 +212,29 @@ export default function AuthTabs() {
       });
     }
 
-    if (!loginFormErrors.email && !loginFormErrors.password) {
-      console.log("Formulario de inicio de sesión válido. Procesando...");
-      // Aquí puedes añadir la lógica de inicio de sesión
+    const API_BASE_URL = "https://waki.onrender.com/api"; 
+    const REGISTER_API_URL = `${API_BASE_URL}/auth/login`;
+
+    try {
+      const response = await fetch(REGISTER_API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: loginFormValues.email,
+          password: loginFormValues.password,
+        }),
+      });
+
+      if (response.ok) {
+        router.push("/ligas");
+      } else {
+        const errorData = await response.json();
+        console.error("Error en el login:", errorData);
+      }
+    } catch (error) {
+      console.error("Error en la solicitud de login:", error);
     }
   };
 
@@ -328,6 +374,8 @@ export default function AuthTabs() {
                 <input
                   type="text"
                   id="username"
+                  value={registerFormValues.username}
+                  onChange={(e) => handleInputChange(e, "register")}
                   className="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                   placeholder="Nombre de usuario"
                 />
