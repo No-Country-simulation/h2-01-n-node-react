@@ -51,3 +51,17 @@ El proyecto se centra en cuatro pantallas clave:
 1. **Clona el repositorio**:
    ```bash
  https://github.com/No-Country-simulation/h2-01-n-node-react.git
+
+## Autores ✒️
+
+_Menciona a todos aquellos que ayudaron a levantar el proyecto desde sus inicios_
+
+* **Inez Muruzabal** - *UX* - 
+* **Alan Rios** - *FrontEnd* - 
+* **Fede Montero** - *FrontEnd* - 
+* **Juan Pablo Quintana** - *BackEnd* - 
+* **Sony Pimentel** - *BackEnd* - 
+* **Alejandro Quintero** - *QA* - 
+* **Patricia Fernandez** - *PM* - 
+* **Diego Gonzalez** - *TL* - 
+ 
