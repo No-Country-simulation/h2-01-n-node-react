@@ -10,3 +10,19 @@ body{
     margin: 20px;
     font-weight: bold;
 }
+
+.partidosTitle{
+    display: flex;
+    color: #317EF4;
+    font-weight: bold;
+    font-size: 22px;
+    font-family: "Poppins", sans-serif;
+    margin-left: 50px;
+    margin-top: 30px;
+   
+}
+
+.statePartido{
+    font-family: "Poppins", sans-serif;
+    font-size: 16px;
+}
