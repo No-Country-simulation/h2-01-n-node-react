@@ -2,6 +2,7 @@ import MenuInferior from '@/app/components/MenuInferior/MenuInferior'
 import SplashScreen from '@/app/components/SplashScreen/SplashScreen'
 import TopView from '@/app/components/TopView/TopView'
 import Carrusel from '@/app/components/Carrusel/Carrusel'
+import { MenuItem } from '@mui/material'
 import './partidos.css'
 import React from 'react'
 
@@ -13,6 +14,8 @@ export default function page() {
       <TopView/>
       <h1 className='title'>¡No te pierdas tus favoritos!</h1>
       <Carrusel/>
+     
+      <MenuInferior />
     </div>
   )
 }

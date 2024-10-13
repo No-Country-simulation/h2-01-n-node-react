@@ -2,11 +2,12 @@
 import React, { useState, useRef, useEffect } from 'react'
 import './carrusel.css'
 import vsImage from '@/app/assets/VS.png'
+import logoLE from '@/app/assets/logo-le.png'
 import Image from "next/image";
-/*import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 import { Card, CardContent } from "@/components/ui/card"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-*/
+
 type Match={
     date:string,
     time:string,
@@ -58,8 +59,14 @@ export default function Carrusel() {
                             <div className="card-content">
                                 <div id="topview-card">
                                     <div className="match-date-time">
-                                        <span>{match.date}</span>
-                                        <span>{match.time}</span>
+                                        <Image
+                                        priority={true}
+                                        alt="Imagen de Liga española"
+                                        className="logo-le"
+                                        src={logoLE}
+                                        />
+                                        <div className='trapecio'><span className='topview-date'>{match.date}</span></div>
+                                        <span className='topview-time'>{match.time}</span>
                                     </div>
                                 </div>
                                 <div className="match-info">
@@ -78,11 +85,18 @@ export default function Carrusel() {
                                         <span className="team-name">{match.visitTeam}</span>
                                     </div>
                                 </div>
+                                <div className="time-close">
+                                Tiempo restante para apostar
+                                    <span className='timeCloseVar'> {match.timeClose}</span>
+                                </div>
                             </div>
                             
                         </div>
+                       
                     ))}
+                    
                 </div>
+                
             </div>
         </div>
     );
