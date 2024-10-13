@@ -12,12 +12,11 @@ body{
     width: 100vw; 
 }
 
-
 .title-waki{
     font-size: 50px;
     font-weight: bold;
     text-align: center;
-    margin-top: 280px;
+    margin-top:140px;
     color: white;
     font-family: "Poppins", sans-serif;
 }
