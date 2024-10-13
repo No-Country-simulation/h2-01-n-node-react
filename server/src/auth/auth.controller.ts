@@ -7,6 +7,7 @@ import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { ApiTags } from '@nestjs/swagger';
 
+// TODO: move logic to auth.service.ts
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
