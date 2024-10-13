@@ -66,5 +66,6 @@ _Menciona a todos aquellos que ayudaron a levantar el proyecto desde sus inicios
 <a href="https://www.linkedin.com/in/patricia-fernandez-rojas" target="_blank">
     <img src="https://img.shields.io/static/v1?message=LinkedIn&logo=linkedin&label=&color=0077B5&logoColor=white&labelColor=&style=for-the-badge" height="35" alt="linkedin logo" />
   </a>
+
 * **Diego Gonzalez** - *TL* - 
  
