@@ -2,11 +2,9 @@
 import React, { useState, useRef, useEffect } from 'react'
 import './carrusel.css'
 import vsImage from '@/app/assets/VS.png'
-import logoLE from '@/app/assets/logo-le.png'
+import logoLE from '@/app/assets//ligas/logo-le.png'
 import Image from "next/image";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
-import { Card, CardContent } from "@/components/ui/card"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+
 
 type Match={
     date:string,

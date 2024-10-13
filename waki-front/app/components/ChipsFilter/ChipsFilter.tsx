@@ -1,3 +1,4 @@
+"use client"
 import React from 'react'
 import logoLE from '@/app/assets/ligas/logo-le.png'
 import logoPL from '@/app/assets/ligas/logoPL.png'
@@ -14,8 +15,8 @@ export default function ChipsFilter() {
       <div className="chip">
       <Image
         priority={true}
-        alt="Imagen de VS"
-        className="vsImage"
+        alt="Logo de ligas"
+        className="logoLigas"
         src={logoLE}
         />
       <span className="chip-text">La Liga</span>
@@ -23,8 +24,8 @@ export default function ChipsFilter() {
     <div className="chip">
       <Image
         priority={true}
-        alt="Imagen de VS"
-        className="vsImage"
+        alt="Logo de ligas"
+        className="logoLigas"
         src={logoPL}
         />
       <span className="chip-text">Premiere League</span>
@@ -32,8 +33,8 @@ export default function ChipsFilter() {
     <div className="chip">
       <Image
         priority={true}
-        alt="Imagen de VS"
-        className="vsImage"
+        alt="Logo de ligas"
+        className="logoLigas"
         src={logoA}
         />
       <span className="chip-text">Serie A</span>
@@ -41,8 +42,8 @@ export default function ChipsFilter() {
     <div className="chip">
       <Image
         priority={true}
-        alt="Imagen de VS"
-        className="vsImage"
+        alt="Logo de ligas"
+        className="logoLigas"
         src={campUY}
         />
       <span className="chip-text">Campeonato uruguayo</span>

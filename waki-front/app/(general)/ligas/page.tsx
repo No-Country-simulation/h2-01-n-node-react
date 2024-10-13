@@ -18,6 +18,8 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState("Hoy");
   const [filter, setFilter] = useState("tendencias");
 
+  
+
   const formatDate = (date: Date) => {
     const day = date.getDate();
     const month = date.toLocaleString("default", { month: "short" });
