@@ -4,6 +4,7 @@ import {Send} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import './faqbot.css'
 
 type Message = {
     text:string
@@ -13,7 +14,7 @@ type Message = {
 const QA = [
     {question:"Hola", answer:"¡Hola, como estas? ¿En que puedo ayudarte?"},
     {question:"Como pago?", answer:"Puedes hacer clic en el boton '+' 😀"},
-    {question:"Hola", answer:"¡Hola, como estas? ¿En que puedo ayudarte?"},
+    {question:"Puedo cancelar mi prediccion?", answer:"NO 😎"},
     {question:"Hola", answer:"¡Hola, como estas? ¿En que puedo ayudarte?"},
 ]
 
@@ -34,6 +35,9 @@ export default function FAQBot() {
     }
   return (
     <div>
+        <div className='titleContainer'>
+            <h1 className='titleChat'>Chat whit bot</h1>
+            </div>
       <div className="w-full max-w-md mx-auto p-4 bg-background rounded-lg shadow">
       <ScrollArea className="h-[400px] mb-4 p-4 border rounded-md">
         {messages.map((message, index) => (
