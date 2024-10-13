@@ -50,4 +50,4 @@ El proyecto se centra en cuatro pantallas clave:
 
 1. **Clona el repositorio**:
    ```bash
- 
+ https://github.com/No-Country-simulation/h2-01-n-node-react.git
