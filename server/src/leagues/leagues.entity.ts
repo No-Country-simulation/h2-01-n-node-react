@@ -1,5 +1,13 @@
 import { Countries } from 'src/countries/countries.entity';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import { LeagueSeasons } from 'src/league-seasons/league-seasons.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryColumn,
+} from 'typeorm';
 
 @Entity('leagues')
 export class Leagues {
@@ -19,4 +27,7 @@ export class Leagues {
   @JoinColumn({ name: 'country' })
   @Column({ nullable: false })
   country: string;
+
+  @OneToMany(() => LeagueSeasons, (leagueSeasons) => leagueSeasons.league)
+  seasons: LeagueSeasons[];
 }

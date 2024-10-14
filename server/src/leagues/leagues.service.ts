@@ -17,7 +17,10 @@ export class LeaguesService {
   }
 
   async findOneById(id: number) {
-    const league = await this.leaguesRepository.findOneBy({ id });
+    const league = await this.leaguesRepository.findOne({
+      where: { id },
+      relations: ['seasons'],
+    });
 
     if (!league) throw new NotFoundException('Country not found');
 
@@ -40,5 +43,18 @@ export class LeaguesService {
     });
 
     return leagues;
+  }
+
+  async findAllWithActiveSeasons() {
+    return await this.leaguesRepository
+      .createQueryBuilder('league')
+      .leftJoinAndSelect(
+        'league.seasons',
+        'season',
+        'season.current = :current',
+        { current: true },
+      )
+      .where('season.id IS NOT NULL')
+      .getMany();
   }
 }

@@ -11,6 +11,7 @@ import { CountriesModule } from './countries/countries.module';
 import { VenuesModule } from './venues/venues.module';
 import { LeaguesModule } from './leagues/leagues.module';
 import { TeamsModule } from './teams/teams.module';
+import { LeagueSeasonsModule } from './league-seasons/league-seasons.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { TeamsModule } from './teams/teams.module';
     VenuesModule,
     LeaguesModule,
     TeamsModule,
+    LeagueSeasonsModule,
   ],
   controllers: [AppController],
 })

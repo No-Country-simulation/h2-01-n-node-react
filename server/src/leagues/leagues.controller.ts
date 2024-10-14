@@ -1,4 +1,11 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  Controller,
+  Get,
+  Param,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { LeaguesService } from './leagues.service';
 import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
@@ -17,7 +24,13 @@ export class LeaguesController {
     return this.leaguesService.findAll();
   }
 
+  @Get('/current')
+  findAllWithActiveSeasons() {
+    return this.leaguesService.findAllWithActiveSeasons();
+  }
+
   @Get(':id')
+  @UseInterceptors(ClassSerializerInterceptor)
   findOneById(@Param('id') id: string) {
     return this.leaguesService.findOneById(+id);
   }
