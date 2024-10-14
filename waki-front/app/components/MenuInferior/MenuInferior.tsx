@@ -7,12 +7,17 @@ import Predicciones from "../../assets/predicciones.png";
 import PartidosActive from "../../assets/Vector12.png";
 import DivisionesActive from "../../assets/Vector.png"; 
 import Image from "next/image";
+import { useRouter } from 'next/router'; 
 
 const MenuInferior = () => {
   const [activeIcon, setActiveIcon] = useState<string>("partidos");
+  const router = useRouter();
 
   const handleIconClick = (icon: string) => {
     setActiveIcon(icon);
+    if (icon === "divisiones") {
+      router.push('/divisiones'); 
+    }
   };
 
   const isActive = (icon: string) => activeIcon === icon;
@@ -32,7 +37,7 @@ const MenuInferior = () => {
             backgroundColor: isActive("partidos") ? "#317EF4" : "transparent",
             transform: isActive("partidos") ? "scale(1.1)" : "scale(1)",
             boxShadow: isActive("partidos") ? "0 4px 10px rgba(0, 0, 0, 0.3)" : "none",
-            borderRadius: isActive("partidos") ? "5px" : "0px", // Añade border-radius aquí
+            borderRadius: isActive("partidos") ? "5px" : "0px", 
             transition: "all 0.3s ease",
           }}
         >
@@ -62,7 +67,7 @@ const MenuInferior = () => {
             backgroundColor: isActive("scout") ? "#317EF4" : "transparent",
             transform: isActive("scout") ? "scale(1.1)" : "scale(1)",
             boxShadow: isActive("scout") ? "0 4px 10px rgba(0, 0, 0, 0.3)" : "none",
-            borderRadius: isActive("scout") ? "5px" : "0px", // Añade border-radius aquí
+            borderRadius: isActive("scout") ? "5px" : "0px", 
             transition: "all 0.3s ease",
           }}
         >
@@ -92,7 +97,7 @@ const MenuInferior = () => {
             backgroundColor: isActive("divisiones") ? "#317EF4" : "transparent",
             transform: isActive("divisiones") ? "scale(1.1)" : "scale(1)",
             boxShadow: isActive("divisiones") ? "0 4px 10px rgba(0, 0, 0, 0.3)" : "none",
-            borderRadius: isActive("divisiones") ? "5px" : "0px", // Añade border-radius aquí
+            borderRadius: isActive("divisiones") ? "5px" : "0px", 
             transition: "all 0.3s ease",
           }}
         >
@@ -122,7 +127,7 @@ const MenuInferior = () => {
             backgroundColor: isActive("predicciones") ? "#317EF4" : "transparent",
             transform: isActive("predicciones") ? "scale(1.1)" : "scale(1)",
             boxShadow: isActive("predicciones") ? "0 4px 10px rgba(0, 0, 0, 0.3)" : "none",
-            borderRadius: isActive("predicciones") ? "5px" : "0px", // Añade border-radius aquí
+            borderRadius: isActive("predicciones") ? "5px" : "0px", 
             transition: "all 0.3s ease",
           }}
         >
