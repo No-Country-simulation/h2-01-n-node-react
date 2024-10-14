@@ -6,7 +6,7 @@ import Carrusel from '@/app/components/Carrusel/Carrusel'
 import ChipsFilter from '@/app/components/ChipsFilter/ChipsFilter'
 import { FiCalendar } from "react-icons/fi";
 import MatchCard from '@/app/components/MatchCard/MatchCard'
-
+import MatchCardLive from '@/app/components/MatchCardLive/MatchCardLive'
 import Collapse from "@/app/components/Collapse/Collapse";
 import { useState } from "react";
 import './partidos.css'
@@ -63,9 +63,9 @@ export default function page() {
       <h1 className='partidosTitle'>Partidos</h1>
       <div ><ChipsFilter/></div>
       <Header tabs={tabs} onTabChange={handleTabChange} />
-      <h1 className='statePartido'>En vivo    _________________________________</h1>
-      <MatchCard/>
-      <h1 className='statePartido'>Por Jugar    _______________________________</h1>
+      <h1 className='statePartido'>En vivo    ___________________________</h1>
+      <MatchCardLive/>
+      <h1 className='statePartido'>Por Jugar    _________________________</h1>
       <MatchCard/>
       <MenuInferior />
     </div>

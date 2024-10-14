@@ -7,7 +7,7 @@ import Predicciones from "../../assets/predicciones.png";
 import PartidosActive from "../../assets/Vector12.png";
 import DivisionesActive from "../../assets/Vector.png"; 
 import Image from "next/image";
-import { useRouter } from 'next/router'; 
+import { useRouter } from 'next/navigation'; 
 
 const MenuInferior = () => {
   const [activeIcon, setActiveIcon] = useState<string>("partidos");
@@ -17,6 +17,9 @@ const MenuInferior = () => {
     setActiveIcon(icon);
     if (icon === "divisiones") {
       router.push('/divisiones'); 
+    }
+    if (icon==='partidos'){
+      router.push('/partidos')
     }
   };
 
