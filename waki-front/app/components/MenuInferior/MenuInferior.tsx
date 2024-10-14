@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ScoutPlayers from "../../assets/Vector-2.png";
 import Partidos from "../../assets/Vector-1.png";
 import Divisiones from "../../assets/Vector1.png";
@@ -7,24 +7,31 @@ import Predicciones from "../../assets/predicciones.png";
 import PartidosActive from "../../assets/Vector12.png";
 import DivisionesActive from "../../assets/Vector.png"; 
 import Image from "next/image";
-import { useRouter } from 'next/navigation'; 
+import { usePathname, useRouter } from 'next/navigation'; 
 
 const MenuInferior = () => {
   const [activeIcon, setActiveIcon] = useState<string>("partidos");
   const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (pathname.includes('/divisiones')) {
+      setActiveIcon("divisiones");
+    } else if (pathname.includes('/partidos')) {
+      setActiveIcon("partidos");
+    } else {
+      setActiveIcon("scout");
+    }
+  }, [pathname]);
 
   const handleIconClick = (icon: string) => {
-    setActiveIcon(icon);
     if (icon === "divisiones") {
       router.push('/divisiones');
-      setActiveIcon("divisiones"); 
+    } else if (icon === "partidos") {
+      router.push('/partidos');
     }
-    if (icon==='partidos'){
-      router.push('/partidos')
-      setActiveIcon("partidos"); 
-    }
+    setActiveIcon(icon); 
   };
-
   const isActive = (icon: string) => activeIcon === icon;
 
   return (
