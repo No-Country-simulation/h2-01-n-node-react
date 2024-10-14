@@ -184,7 +184,7 @@ export default function AuthTabs() {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const result = await signInWithPopup(auth, googleProvider);
-      router.push("/ligas");
+      router.push("/partidos");
     } catch (error) {
       console.error("Error durante la autenticación con Google:", error);
     }
@@ -247,7 +247,7 @@ export default function AuthTabs() {
         });
 
         if (response.ok) {
-          router.push("/ligas");
+          router.push("/partidos");
         } else {
           const errorData = await response.json();
           console.error("Error en el registro:", errorData);
@@ -291,7 +291,7 @@ export default function AuthTabs() {
       });
 
       if (response.ok) {
-        router.push("/ligas");
+        router.push("/partidos");
       } else {
         const errorData = await response.json();
         console.error("Error en el login:", errorData);
