@@ -16,10 +16,12 @@ const MenuInferior = () => {
   const handleIconClick = (icon: string) => {
     setActiveIcon(icon);
     if (icon === "divisiones") {
-      router.push('/divisiones'); 
+      router.push('/divisiones');
+      setActiveIcon("divisiones"); 
     }
     if (icon==='partidos'){
       router.push('/partidos')
+      setActiveIcon("partidos"); 
     }
   };
 
