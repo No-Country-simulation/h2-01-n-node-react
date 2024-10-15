@@ -25,8 +25,7 @@ export class Leagues {
 
   @ManyToOne(() => Countries, { nullable: false })
   @JoinColumn({ name: 'country' })
-  @Column({ nullable: false })
-  country: string;
+  country: Countries;
 
   @OneToMany(() => LeagueSeasons, (leagueSeasons) => leagueSeasons.league)
   seasons: LeagueSeasons[];
