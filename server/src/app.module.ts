@@ -9,6 +9,11 @@ import { AuthModule } from './auth/auth.module';
 import { AppController } from './app.controller';
 import { CountriesModule } from './countries/countries.module';
 import { VenuesModule } from './venues/venues.module';
+import { LeaguesModule } from './leagues/leagues.module';
+import { TeamsModule } from './teams/teams.module';
+import { LeagueSeasonsModule } from './league-seasons/league-seasons.module';
+import { TeamStatisticsModule } from './team-statistics/team-statistics.module';
+import { FixturesModule } from './fixtures/fixtures.module';
 
 @Module({
   imports: [
@@ -35,6 +40,11 @@ import { VenuesModule } from './venues/venues.module';
     AuthModule,
     CountriesModule,
     VenuesModule,
+    LeaguesModule,
+    TeamsModule,
+    LeagueSeasonsModule,
+    TeamStatisticsModule,
+    FixturesModule,
   ],
   controllers: [AppController],
 })

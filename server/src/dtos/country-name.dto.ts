@@ -1,5 +1,6 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
+// TODO: fix case "El-Salvador"
 export class CountryNameDTO {
   @IsString()
   @IsNotEmpty()

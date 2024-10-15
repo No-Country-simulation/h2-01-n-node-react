@@ -15,11 +15,14 @@ export class VenuesService {
   ) {}
 
   async findAll() {
-    return await this.venuesRepository.find();
+    return await this.venuesRepository.find({ relations: ['country'] });
   }
 
   async findOneById(id: number) {
-    const venue = await this.venuesRepository.findOneBy({ id });
+    const venue = await this.venuesRepository.findOne({
+      where: { id },
+      relations: ['country'],
+    });
 
     if (!venue) throw new NotFoundException('Venue not found');
 
@@ -34,7 +37,8 @@ export class VenuesService {
     if (!country) throw new NotFoundException('Country not found');
 
     const venues = await this.venuesRepository.find({
-      where: { country: country.name },
+      where: { country: { name: country.name } },
+      relations: ['country'],
     });
 
     return venues;

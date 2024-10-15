@@ -10,8 +10,8 @@ export class CountriesService {
     private countriesRepository: Repository<Countries>,
   ) {}
 
-  findAll() {
-    return this.countriesRepository.find();
+  async findAll() {
+    return await this.countriesRepository.find();
   }
 
   async findOneByName(name: string) {
