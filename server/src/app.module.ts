@@ -12,6 +12,8 @@ import { VenuesModule } from './venues/venues.module';
 import { LeaguesModule } from './leagues/leagues.module';
 import { TeamsModule } from './teams/teams.module';
 import { LeagueSeasonsModule } from './league-seasons/league-seasons.module';
+import { TeamStatisticsModule } from './team-statistics/team-statistics.module';
+import { FixturesModule } from './fixtures/fixtures.module';
 
 @Module({
   imports: [
@@ -41,6 +43,8 @@ import { LeagueSeasonsModule } from './league-seasons/league-seasons.module';
     LeaguesModule,
     TeamsModule,
     LeagueSeasonsModule,
+    TeamStatisticsModule,
+    FixturesModule,
   ],
   controllers: [AppController],
 })

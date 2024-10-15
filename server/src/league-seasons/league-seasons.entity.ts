@@ -18,10 +18,10 @@ export class LeagueSeasons {
   year: number;
 
   @Column()
-  start: string;
+  start: Date;
 
   @Column()
-  end: string;
+  end: Date;
 
   @Column()
   current: boolean;
