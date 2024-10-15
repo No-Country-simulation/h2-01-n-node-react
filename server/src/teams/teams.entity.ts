@@ -22,8 +22,7 @@ export class Teams {
 
   @ManyToOne(() => Countries, { nullable: false })
   @JoinColumn({ name: 'country' })
-  @Column({ nullable: false })
-  country: string;
+  country: Countries;
 
   @Column()
   founded: number;

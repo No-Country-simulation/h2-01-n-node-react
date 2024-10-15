@@ -13,13 +13,15 @@ export class TeamsService {
   ) {}
 
   async findAll() {
-    return await this.teamsRepository.find();
+    return await this.teamsRepository.find({
+      relations: ['country'],
+    });
   }
 
   async findOneById(id: number) {
     const team = this.teamsRepository.findOne({
       where: { id },
-      relations: ['venue'],
+      relations: ['country', 'venue'],
     });
 
     if (!team) throw new NotFoundException('Team not found');
@@ -31,7 +33,8 @@ export class TeamsService {
     const country = await this.countriesService.findOneByName(name);
 
     const leagues = await this.teamsRepository.find({
-      where: { country: country.name },
+      where: { country: { name: country.name } },
+      relations: ['country'],
     });
 
     return leagues;
