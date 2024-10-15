@@ -38,6 +38,9 @@ export default function page() {
   const yesterday = new Date(today);
   const tomorrow = new Date(today);
 
+  yesterday.setDate(today.getDate() - 1);
+  tomorrow.setDate(today.getDate() + 1);
+
   const tabs = [
     { id: "Ayer", label: `${formatDate(yesterday)}` },
     { id: "Hoy", label: `Hoy` },
