@@ -6,6 +6,8 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  Matches,
+  MaxLength,
 } from 'class-validator';
 import { USER_RANK, USER_ROLE } from 'src/users/users.entity';
 import { Match } from '../decorators/match.decorator';
@@ -17,6 +19,10 @@ export class RegisterUserDTO {
   })
   @IsString()
   @IsNotEmpty()
+  @MaxLength(20, { message: 'Username cannot be longer than 20 characters' })
+  @Matches(/^[a-zA-Z0-9]+$/, {
+    message: 'Username must contain only letters and numbers',
+  })
   username: string;
 
   @ApiProperty({
