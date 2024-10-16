@@ -1,18 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
 
-/* Contenedor principal */
-
 .component-imagen{
     height: 70px;
     background: linear-gradient( #317ef4 35%, #23529A 100%);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 15px; /* Espaciado interno */
+    padding: 0 15px; 
 }
-
-/* Imagen de perfil (avatar) */
 
 .avatarImg{
     clip-path: circle(50%);
@@ -20,19 +16,15 @@
     height: 45px;
     border: 3px solid #BD6B36;
     object-fit: cover;
-    margin-right: 10px; /* Menor separación del saludo */
+    margin-right: 10px;
 }
-
-/* Saludo al usuario */
 
 .welcome-user{
     font-family: "Nunito", sans-serif;
     color: white;
-    font-size: 14px;
-    margin-left: 5px; /* Ajustar margen para acercar al avatar */
+    font-size: 12px;
+    margin-left: 5px; 
 }
-
-/* Contenedor de vidas y comprar */
 
 .icon-ball-container{
     display: flex;
@@ -40,8 +32,8 @@
     justify-content: space-between;
     background-color: #353333;
     padding: 5px;
-    margin-left: 20px; /* Más espacio del saludo */
-    margin-right: 30px; /* Separación del ícono de notificación */
+    margin-left: 20px; 
+    margin-right: 30px; 
     width: 120px;
     height: 30px;
     transform: skew(-5deg);
@@ -119,8 +111,8 @@
     .icon-ball-container {
         width: 100px;
         height: 25px;
-        margin-left: 15px; /* Separación del saludo */
-        margin-right: 20px; /* Separación del ícono de notificación */
+        margin-left: 15px; 
+        margin-right: 20px; 
     }
 
     .icon-ball {

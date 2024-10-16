@@ -192,92 +192,107 @@ export default function AuthTabs() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     if (!validateUsername(registerFormValues.username)) {
       setRegisterFormErrors({
         ...registerFormErrors,
         username: "El formato del usuario es incorrecto.",
       });
+      return;
     }
-
+  
     if (!validateEmail(registerFormValues.email)) {
       setRegisterFormErrors({
         ...registerFormErrors,
         email: "El formato del email es incorrecto.",
       });
+      return;
     }
-
+  
     if (!validatePassword(registerFormValues.password)) {
       setRegisterFormErrors({
         ...registerFormErrors,
         password: "La contraseña debe tener al menos 6 caracteres.",
       });
+      return;
     }
-
+  
     if (registerFormValues.password !== registerFormValues.confirmPassword) {
       setRegisterFormErrors({
         ...registerFormErrors,
         confirmPassword: "Las contraseñas no coinciden.",
       });
+      return;
     }
-
+  
     if (!validateConfirmPassword(registerFormValues.confirmPassword)) {
       setRegisterFormErrors({
         ...registerFormErrors,
         confirmPassword: "La contraseña debe tener al menos 6 caracteres.",
       });
+      return;
     }
-
-    {
-      const API_BASE_URL = "https://waki.onrender.com/api";
-      const REGISTER_API_URL = `${API_BASE_URL}/auth/register`;
-
-      try {
-        const response = await fetch(REGISTER_API_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username: registerFormValues.username,
-            email: registerFormValues.email,
-            password: registerFormValues.password,
-            confirmPassword: registerFormValues.confirmPassword,
-          }),
-        });
-
-        if (response.ok) {
-          router.push("/partidos");
+  
+    const API_BASE_URL = "https://waki.onrender.com/api";
+    const REGISTER_API_URL = `${API_BASE_URL}/auth/register`;
+  
+    try {
+      const response = await fetch(REGISTER_API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: registerFormValues.username,
+          email: registerFormValues.email,
+          password: registerFormValues.password,
+          confirmPassword: registerFormValues.confirmPassword,
+        }),
+      });
+  
+      if (response.ok) {
+        const data = await response.json(); // Obtenemos el cuerpo de la respuesta
+        const token = data.token; // Extraemos el token del body
+  
+        if (token) {
+          console.log("Token recibido:", token);
+          // Guardar el token en localStorage
+          localStorage.setItem("authToken", token); // Ejemplo de cómo guardarlo en localStorage
+          router.push("/partidos"); // Navegar a la página deseada
         } else {
-          const errorData = await response.json();
-          console.error("Error en el registro:", errorData);
+          console.error("No se recibió token en la respuesta.");
         }
-      } catch (error) {
-        console.error("Error en la solicitud de registro:", error);
+      } else {
+        const errorData = await response.json();
+        console.error("Error en el registro:", errorData);
       }
+    } catch (error) {
+      console.error("Error en la solicitud de registro:", error);
     }
   };
-
+  
   const handleSubmitLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     if (!validateEmail(loginFormValues.email)) {
       setLoginFormErrors({
         ...loginFormErrors,
         email: "Por favor ingresa un correo válido.",
       });
+      return; // Detenemos la ejecución si hay error en el email
     }
-
+  
     if (!validatePassword(loginFormValues.password)) {
       setLoginFormErrors({
         ...loginFormErrors,
         password: "La contraseña debe tener al menos 6 caracteres.",
       });
+      return; // Detenemos la ejecución si hay error en la contraseña
     }
-
+  
     const API_BASE_URL = "https://waki.onrender.com/api";
     const REGISTER_API_URL = `${API_BASE_URL}/auth/login`;
-
+  
     try {
       const response = await fetch(REGISTER_API_URL, {
         method: "POST",
@@ -289,9 +304,19 @@ export default function AuthTabs() {
           password: loginFormValues.password,
         }),
       });
-
+  
       if (response.ok) {
-        router.push("/partidos");
+        const data = await response.json(); // Obtenemos el cuerpo de la respuesta
+        const token = data.token; // Extraemos el token del body
+        
+        if (token) {
+          console.log("Token recibido:", token);
+          // Aquí puedes almacenar el token en localStorage o en algún estado global
+          localStorage.setItem("authToken", token); // Ejemplo de cómo guardarlo en localStorage
+          router.push("/partidos"); // Navegar después del login exitoso
+        } else {
+          console.error("No se recibió token en la respuesta.");
+        }
       } else {
         const errorData = await response.json();
         console.error("Error en el login:", errorData);
@@ -300,7 +325,7 @@ export default function AuthTabs() {
       console.error("Error en la solicitud de login:", error);
     }
   };
-
+  
   return (
     <>
       <Header tabs={tabs} onTabChange={handleTabChange} />

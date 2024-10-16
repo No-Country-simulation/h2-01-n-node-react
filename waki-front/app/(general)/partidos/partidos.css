@@ -35,18 +35,18 @@ body{
 
 .title-container {
     display: flex;
-    justify-content: space-between; /* Para separar el título y el filtro */
-    align-items: center; /* Alinea verticalmente al centro */
-    margin-bottom: 16px; /* Puedes ajustar esto según el espacio que necesites */
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 16px;
   }
   
   .partidosTitle {
-    font-size: 24px; /* Ajusta el tamaño del texto si es necesario */
+    font-size: 24px; 
     font-weight: bold;
     margin-left: 20px;
   }
   
   .container-partido {
-    padding: 16px; /* Ajusta según el espaciado que desees en el contenedor general */
+    padding: 16px; 
   }
   
