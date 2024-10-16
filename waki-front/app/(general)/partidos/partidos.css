@@ -4,6 +4,10 @@ body{
     background: white;
 }
 
+.container-partido{
+    margin-bottom: 100px; /*Esto arregla que le menu pise la tarjeta*/
+}
+
 .title{
     font-family: "Poppins", sans-serif;
     color: black;

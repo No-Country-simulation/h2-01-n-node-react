@@ -128,39 +128,31 @@
 
 .topview-time{
   color: black;
-  margin-right: 10px; 
+  margin-left: 40px; 
 }
 /*TRAPECIO Y DATE*/
 .trapecio {
-  color: white;
-    text-align: center;
-    align-items: center;
-    width: 50%;
-    height: 0px;
-    margin: auto;
-    border-right: 3em solid transparent;
-    border-left: 3em solid transparent;
-    border-top: 3em solid; 
-    border-top: 3em solid #BF2CFF;
-    position: relative;
-    background: linear-gradient(#C99BFF 35%, #8F2CFF 100%); 
+  color: rgb(234, 13, 13);
+  text-align: center;
+  align-items: center;
+  width: 50%;
+  height: 0px;
+  background: linear-gradient(#C99BFF 35%, #8F2CFF 100%); 
 }
 
 .topview-date{
   color:rgb(255, 255, 255);
-    position: absolute;
     bottom: 1em;
-    margin: auto;
+    margin-left: 70px;
+    margin-top: 5px;
     padding: auto;
-    width: fit-content;
-    right: 1em;
-    text-align: center;
+    background: linear-gradient(#C99BFF 35%, #8F2CFF 100%); 
 }
 
-
- 
-logo-le{
+.logo-le{
   margin-left: 10px;
+  width: 30px;
+  height: 30px;
 }
 
 .time-close {

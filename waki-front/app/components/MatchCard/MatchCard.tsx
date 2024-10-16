@@ -1,5 +1,5 @@
 "use client"
-
+import './matchcard.css'
 import { useState } from 'react'
 import Image from 'next/image'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -24,7 +24,7 @@ export default function MatchCard() {
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto bg-white shadow-lg rounded-xl overflow-hidden">
+    <Card id='card' className="w-full max-w-md mx-auto bg-white shadow-lg rounded-xl overflow-hidden">
       <CardHeader className="flex justify-between items-center p-4 bg-gray-50">
         <div className="flex items-center space-x-2">
           <Image src={logoPL}
