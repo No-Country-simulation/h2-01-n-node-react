@@ -1,10 +1,10 @@
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { FixturesService } from './fixtures.service';
-import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 
 @ApiTags('Fixtures')
-@ApiCookieAuth()
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('fixtures')
 export class FixturesController {

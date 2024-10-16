@@ -7,13 +7,13 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { LeaguesService } from './leagues.service';
-import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { CountryNameDTO } from 'src/dtos/country-name.dto';
 import { LeagueTypeDTO } from './dtos/type.dto';
 
 @ApiTags('Leagues')
-@ApiCookieAuth()
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('leagues')
 export class LeaguesController {
