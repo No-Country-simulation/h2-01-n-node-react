@@ -1,0 +1,66 @@
+.top-curve{
+    background: linear-gradient( #49DF76 25%, #0DB37B 100%);
+    width: 100%;
+    height: 30vh;
+    border-bottom-left-radius: 60% 70%;
+    border-bottom-right-radius: 60% 70%;
+}
+
+.header{
+    background-color: #2BC978;
+    height: 50px;
+    display: flex;
+}
+.flechaImg{
+    width: 20px;
+    height: 20px;
+    margin-left: 5px;
+    margin-top: 15px;
+}
+
+.partidosAtras{
+    color: #3836D1;
+    margin-left: 4px;
+    margin-top: 15px;
+}
+
+
+.icon-ball-container{
+    display: flex;
+    margin-left: 150px;
+}
+
+.icon-ball{
+    width: 30px;
+    height: 30px;
+    margin-top: 10px;
+}
+
+.counter-container{
+ margin-top: 12px;
+ width: 70px;
+ height: 25px;
+ background-color: gray;
+ display: flex;
+
+}
+
+.counter-life{
+    background: #2d2b2b;
+    color: white;
+    margin-left: 10px;
+    width: 20px;
+    text-align: center;
+}
+
+.buy-button{
+    margin-left: 15px;
+    border-radius: 2px;
+    background: #0DB37B;
+    color:white;
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+    
+}
+
