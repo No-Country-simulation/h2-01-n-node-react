@@ -1,11 +1,11 @@
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
-import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { TeamsService } from './teams.service';
 import { CountryNameDTO } from 'src/dtos/country-name.dto';
 
 @ApiTags('Teams')
-@ApiCookieAuth()
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('teams')
 export class TeamsController {

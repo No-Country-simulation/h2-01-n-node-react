@@ -22,21 +22,27 @@ export class AuthController {
     @Body() registerUserDto: RegisterUserDTO,
     @Res() res: Response,
   ) {
+    const { password } = registerUserDto;
     await this.usersService.create(registerUserDto);
 
-    return res.json({ message: 'Register successful' });
+    const user = await this.authService.login({
+      email: registerUserDto.email,
+      password,
+    });
+
+    return res.json({ token: user.accessToken });
   }
 
   @Post('login')
   async login(@Body() loginUserDto: LoginUserDTO, @Res() res: Response) {
     const user = await this.authService.login(loginUserDto);
 
-    res.cookie('access_token', user.accessToken, {
-      httpOnly: true,
-      secure: this.configService.get<string>('environment') === 'prod',
-      maxAge: this.configService.get<number>('cookieTtl'),
-    });
+    // res.cookie('access_token', user.accessToken, {
+    //   httpOnly: true,
+    //   secure: this.configService.get<string>('environment') === 'prod',
+    //   maxAge: this.configService.get<number>('cookieTtl'),
+    // });
 
-    return res.json({ message: 'Login successful' });
+    return res.json({ token: user.accessToken });
   }
 }
