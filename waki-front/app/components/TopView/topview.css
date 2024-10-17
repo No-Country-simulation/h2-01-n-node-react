@@ -2,13 +2,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
 
 .component-imagen{
-    height: 70px;
-    background: linear-gradient( #317ef4 35%, #23529A 100%);
+    width: 100%; /* Se asegura que ocupe todo el ancho */
+    height: 100px; /* Ajusta la altura como prefieras */
+    background: linear-gradient(#317ef4 35%, #23529A 100%);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 15px; 
+    padding: 0 15px;
 }
+
 
 .avatarImg{
     clip-path: circle(50%);

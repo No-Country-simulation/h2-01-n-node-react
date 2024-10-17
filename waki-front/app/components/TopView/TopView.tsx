@@ -6,6 +6,7 @@ import IconBall from "@/app/assets/icon-ball.png";
 import Notification from "@/app/assets/notification.png";
 import Image from "next/image";
 import "./topview.css";
+import Cookies from "js-cookie";
 
 export default function TopView() {
   const [userProfile, setUserProfile] = useState<{ username: string; profileImage?: string | null }>({
@@ -14,7 +15,7 @@ export default function TopView() {
   });
 
   const fetchUserProfile = async () => {
-    const token = localStorage.getItem("authToken");
+    const token = Cookies.get("authToken");
     if (!token) {
       console.error("Token no disponible");
       return;
@@ -48,7 +49,6 @@ export default function TopView() {
   }, []);
 
   return (
-    <div>
       <div className="component-imagen">
         <Image
           priority={true}
@@ -80,6 +80,5 @@ export default function TopView() {
           src={Notification}
         />
       </div>
-    </div>
   );
 }

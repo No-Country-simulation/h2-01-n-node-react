@@ -26,7 +26,7 @@ export default function MatchCardLive() {
         }))
       }
       return (
-        <Card className="w-full max-w-md mx-auto bg-white shadow-lg rounded-xl overflow-hidden">
+        <Card className="w-full max-w-md mx-auto mt-10 pr-5 bg-white shadow-lg rounded-xl overflow-hidden">
           <CardHeader className="flex justify-between items-center p-4 bg-gray-50">
             <div className="flex items-center space-x-2">
               <Image src={logoPL}
