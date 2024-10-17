@@ -1,10 +1,7 @@
 import { useState } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 
-const CollapseItem: React.FC<{ title: string; content: string }> = ({
-  title,
-  content,
-}) => {
+const CollapseItem: React.FC<{ title: React.ReactNode; content: React.ReactNode }> = ({ title, content }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleCollapse = () => {
@@ -25,32 +22,11 @@ const CollapseItem: React.FC<{ title: string; content: string }> = ({
         )}
       </button>
 
-      <div
-        className={`overflow-hidden transition-all duration-300 ${
-          isOpen ? "max-h-screen" : "max-h-0"
-        }`}
-      >
+      <div className={`overflow-hidden transition-all duration-300 ${isOpen ? "max-h-screen" : "max-h-0"}`}>
         <div className="p-4 bg-gray-100">{content}</div>
       </div>
     </div>
   );
 };
 
-export default function SimpleCollapses() {
-  return (
-    <div className="max-w-md mx-auto bg-white border w-60 border-gray-300 rounded-md shadow-md text-sm">
-      <CollapseItem
-        title="Collapse 1"
-        content="Este es el contenido del primer collapse."
-      />
-      <CollapseItem
-        title="Collapse 2"
-        content="Este es el contenido del segundo collapse."
-      />
-      <CollapseItem
-        title="Collapse 3"
-        content="Este es el contenido del tercer collapse."
-      />
-    </div>
-  );
-}
+export default CollapseItem;

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { FiCalendar } from "react-icons/fi";
 import Header from "@/app/components/Navbar/Navbar";
-import Collapse from "@/app/components/Collapse/Collapse";
+import Collapse from "@/app/components/Collapse/CollapseItem";
 import MenuInferior from "@/app/components/MenuInferior/MenuInferior";
 import {
   Select,
