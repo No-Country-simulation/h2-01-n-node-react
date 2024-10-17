@@ -136,24 +136,22 @@
   font-size: 10px; 
   margin-top: 10px;
 }
-/*TRAPECIO Y DATE*/
+/* TRAPECIO Y DATE */
 .trapecio {
-  color: rgb(234, 13, 13);
-  text-align: center;
-  align-items: center;
-  width: 50%;
-  height: 0px;
-  background: linear-gradient(#C99BFF 35%, #8F2CFF 100%); 
+  display: flex;
+  justify-content: center; /* Centrar el contenido horizontalmente */
+  align-items: center; /* Centrar el contenido verticalmente */
+  width: 50px; /* Ajusta el ancho a lo necesario */
+  height: 50px; /* Ajusta el alto a lo necesario */
+  background: linear-gradient(#C99BFF 35%, #8F2CFF 100%);
+  border-radius: 10%; /* Añadir un borde redondeado */
+  margin-left: 50px;
 }
 
-.topview-date{
-  color:rgb(255, 255, 255);
-    bottom: 1em;
-    margin-left: 50px;
-    margin-top: 5px;
-    padding: 10px;
-    font-size: 12px;
-    background: linear-gradient(#C99BFF 35%, #8F2CFF 100%); 
+.topview-date {
+  color: rgb(255, 255, 255);
+  font-size: 14px;
+  padding: 10px;
 }
 
 .logo-le{

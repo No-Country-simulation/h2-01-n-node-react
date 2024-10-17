@@ -10,6 +10,8 @@ import "./auth.css";
 import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../../../firebase/config";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
+
 
 export default function AuthTabs() {
   const [showPassword, setShowPassword] = useState(false);
@@ -273,13 +275,13 @@ export default function AuthTabs() {
   
   const handleSubmitLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+      
     if (!validateEmail(loginFormValues.email)) {
       setLoginFormErrors({
         ...loginFormErrors,
         email: "Por favor ingresa un correo válido.",
       });
-      return; // Detenemos la ejecución si hay error en el email
+      return;
     }
   
     if (!validatePassword(loginFormValues.password)) {
@@ -287,14 +289,14 @@ export default function AuthTabs() {
         ...loginFormErrors,
         password: "La contraseña debe tener al menos 6 caracteres.",
       });
-      return; // Detenemos la ejecución si hay error en la contraseña
+      return;
     }
   
     const API_BASE_URL = "https://waki.onrender.com/api";
-    const REGISTER_API_URL = `${API_BASE_URL}/auth/login`;
+    const LOGIN_API_URL = `${API_BASE_URL}/auth/login`;
   
     try {
-      const response = await fetch(REGISTER_API_URL, {
+      const response = await fetch(LOGIN_API_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -306,16 +308,20 @@ export default function AuthTabs() {
       });
   
       if (response.ok) {
-        const data = await response.json(); // Obtenemos el cuerpo de la respuesta
-        const token = data.token; // Extraemos el token del body
-        
+        const data = await response.json();
+        const token = data.token;
+  
         if (token) {
           console.log("Token recibido:", token);
-          // Aquí puedes almacenar el token en localStorage o en algún estado global
-          localStorage.setItem("authToken", token); // Ejemplo de cómo guardarlo en localStorage
-          router.push("/partidos"); // Navegar después del login exitoso
+          
+          // Guarda el token en una cookie con js-cookie
+          Cookies.set("authToken", token, { expires: 7 }); // El token expira en 7 días
+          
+          // Redirige al usuario a la página protegida
+          router.push("/partidos");
         } else {
           console.error("No se recibió token en la respuesta.");
+    
         }
       } else {
         const errorData = await response.json();
