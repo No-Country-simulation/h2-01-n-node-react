@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import MenuInferior from "@/app/components/MenuInferior/MenuInferior";
 import SplashScreen from "@/app/components/SplashScreen/SplashScreen";
@@ -8,7 +8,6 @@ import TopView from "@/app/components/TopView/TopView";
 import Carrusel from "@/app/components/Carrusel/Carrusel";
 import ChipsFilter from "@/app/components/ChipsFilter/ChipsFilter";
 import MatchCard from "@/app/components/MatchCard/MatchCard";
-import MatchCardLive from "@/app/components/MatchCardLive/MatchCardLive";
 import "./partidos.css";
 import Header from "@/app/components/Navbar/Navbar";
 import Filter from "@/app/components/Filter/Filter";
@@ -16,7 +15,7 @@ import Filter from "@/app/components/Filter/Filter";
 export default function Page() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [activeTab, setActiveTab] = useState("Hoy");
-  const router = useRouter(); 
+  const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
@@ -26,7 +25,7 @@ export default function Page() {
       // Si no hay token, redirige al usuario a la página de login
       router.push("/auth");
     } else {
-      setIsAuthenticated(true); 
+      setIsAuthenticated(true);
     }
   }, [router]);
 
@@ -59,17 +58,26 @@ export default function Page() {
   }
 
   return (
-      <><TopView /><h1 className="title">¡No te pierdas tus favoritos!</h1><Carrusel /><div className="flex items-center justify-between title-container">
-      <h1 className="partidosTitle">Partidos</h1>
-      <Filter />
-    </div><div>
+    <>
+      <TopView />
+      <h1 className="title">¡No te pierdas tus favoritos!</h1>
+      <Carrusel />
+      <div className="flex items-center justify-between title-container">
+        <h1 className="partidosTitle">Partidos</h1>
+        <Filter />
+      </div>
+      <div>
         <ChipsFilter />
-      </div><Header tabs={tabs} onTabChange={handleTabChange} /><div className="section-header">
-        <h1 className="statePartido">En vivo</h1>
-        <div className="divider" /> {/* Divisor al lado del texto */}
-      </div><MatchCardLive /><div className="section-header">
-        <h1 className="statePartido">Por Jugar</h1>
-        <div className="divider" /> {/* Divisor al lado del texto */}
-      </div><MatchCard/><MenuInferior /></>
+      </div>
+      <Header tabs={tabs} onTabChange={handleTabChange} />
+     
+    
+      <div className="section-header">
+        {/* <h1 className="statePartido">Por Jugar</h1>
+        <div className="divider" />  */}
+      <MatchCard />
+      </div>
+      <MenuInferior />
+    </>
   );
 }

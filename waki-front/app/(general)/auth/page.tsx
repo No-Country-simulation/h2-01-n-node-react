@@ -12,7 +12,6 @@ import { auth, googleProvider } from "../../../firebase/config";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 
-
 export default function AuthTabs() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -144,6 +143,10 @@ export default function AuthTabs() {
         setRegisterFormErrors({
           ...registerFormErrors,
           confirmPassword: "La contraseña debe tener al menos 6 caracteres.",
+        });
+        setPasswordsMatch({
+          ...passwordsMatch,
+          confirmPassword: "",
         });
       } else if (id === "confirmPassword") {
         setPasswordsMatch({
@@ -351,7 +354,7 @@ export default function AuthTabs() {
                   htmlFor="email"
                   className="block text-[#060606] text-sm mb-2"
                 >
-                  Ingresa tu email o teléfono
+                  Ingresa tu email
                 </label>
                 <input
                   type="email"
@@ -359,7 +362,7 @@ export default function AuthTabs() {
                   value={loginFormValues.email}
                   onChange={(e) => handleInputChange(e, "login")}
                   className="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  placeholder="Email o teléfono"
+                  placeholder="Email"
                 />
                 {loginFormErrors.email && (
                   <p className="text-red-500 text-xs mt-1">
@@ -484,7 +487,7 @@ export default function AuthTabs() {
                   htmlFor="email"
                   className="block text-[#060606] text-sm mb-2"
                 >
-                  Ingresa tu email o teléfono
+                  Ingresa tu email
                 </label>
                 <input
                   type="email"
@@ -492,7 +495,7 @@ export default function AuthTabs() {
                   value={registerFormValues.email}
                   onChange={(e) => handleInputChange(e, "register")}
                   className="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  placeholder="Email o teléfono"
+                  placeholder="Email"
                 />
                 {registerFormErrors.email && (
                   <p className="text-red-500 text-xs mt-1">
