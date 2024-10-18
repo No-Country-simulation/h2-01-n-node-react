@@ -1,7 +1,7 @@
 import { Bets } from 'src/bets/bets.entity';
+import { FixtureBetOdds } from 'src/fixture-bet-odds/fixture-bet-odds.entity';
 import { Fixtures } from 'src/fixtures/fixtures.entities';
 import { Leagues } from 'src/leagues/leagues.entity';
-import { OddValues } from 'src/odd-values/odd-values.entity';
 import {
   Column,
   Entity,
@@ -11,8 +11,8 @@ import {
   PrimaryColumn,
 } from 'typeorm';
 
-@Entity('odds')
-export class Odds {
+@Entity('fixture_bets')
+export class FixtureBets {
   @PrimaryColumn()
   id: number;
 
@@ -37,6 +37,6 @@ export class Odds {
   @JoinColumn({ name: 'betId' })
   bet: Bets;
 
-  @OneToMany(() => OddValues, (oddValue) => oddValue.odds)
-  oddValues: OddValues[];
+  @OneToMany(() => FixtureBetOdds, (fixtureBetOdd) => fixtureBetOdd.fixtureBet)
+  fixtureBetOdds: FixtureBetOdds[];
 }
