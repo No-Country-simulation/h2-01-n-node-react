@@ -1,8 +1,16 @@
 import { LeagueSeasons } from 'src/league-seasons/league-seasons.entity';
 import { Leagues } from 'src/leagues/leagues.entity';
+import { Odds } from 'src/odds/odds.entity';
 import { Teams } from 'src/teams/teams.entity';
 import { Venues } from 'src/venues/venues.entity';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryColumn,
+} from 'typeorm';
 
 @Entity('fixtures')
 export class Fixtures {
@@ -96,4 +104,7 @@ export class Fixtures {
 
   @Column({ nullable: true })
   awayScorePenalty: number | null;
+
+  @OneToMany(() => Odds, (odds) => odds.fixture)
+  odds: Odds[];
 }
