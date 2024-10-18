@@ -1,5 +1,6 @@
+/* eslint-disable @next/next/no-img-element */
 "use client"
-import React, { useState, useRef, useEffect } from 'react'
+import React from 'react'
 import './carrusel.css'
 import vsImage from '@/app/assets/VS.png'
 import logoLE from '@/app/assets//ligas/logo-le.png'
