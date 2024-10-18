@@ -257,9 +257,7 @@ export default function AuthTabs() {
         const token = data.token; // Extraemos el token del body
   
         if (token) {
-          console.log("Token recibido:", token);
           // Guardar el token en localStorage
-          localStorage.setItem("authToken", token); // Ejemplo de cómo guardarlo en localStorage
           router.push("/partidos"); // Navegar a la página deseada
         } else {
           console.error("No se recibió token en la respuesta.");
@@ -312,7 +310,6 @@ export default function AuthTabs() {
         const token = data.token;
   
         if (token) {
-          console.log("Token recibido:", token);
           
           // Guarda el token en una cookie con js-cookie
           Cookies.set("authToken", token, { expires: 7 }); // El token expira en 7 días
