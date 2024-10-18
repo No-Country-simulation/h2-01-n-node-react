@@ -7,22 +7,13 @@ import SplashScreen from "@/app/components/SplashScreen/SplashScreen";
 import TopView from "@/app/components/TopView/TopView";
 import Carrusel from "@/app/components/Carrusel/Carrusel";
 import ChipsFilter from "@/app/components/ChipsFilter/ChipsFilter";
-import { FiCalendar } from "react-icons/fi";
 import MatchCard from "@/app/components/MatchCard/MatchCard";
-import MatchCardLive from "@/app/components/MatchCardLive/MatchCardLive";
-import Collapse from "@/app/components/Collapse/CollapseItem";
-import {
-  Select,
-  MenuItem,
-  InputLabel,
-  FormControl,
-  SelectChangeEvent,
-} from "@mui/material";
 import "./partidos.css";
 import Header from "@/app/components/Navbar/Navbar";
 import Filter from "@/app/components/Filter/Filter";
 
 export default function Page() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [activeTab, setActiveTab] = useState("Hoy");
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -59,10 +50,6 @@ export default function Page() {
 
   const handleTabChange = (tabId: string) => {
     setActiveTab(tabId);
-  };
-
-  const handleFilterChange = (event: SelectChangeEvent) => {
-    setFilter(event.target.value as string);
   };
 
   if (!isAuthenticated) {
