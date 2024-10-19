@@ -130,7 +130,7 @@ export default function Home() {
         className="flex h-screen items-center justify-center"
         style={{ marginTop: "-160px" }}
       >
-        {activeTab === "Hoy" && <Collapse />}
+        {activeTab === "Hoy" && <Collapse title={undefined} content={undefined} />}
         {activeTab === "Ayer" && (
           <h1 className="text-6xl text-white font-bold">Contenido de Ayer</h1>
         )}
