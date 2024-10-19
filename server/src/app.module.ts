@@ -14,6 +14,9 @@ import { TeamsModule } from './teams/teams.module';
 import { LeagueSeasonsModule } from './league-seasons/league-seasons.module';
 import { TeamStatisticsModule } from './team-statistics/team-statistics.module';
 import { FixturesModule } from './fixtures/fixtures.module';
+import { BetsModule } from './bets/bets.module';
+import { FixtureBetsModule } from './fixture-bets/fixture-bets.module';
+import { FixtureBetOddsModule } from './fixture-bet-odds/fixture-bet-odds.module';
 
 @Module({
   imports: [
@@ -45,6 +48,9 @@ import { FixturesModule } from './fixtures/fixtures.module';
     LeagueSeasonsModule,
     TeamStatisticsModule,
     FixturesModule,
+    BetsModule,
+    FixtureBetsModule,
+    FixtureBetOddsModule,
   ],
   controllers: [AppController],
 })
