@@ -1,21 +1,12 @@
 import { FixtureBets } from 'src/fixture-bets/fixture-bets.entity';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 
 @Entity('fixture_bet_odds')
 export class FixtureBetOdds {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column()
+  @PrimaryColumn()
   fixtureBetId: number;
 
-  @Column()
+  @PrimaryColumn()
   value: string;
 
   @Column()
