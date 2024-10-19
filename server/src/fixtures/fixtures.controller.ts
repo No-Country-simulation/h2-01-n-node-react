@@ -26,7 +26,6 @@ export class FixturesController {
       'Time zone string (e.g. America/Argentina/Buenos_Aires). Default: America/Argentina/Buenos_Aires',
   })
   findAll(@Query() query: FixturesPaginationDTO) {
-    query.applyDefaults();
     return this.fixturesService.findAll(query);
   }
 
