@@ -9,12 +9,9 @@ export class FixturesPaginationDTO {
 
   @IsOptional()
   @IsString()
-  @Transform(({ value }) => value?.trim())
+  @Transform(({ value }) => {
+    value?.trim();
+    return value || 'America/Argentina/Buenos_Aires';
+  })
   timezone?: string;
-
-  public applyDefaults() {
-    if (!this.timezone) {
-      this.timezone = 'America/Argentina/Buenos_Aires';
-    }
-  }
 }
