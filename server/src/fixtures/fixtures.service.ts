@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Fixtures } from './fixtures.entities';
 import { Repository } from 'typeorm';
+import { FixturesPaginationDTO } from './dtos/pagination.dto';
 
 @Injectable()
 export class FixturesService {
@@ -10,8 +11,10 @@ export class FixturesService {
     private fixturesRepository: Repository<Fixtures>,
   ) {}
 
-  async findAll() {
-    return await this.fixturesRepository
+  async findAll(query: FixturesPaginationDTO) {
+    const { date, timezone } = query;
+
+    const queryBuilder = this.fixturesRepository
       .createQueryBuilder('fixture')
       .leftJoinAndSelect('fixture.venue', 'venue')
       .leftJoinAndSelect('fixture.league', 'league')
@@ -19,8 +22,33 @@ export class FixturesService {
       .leftJoinAndSelect('fixture.awayTeam', 'awayTeam')
       .leftJoinAndSelect('fixture.fixtureBets', 'fixtureBet')
       .leftJoinAndSelect('fixtureBet.fixtureBetOdds', 'fixtureBetOdd')
-      .where('fixtureBet.betId = :betId', { betId: 1 })
-      .getMany();
+      .where('fixtureBet.betId = :betId OR fixtureBet.id IS NULL', {
+        betId: 1,
+      });
+
+    if (date && timezone) {
+      const localDate = new Date(date);
+      const utcDate = new Date(
+        localDate.toLocaleString('en-US', { timeZone: timezone }),
+      );
+
+      const startOfDay = new Date(utcDate);
+      startOfDay.setUTCHours(0, 0, 0, 0);
+
+      const endOfDay = new Date(utcDate);
+      endOfDay.setUTCHours(23, 59, 59, 999);
+
+      endOfDay.setUTCMinutes(
+        endOfDay.getUTCMinutes() + new Date().getTimezoneOffset(),
+      );
+
+      queryBuilder.andWhere(
+        'fixture.date >= :startOfDay AND fixture.date <= :endOfDay',
+        { startOfDay, endOfDay },
+      );
+    }
+
+    return await queryBuilder.getMany();
   }
 
   async findOneById(id: number) {
@@ -33,7 +61,9 @@ export class FixturesService {
       .leftJoinAndSelect('fixture.fixtureBets', 'fixtureBet')
       .leftJoinAndSelect('fixtureBet.fixtureBetOdds', 'fixtureBetOdd')
       .where('fixture.id = :id', { id })
-      .andWhere('fixtureBet.betId IN (:...betIds)', { betIds: [1, 215] })
+      .andWhere('fixtureBet.betId IN (:...betIds) OR fixtureBet.id IS NULL ', {
+        betIds: [1, 92],
+      })
       .getOne();
   }
 }
