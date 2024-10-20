@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
-import { FaChevronUp, FaChevronDown } from "react-icons/fa"; // Importar los iconos
+import { FaChevronUp, FaChevronDown } from "react-icons/fa";
 import SplashScreen from "../SplashScreen/SplashScreen";
 import { Card, CardContent, CardHeader } from "@mui/material";
 
