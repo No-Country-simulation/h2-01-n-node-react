@@ -1,5 +1,7 @@
 # Waki - Predicción de Partidos de Fútbol
 
+Deploy: https://h2-01-n-node-react.vercel.app/
+
 Waki es una plataforma que permite a los usuarios realizar predicciones sobre partidos de fútbol, ganar puntos por predicciones acertadas y competir en un ranking. Los usuarios pueden mejorar su posición en el ranking y optar a recompensas basadas en sus resultados.
 
 ## Índice
