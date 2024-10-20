@@ -9,9 +9,6 @@ export class FixturesPaginationDTO {
 
   @IsOptional()
   @IsString()
-  @Transform(({ value }) => {
-    value?.trim();
-    return value || 'America/Argentina/Buenos_Aires';
-  })
+  @Transform(({ value }) => value?.trim())
   timezone?: string;
 }
