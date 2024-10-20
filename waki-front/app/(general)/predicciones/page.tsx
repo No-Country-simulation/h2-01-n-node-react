@@ -14,6 +14,7 @@ import CamisetaIcon from '@/app/assets/camisetaicon.png'
 import CanchaIcon from '@/app/assets/cancha.png'
 import BarselonaImg from '@/app/assets/escudos/fc-barcelona.svg'
 import OsasunaImg from '@/app/assets/escudos/osasuna.svg'
+import IconCopa from '@/app/assets/iconCopa.png'
 
 interface MatchStatistic {
   team: string
@@ -26,13 +27,11 @@ interface MatchStatisticsCardProps {
 
 export default function page() {
     const [activeTab, setActiveTab] = useState("Ranking");
-
     const [isOpen, setIsOpen] = useState(false)
     const [selectedOption, setSelectedOption] = useState('Resultado')
     const [showResultadoPopup, setShowResultadoPopup] = useState(false)
-    
-
-
+    const [selectedTeam, setSelectedTeam] = useState<string | null>(null)
+    const [showConfirmationPopup, setShowConfirmationPopup] = useState(false)
 
     const matchStatistics: MatchStatistic[] = [
       { team: 'Osasuna', percentage: 48 },
@@ -49,14 +48,29 @@ export default function page() {
       const handleTabChange = (tabId: string) => {
         setActiveTab(tabId);
       };
-
+/*FUNCION DE RESULTADO*/
       const handleOptionClick = (option: string) => {
         setSelectedOption(option)
         if (option === 'Resultado') {
           setShowResultadoPopup(true)
         }
       }
-      
+/*FUNCION CONFIRMAR*/ 
+      const handleTeamSelect = (team: string) => {
+        setSelectedTeam(team)
+}
+
+      const handleContinue = () => {
+        if (selectedTeam) {
+          setShowConfirmationPopup(true)
+  }
+}
+      const handleConfirm = () => {
+        setShowConfirmationPopup(false)
+        setShowResultadoPopup(false)
+        setIsOpen(false)
+      }
+    
 
   return (
     <>
@@ -105,8 +119,7 @@ export default function page() {
         className="escudos-curve"
                 /> 
       </div>
-
-               
+              
       </div>
       <Header tabs={tabs} onTabChange={handleTabChange} />
       <h1 className='title-section'>Tus Predicciones</h1>
@@ -158,7 +171,7 @@ export default function page() {
         </div>
       )}
 
-{showResultadoPopup && (
+    {showResultadoPopup && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white rounded-lg p-6 w-80 relative">
             <button 
@@ -186,7 +199,10 @@ export default function page() {
             <h2 className="text-xl font-bold mb-2 text-center">Elige quién ganará</h2>
             <p className="text-sm text-gray-500 mb-4 text-center">Selecciona una opción</p>
             <div className="grid grid-cols-2 gap-4 mb-4">
-              <button className="p-4 border rounded-lg flex flex-col items-center">
+            <button 
+                className={`p-4 border rounded-lg flex flex-col items-center ${selectedTeam === 'Osasuna' ? 'border-blue-500' : ''}`}
+                onClick={() => handleTeamSelect('Osasuna')}
+              >
                 <Image 
                   src={OsasunaImg} 
                   alt="Osasuna" 
@@ -197,7 +213,10 @@ export default function page() {
                 <span>Osasuna</span>
                 <span className="text-sm text-gray-500">13</span>
               </button>
-              <button className="p-4 border rounded-lg flex flex-col items-center">
+              <button 
+                className={`p-4 border rounded-lg flex flex-col items-center ${selectedTeam === 'Barcelona' ? 'border-blue-500' : ''}`}
+                onClick={() => handleTeamSelect('Barcelona')}
+              >
                 <Image 
                   src={BarselonaImg}
                   alt="Barcelona" 
@@ -209,13 +228,17 @@ export default function page() {
                 <span className="text-sm text-gray-500">10</span>
               </button>
             </div>
-            <button className="w-full p-4 border rounded-lg flex flex-col items-center mb-4">
+            <button 
+              className={`w-full p-4 border rounded-lg flex flex-col items-center mb-4 ${selectedTeam === 'Empate' ? 'border-blue-500' : ''}`}
+              onClick={() => handleTeamSelect('Empate')}
+            >
               <span>Empate</span>
               <span className="text-sm text-gray-500">21</span>
             </button>
             <div className="flex justify-between">
-              <button className="px-4 py-2 border rounded-lg text-gray-500" id='btnCardCombinada'>Hacer combinada</button>
-              <button className="px-4 py-2 bg-purple-500 text-white rounded-lg" id='btnCard'>Continuar</button>
+              <button className="px-4 py-2 border rounded-lg text-gray-500" id='btnCardCombinada'
+               >Hacer combinada</button>
+              <button className="px-4 py-2 bg-purple-500 text-white rounded-lg" id='btnCard' onClick={handleContinue}>Continuar</button>
             </div>
             <div className="mt-4 flex items-center justify-between">
               <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
@@ -226,6 +249,84 @@ export default function page() {
           </div>
         </div>
       )}
+
+{showConfirmationPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg p-6 w-80 relative">
+            <button 
+              className="absolute top-2 left-2 text-purple-500 hover:text-purple-700"
+              onClick={() => setShowConfirmationPopup(false)}
+            >
+              <Image 
+                src={Flecha}
+                alt="Back" 
+                width={24} 
+                height={24} 
+              />
+            </button>
+            <button 
+              className="absolute top-2 right-2 text-purple-500 hover:text-purple-700"
+              onClick={() => {
+                setShowConfirmationPopup(false)
+                setShowResultadoPopup(false)
+                setIsOpen(false)
+              }}
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+            <h2 className="text-xl font-bold mb-6 text-center">¿Estás seguro de tu predicción?</h2>
+            <div className="bg-blue-100 rounded-lg p-4 flex items-center mb-6">
+              {/*ARREGLAR ESTA SECCION PARA MOSTRAR EL LOGO CORRECTAMENTE*/}
+              <Image 
+                src={`/assets/${selectedTeam?.toLowerCase()}-logo.png`}
+                alt={selectedTeam || ''}
+                width={64}
+                height={64}
+                className="mr-4"
+              />
+              <div>
+                <p className="font-bold">{selectedTeam}</p>
+                <p className="text-sm">
+                  <Image 
+                    src={IconCopa}
+                    alt="Trophy"
+                    width={16}
+                    height={16}
+                    className="inline mr-1"
+                  />
+                  x 10
+                </p>
+              </div>
+            </div>
+            <button 
+              className="w-full py-3 bg-purple-500 text-white rounded-lg font-bold"
+              onClick={handleConfirm}
+            >
+              Sí, predecir
+            </button>
+            <div className="mt-6 flex items-center justify-between">
+              <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                <div className="bg-purple-600 h-2.5 rounded-full" style={{width: '20%'}}></div>
+              </div>
+              <span className="text-sm text-purple-600 ml-2">1/5</span>
+            </div>
+            <div className="mt-2 flex justify-end">
+              <Image 
+                src={iconBall}
+                alt="Coin"
+                width={24}
+                height={24}
+                className="mr-2"
+              />
+             
+            </div>
+          </div>
+        </div>
+      )}
+
+
 
 
       </div>  
