@@ -20,11 +20,13 @@ export class FixturesService {
       .leftJoinAndSelect('fixture.league', 'league')
       .leftJoinAndSelect('fixture.homeTeam', 'homeTeam')
       .leftJoinAndSelect('fixture.awayTeam', 'awayTeam')
-      .leftJoinAndSelect('fixture.fixtureBets', 'fixtureBet')
-      .leftJoinAndSelect('fixtureBet.fixtureBetOdds', 'fixtureBetOdd')
-      .where('fixtureBet.betId = :betId OR fixtureBet.id IS NULL', {
-        betId: 1,
-      });
+      .leftJoinAndSelect(
+        'fixture.fixtureBets',
+        'fixtureBet',
+        '(fixtureBet.betId = :betId OR fixtureBet.id IS NULL)',
+        { betId: 1 },
+      )
+      .leftJoinAndSelect('fixtureBet.fixtureBetOdds', 'fixtureBetOdd');
 
     if (date && timezone) {
       const localDate = new Date(date);
@@ -48,6 +50,11 @@ export class FixturesService {
       );
     }
 
+    queryBuilder.andWhere(
+      '(fixtureBet.betId = :betId OR fixtureBet.id IS NULL)',
+      { betId: 1 },
+    );
+
     return await queryBuilder.getMany();
   }
 
@@ -58,12 +65,16 @@ export class FixturesService {
       .leftJoinAndSelect('fixture.league', 'league')
       .leftJoinAndSelect('fixture.homeTeam', 'homeTeam')
       .leftJoinAndSelect('fixture.awayTeam', 'awayTeam')
-      .leftJoinAndSelect('fixture.fixtureBets', 'fixtureBet')
+      .leftJoinAndSelect(
+        'fixture.fixtureBets',
+        'fixtureBet',
+        'fixtureBet.betId IN (:...betIds) OR fixtureBet.id IS NULL',
+        {
+          betIds: [1, 92],
+        },
+      )
       .leftJoinAndSelect('fixtureBet.fixtureBetOdds', 'fixtureBetOdd')
       .where('fixture.id = :id', { id })
-      .andWhere('fixtureBet.betId IN (:...betIds) OR fixtureBet.id IS NULL ', {
-        betIds: [1, 92],
-      })
       .getOne();
   }
 }
