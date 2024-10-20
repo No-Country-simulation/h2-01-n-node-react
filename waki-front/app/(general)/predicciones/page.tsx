@@ -6,10 +6,37 @@ import Image from 'next/image'
 import Flecha from '@/app/assets/flecha.png'
 import iconBall from '@/app/assets/icon-ball.png'
 import Header from '../../components/Navbar/Navbar';
+import MenuInferior from "@/app/components/MenuInferior/MenuInferior";
+import CardStatis from '@/app/components/CardStatis/CardStatis';
+import CamisetaIcon from '@/app/assets/camisetaicon.png'
+import CanchaIcon from '@/app/assets/cancha.png'
+import BarselonaImg from '@/app/assets/escudos/fc-barcelona.svg'
+import OsasunaImg from '@/app/assets/escudos/osasuna.svg'
 
+interface MatchStatistic {
+  team: string
+  percentage: number
+}
+
+interface MatchStatisticsCardProps {
+  statistics: MatchStatistic[]
+}
 
 export default function page() {
     const [activeTab, setActiveTab] = useState("Ranking");
+
+    const [isOpen, setIsOpen] = useState(false)
+    const [selectedOption, setSelectedOption] = useState('Resultado')
+    const [showResultadoPopup, setShowResultadoPopup] = useState(false)
+    
+
+
+
+    const matchStatistics: MatchStatistic[] = [
+      { team: 'Osasuna', percentage: 48 },
+      { team: 'Empate', percentage: 12 },
+      { team: 'Barcelona', percentage: 40 }
+    ]  
 
     const tabs = [
         { id: "Predicciones", label: "Predicciones" },
@@ -21,7 +48,16 @@ export default function page() {
         setActiveTab(tabId);
       };
 
+      const handleOptionClick = (option: string) => {
+        setSelectedOption(option)
+        if (option === 'Resultado') {
+          setShowResultadoPopup(true)
+        }
+      }
+      
+
   return (
+    <>
     <div>
         <div className='header'>
         <Image src={Flecha}
@@ -42,9 +78,165 @@ export default function page() {
             </div>
         </div>            
         </div>
-      <div className='top-curve'></div>
+{/*TOP CURVE VERDE CON ESCUDOS*/}
+      <div className='top-curve'>
+        <h1 className='subtitle-curve'>Eliminatorias, cuartos de final, primer partido</h1>
+      <div className='container-curve'>
+      <Image 
+        src={OsasunaImg} 
+        alt="Resultado" 
+        width={32} 
+        height={32} 
+        className="escudos-curve"
+                />
+      <div>
+      <h1 className='date-curve'>Sep 24</h1>
+      <h1 className='time-curve'>10:30</h1>
+      </div>
+        
+             
+       <Image 
+        src={BarselonaImg} 
+        alt="Resultado" 
+        width={32} 
+        height={32} 
+        className="escudos-curve"
+                /> 
+      </div>
+
+               
+      </div>
       <Header tabs={tabs} onTabChange={handleTabChange} />
+      <h1 className='title-section'>Tus Predicciones</h1>
+      <div className='predicciones-container'>
+        <h1 className='sub-predicciones'>¡Todavia estas a tiempo!</h1>
+        <button className='btnPrediccion' onClick={() => setIsOpen(true)}>Hacer Predicción</button>
+
+        {isOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg p-6 w-80 relative">
+            <button 
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+              onClick={() => setIsOpen(false)}
+            >
+             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+            <h2 className="text-xl font-bold mb-4">¿En que vas a apostar?</h2>
+            <div className="grid grid-cols-2 gap-4">
+              <button 
+                className={`p-4 rounded-lg flex flex-col items-center ${selectedOption === 'Resultado' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                onClick={() => handleOptionClick('Resultado')}
+              >
+                <Image 
+                  src={CanchaIcon} 
+                  alt="Resultado" 
+                  width={32} 
+                  height={32} 
+                  className="mb-2"
+                />
+                Resultado
+              </button>
+              <button 
+                className={`p-4 rounded-lg flex flex-col items-center ${selectedOption === 'Gol por jugador' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                onClick={() => setSelectedOption('Gol por jugador')}
+              >
+                <Image 
+                  src={CamisetaIcon} 
+                  alt="Gol por jugador" 
+                  width={32} 
+                  height={32} 
+                  className="mb-2"
+                />
+                Gol por jugador
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+{showResultadoPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg p-6 w-80 relative">
+            <button 
+              className="absolute top-2 left-2 text-purple-500 hover:text-purple-700"
+              onClick={() => setShowResultadoPopup(false)}
+            >
+              <Image 
+                src={Flecha}
+                alt="Back" 
+                width={24} 
+                height={24} 
+              />
+            </button>
+            <button 
+              className="absolute top-2 right-2 text-purple-500 hover:text-purple-700"
+              onClick={() => {
+                setShowResultadoPopup(false)
+                setIsOpen(false)
+              }}
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+            <h2 className="text-xl font-bold mb-2 text-center">Elige quién ganará</h2>
+            <p className="text-sm text-gray-500 mb-4 text-center">Selecciona una opción</p>
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <button className="p-4 border rounded-lg flex flex-col items-center">
+                <Image 
+                  src={OsasunaImg} 
+                  alt="Osasuna" 
+                  width={48} 
+                  height={48} 
+                  className="mb-2"
+                />
+                <span>Osasuna</span>
+                <span className="text-sm text-gray-500">13</span>
+              </button>
+              <button className="p-4 border rounded-lg flex flex-col items-center">
+                <Image 
+                  src={BarselonaImg}
+                  alt="Barcelona" 
+                  width={48} 
+                  height={48} 
+                  className="mb-2"
+                />
+                <span>Barcelona</span>
+                <span className="text-sm text-gray-500">10</span>
+              </button>
+            </div>
+            <button className="w-full p-4 border rounded-lg flex flex-col items-center mb-4">
+              <span>Empate</span>
+              <span className="text-sm text-gray-500">21</span>
+            </button>
+            <div className="flex justify-between">
+              <button className="px-4 py-2 border rounded-lg text-gray-500" id='btnCardCombinada'>Hacer combinada</button>
+              <button className="px-4 py-2 bg-purple-500 text-white rounded-lg" id='btnCard'>Continuar</button>
+            </div>
+            <div className="mt-4 flex items-center justify-between">
+              <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                <div className="bg-purple-600 h-2.5 rounded-full" style={{width: '0%'}}></div>
+              </div>
+              <span className="text-sm text-purple-600 ml-2">0/5</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+      </div>  
+
+    <h1 className='title-section2'>Pronóstico general</h1>
+    <div>
+    <CardStatis statistics={matchStatistics}/>
     </div>
     
+
+
+    </div>
+    <MenuInferior />
+    </>
   )
 }

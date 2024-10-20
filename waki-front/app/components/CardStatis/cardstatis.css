@@ -1,0 +1,9 @@
+#cardStatis{
+    max-width: 400px;
+    margin-top: 10px;
+    border: 1px solid #dfdfdf;
+}
+
+#statisPercentage{
+    background-color: white;
+}

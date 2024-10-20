@@ -17,6 +17,8 @@ const MenuInferior = () => {
   useEffect(() => {
     if (pathname.includes('/divisiones')) {
       setActiveIcon("divisiones");
+    } else if (pathname.includes('/predicciones')) {
+      setActiveIcon("predicciones");
     } else if (pathname.includes('/partidos')) {
       setActiveIcon("partidos");
     } else {
@@ -29,6 +31,8 @@ const MenuInferior = () => {
       router.push('/divisiones');
     } else if (icon === "partidos") {
       router.push('/partidos');
+    } else if (icon === 'predicciones'){
+      router.push('/predicciones');
     }
     setActiveIcon(icon); 
   };
