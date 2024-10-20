@@ -1,160 +1,182 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
 /* Configuacion general de la tarjeta y movivimiento */
 #container-carrusel {
-    width: 100%;
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .carousel {
-    position: relative;
-    margin-left: 10px;
-    margin-right: 10px;
-  }
-  
-  .carousel-content {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none; /* Para Firefox */
-    -ms-overflow-style: none; /* Para Internet Explorer y Edge */
-    -webkit-overflow-scrolling: touch; /* Para un desplazamiento suave en iOS */
-    padding-bottom: 1rem; /* Espacio para el scrollbar */
-    gap: 1rem; /* Espacio entre tarjetas */
-  }
-  
-  .carousel-content::-webkit-scrollbar {
-    display: none; /* Para Chrome, Safari y Opera */
-  }
-  /*Diseño de la card*/
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.carousel {
+  position: relative;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.carousel-content {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none; 
+  -ms-overflow-style: none; 
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 1rem; 
+  gap: 1rem; 
+}
+
+.carousel-content::-webkit-scrollbar {
+  display: none; /* Para Chrome, Safari y Opera */
+}
+/*Diseño de la card*/
+.carousel-item {
+  flex: 0 0 auto;
+  width: calc(100% - 2rem);
+  scroll-snap-align: center;
+  height: 15rem;
+  background: linear-gradient(
+    90deg,
+    rgba(49, 126, 244, 1) 35%,
+    rgba(142, 43, 255, 1) 100%
+  );
+  color: white;
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@media (min-width: 768px) {
   .carousel-item {
-    flex: 0 0 auto;
-    width: calc(100% - 2rem); 
-    scroll-snap-align: center;
-    height: 15rem; 
-    background: linear-gradient(90deg, rgba(49,126,244,1) 35%, rgba(142,43,255,1) 100%); 
-    color: white;
-    border-radius: 1rem; 
-    display: flex;
-    flex-direction: column;
-    /*justify-content: center;*/
-    align-items: center;
+    width: calc(50% - 1rem);
   }
-  
-  @media (min-width: 768px) {
-    .carousel-item {
-      width: calc(50% - 1rem); 
-    }
+}
+
+@media (min-width: 1024px) {
+  .carousel-item {
+    width: calc(33.333333% - 1rem);
   }
-  
-  @media (min-width: 1024px) {
-    .carousel-item {
-      width: calc(33.333333% - 1rem); 
-    }
+}
+
+@media (min-width: 768px) {
+  .carousel-item {
+    width: calc(50% - 0.5rem);
   }
-  
-  @media (min-width: 768px) {
-    .carousel-item {
-      width: calc(50% - 0.5rem); 
-    }
+}
+
+@media (min-width: 1024px) {
+  .carousel-item {
+    width: calc(33.333333% - 0.67rem);
   }
-  
-  @media (min-width: 1024px) {
-    .carousel-item {
-      width: calc(33.333333% - 0.67rem); 
-    }
-  }
-  
-  .card-content {
-    padding: 0;
-    width: 100%;
-    position: relative;
+}
+
+.card-content {
+  padding: 0;
+  width: 100%;
+  position: relative;
 }
 /*Parte superior de la tarjeta*/
 #topview-card {
- 
   justify-content: space-between;
-    background-color: #EFF1FA;
-    text-align: center;
-  /*  padding: 8px 0; */
-    font-weight: 600; /* */
-    border-top-left-radius: 1rem;
-    border-top-right-radius: 1rem;
-    color: white;
+  background-color: #eff1fa;
+  text-align: center;
+  font-weight: 600; 
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+  color: white;
 }
 
 .match-date-time {
-    display: flex;
-    text-align: center;
-    color: white; 
-    font-weight: 600; 
+  position: relative; 
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  color: white;
+  font-weight: 600;
 }
 
 /*Contenedor donde estan los VS*/
 .match-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-    flex-grow: 1;
-    background: linear-gradient(90deg, rgba(49,126,244,1) 35%, rgba(142,43,255,1) 100%); 
-    border-bottom-left-radius: 1rem;
-    border-bottom-right-radius: 1rem;
-    margin-top: 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  flex-grow: 1;
+  background: linear-gradient(
+    90deg,
+    rgba(49, 126, 244, 1) 35%,
+    rgba(142, 43, 255, 1) 100%
+  );
+  border-bottom-left-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+  margin-top: 50px;
 }
 
 .team-info {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
 
 .team-logo {
-    width: 4rem;
-    height: 4rem;
-    object-fit: contain; 
+  width: 4rem;
+  height: 4rem;
+  object-fit: contain;
 }
 
 .team-name {
-    margin-top: 0.5rem;
-    font-size: 0.875rem;
-    color: white;
-    text-align: center;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: white;
+  text-align: center;
 }
 
 /*Imagen del versus*/
 .vsImage {
-    height: 100px;
-    width: 100px; 
+  height: 100px;
+  width: 100px;
 }
 
-.topview-time{
+.team-logo {
+  width: 40px;
+  height: auto;
+}
+
+.team-name {
+  font-size: 11px;
+}
+
+.topview-time {
   color: rgb(90, 89, 89);
-  margin-left: 40px;
-  font-size: 10px; 
-  margin-top: 10px;
+  padding-right: 10px;
+  margin-left: auto; 
+  font-size: 10px;
+  margin-top: 0px;
 }
 /* TRAPECIO Y DATE */
 .trapecio {
+  position: absolute; 
+  left: 50%; 
+  transform: translateX(-50%); 
   display: flex;
-  justify-content: center; /* Centrar el contenido horizontalmente */
-  align-items: center; /* Centrar el contenido verticalmente */
-  width: 50px; /* Ajusta el ancho a lo necesario */
-  height: 50px; /* Ajusta el alto a lo necesario */
-  background: linear-gradient(#C99BFF 35%, #8F2CFF 100%);
-  border-radius: 10%; /* Añadir un borde redondeado */
-  margin-left: 50px;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(#c99bff 35%, #8f2cff 100%);
+  border-radius: 10%;
 }
 
 .topview-date {
   color: rgb(255, 255, 255);
   font-size: 14px;
   padding: 10px;
+  flex: 1; 
+  text-align: center; 
 }
 
-.logo-le{
+.logo-le {
   margin-left: 10px;
   width: 40px;
   padding: 5px;
@@ -172,11 +194,19 @@
   border-bottom-right-radius: 1rem;
 }
 
-.timeCloseVar{
+.timeCloseVar {
   background: rgb(168, 167, 167);
   color: white;
   padding: 5px;
   border-radius: 10px;
   font-weight: bold;
   margin-left: 10px;
+}
+
+.loader-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
 }
