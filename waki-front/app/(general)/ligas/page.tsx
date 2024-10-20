@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { FiCalendar } from "react-icons/fi";
 import Header from "@/app/components/Navbar/Navbar";
-import Collapse from "@/app/components/Collapse/Collapse";
+import Collapse from "@/app/components/Collapse/CollapseItem";
 import MenuInferior from "@/app/components/MenuInferior/MenuInferior";
 import {
   Select,
@@ -130,7 +130,7 @@ export default function Home() {
         className="flex h-screen items-center justify-center"
         style={{ marginTop: "-160px" }}
       >
-        {activeTab === "Hoy" && <Collapse />}
+        {activeTab === "Hoy" && <Collapse title={undefined} content={undefined} />}
         {activeTab === "Ayer" && (
           <h1 className="text-6xl text-white font-bold">Contenido de Ayer</h1>
         )}
