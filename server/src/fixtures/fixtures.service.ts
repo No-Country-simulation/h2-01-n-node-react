@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Fixtures } from './fixtures.entities';
 import { Repository } from 'typeorm';
 import { FixturesPaginationDTO } from './dtos/pagination.dto';
+import { DateTime } from 'luxon';
 
 @Injectable()
 export class FixturesService {
@@ -29,24 +30,15 @@ export class FixturesService {
       .leftJoinAndSelect('fixtureBet.fixtureBetOdds', 'fixtureBetOdd');
 
     if (date && timezone) {
-      const localDate = new Date(date);
-      const utcDate = new Date(
-        localDate.toLocaleString('en-US', { timeZone: timezone }),
-      );
+      const localDate = DateTime.fromISO(date, { zone: timezone });
 
-      const startOfDay = new Date(utcDate);
-      startOfDay.setUTCHours(0, 0, 0, 0);
+      const startOfDay = localDate.startOf('day').toUTC();
 
-      const endOfDay = new Date(utcDate);
-      endOfDay.setUTCHours(23, 59, 59, 999);
-
-      endOfDay.setUTCMinutes(
-        endOfDay.getUTCMinutes() + new Date().getTimezoneOffset(),
-      );
+      const endOfDay = localDate.endOf('day').toUTC();
 
       queryBuilder.andWhere(
         'fixture.date >= :startOfDay AND fixture.date <= :endOfDay',
-        { startOfDay, endOfDay },
+        { startOfDay: startOfDay.toISO(), endOfDay: endOfDay.toISO() },
       );
     }
 
