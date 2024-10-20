@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client"
 import React from 'react'
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import './predicciones.css'
 import Image from 'next/image'
 import Flecha from '@/app/assets/flecha.png'
@@ -15,6 +15,7 @@ import CanchaIcon from '@/app/assets/cancha.png'
 import BarselonaImg from '@/app/assets/escudos/fc-barcelona.svg'
 import OsasunaImg from '@/app/assets/escudos/osasuna.svg'
 import IconCopa from '@/app/assets/iconCopa.png'
+import IconCheck from '@/app/assets/iconCheck.png'
 
 interface MatchStatistic {
   team: string
@@ -26,12 +27,13 @@ interface MatchStatisticsCardProps {
 }
 
 export default function page() {
-    const [activeTab, setActiveTab] = useState("Ranking");
-    const [isOpen, setIsOpen] = useState(false)
-    const [selectedOption, setSelectedOption] = useState('Resultado')
-    const [showResultadoPopup, setShowResultadoPopup] = useState(false)
-    const [selectedTeam, setSelectedTeam] = useState<string | null>(null)
-    const [showConfirmationPopup, setShowConfirmationPopup] = useState(false)
+  const [activeTab, setActiveTab] = useState("Ranking");
+  const [isOpen, setIsOpen] = useState(false)
+  const [selectedOption, setSelectedOption] = useState('')
+  const [showResultadoPopup, setShowResultadoPopup] = useState(false)
+  const [selectedTeam, setSelectedTeam] = useState<string | null>(null)
+  const [showConfirmationPopup, setShowConfirmationPopup] = useState(false)
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false)
 
     const matchStatistics: MatchStatistic[] = [
       { team: 'Osasuna', percentage: 48 },
@@ -65,11 +67,22 @@ export default function page() {
           setShowConfirmationPopup(true)
   }
 }
-      const handleConfirm = () => {
-        setShowConfirmationPopup(false)
-        setShowResultadoPopup(false)
-        setIsOpen(false)
-      }
+const handleConfirm = () => {
+  setShowConfirmationPopup(false)
+  setShowSuccessMessage(true)
+}
+
+useEffect(() => {
+  if (showSuccessMessage) {
+    const timer = setTimeout(() => {
+      setShowSuccessMessage(false)
+      setShowResultadoPopup(false)
+      setIsOpen(false)
+      // Reset other states as needed
+    }, 2000)
+    return () => clearTimeout(timer)
+  }
+}, [showSuccessMessage])
     
 
   return (
@@ -326,8 +339,20 @@ export default function page() {
         </div>
       )}
 
-
-
+{showSuccessMessage && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg p-6 w-80 flex flex-col items-center">
+            <Image 
+              src={IconCheck}
+              alt="Checkmark"
+              width={64}
+              height={64}
+              className="mb-4"
+            />
+            <h2 className="text-xl font-bold text-center">Se ha añadido tu predicción</h2>
+          </div>
+        </div>
+      )}
 
       </div>  
 
