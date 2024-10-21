@@ -1,21 +1,13 @@
-import { Exclude } from 'class-transformer';
 import { Leagues } from 'src/leagues/leagues.entity';
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn, PrimaryColumn } from 'typeorm';
 
 @Entity('league_seasons')
 export class LeagueSeasons {
-  @PrimaryGeneratedColumn()
-  @Exclude()
-  id: number;
-
-  @Column()
+  @PrimaryColumn()
   year: number;
+
+  @PrimaryColumn()
+  leagueId: number;
 
   @Column()
   start: Date;
