@@ -10,8 +10,11 @@ import ChipsFilter from "@/app/components/ChipsFilter/ChipsFilter";
 import MatchCard from "@/app/components/MatchCard/MatchCard";
 import "./partidos.css";
 import Header from "@/app/components/Navbar/Navbar";
-import Filter from "@/app/components/Filter/Filter";
+
+// import Filter from "@/app/components/Filter/Filter";
+
 import BotomChat from '@/app/components/BotomChat/BotomChat'
+
 
 export default function Page() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -65,20 +68,24 @@ export default function Page() {
       <Carrusel />
       <div className="flex items-center justify-between title-container">
         <h1 className="partidosTitle">Partidos</h1>
-        <Filter />
+        {/* <Filter /> */}
       </div>
       <div>
         <ChipsFilter />
       </div>
       <Header tabs={tabs} onTabChange={handleTabChange} />
-     
-    
+
       <div className="section-header">
-        {/* <h1 className="statePartido">Por Jugar</h1>
-        <div className="divider" />  */}
-      <MatchCard />
+        <h1 className="statePartido">Por Jugar</h1>
+        <div className="divider"></div>
       </div>
+
+      <div className="match-card-container">
+        <MatchCard />
+      </div>
+
       <BotomChat/>
+
       <MenuInferior />
     </>
   );
