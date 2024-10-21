@@ -35,6 +35,19 @@ body{
     align-items: center;
     gap: 10px; 
   }
+
+  .match-card-container {
+    max-height: 400px;
+    overflow-y: auto; 
+    padding: 16px;  
+    margin-bottom: 300px;
+    margin-top: -150px;
+  }
+  
+
+  .divPartido{
+    margin-bottom: 100px;
+  }
   
   .divider {
     flex-grow: 1; 
