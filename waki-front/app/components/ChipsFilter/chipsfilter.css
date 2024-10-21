@@ -4,16 +4,17 @@
 .container-chips {
     height: 60px;
     display: flex;
-    gap: 15px; /* Espacio entre los chips */
-    overflow-x: auto; /* Habilitar scroll horizontal */
+    gap: 15px; 
+    overflow-x: auto; 
     padding: 10px 0;
-    scrollbar-width: thin; /* Personaliza el ancho del scrollbar en Firefox */
-    max-width: 100%; /* Asegura que el contenedor no se expanda más allá del viewport */
+    scrollbar-width: thin;
+    max-width: 100%; 
+    justify-content: center;
   }
   
   /* Estilo base del chip */
   .chip {
-    display: inline-flex; /* Asegura que el tamaño del chip se ajuste al contenido */
+    display: inline-flex; 
     align-items: center;
     background-color: white;
     border-radius: 50px;
@@ -21,28 +22,27 @@
     font-size: 12px;
     color: #333;
     border: 1px solid #d1d1d1;
-    white-space: nowrap; /* Evitar saltos de línea */
+    white-space: nowrap; 
     cursor: pointer;
     transition: border-color 0.3s;
-    flex-shrink: 0; /* Evitar que los chips se reduzcan demasiado */
-    max-width: 100%; /* Asegurar que el texto no se salga del chip */
+    flex-shrink: 0; 
+    max-width: 100%;
   }
   
   /* Imagen dentro del chip */
   .logoLigas {
-    width: 30px;  /* Tamaño de la imagen */
+    width: 30px;  
     height: 30px;
     margin-right: 10px;
-    border-radius: 50%; /* Redondear la imagen */
-     /* Asegura que la imagen no se encoja */
+    border-radius: 50%;
   }
   
   /* Texto dentro del chip */
   .chip-text {
     font-weight: 500;
-    overflow: hidden; /* Evitar que el texto se desborde */
-    text-overflow: ellipsis; /* Si el texto es muy largo, muestra "..." */
-    white-space: nowrap; /* Mantener el texto en una sola línea */
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    white-space: nowrap; 
     font-family: "Poppins", sans-serif;
   }
   

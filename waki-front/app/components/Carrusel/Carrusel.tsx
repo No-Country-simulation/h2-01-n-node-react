@@ -1,13 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation"; 
-import Cookies from "js-cookie"; 
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 import "./carrusel.css";
 import vsImage from "@/app/assets/VS.png";
 import logoLE from "@/app/assets/ligas/logo-le.png";
 import Image from "next/image";
-import { ClipLoader } from "react-spinners"; 
+import { ClipLoader } from "react-spinners";
 
 const API_BASE_URL = "https://waki.onrender.com/api";
 const FIXTURES_API_URL = `${API_BASE_URL}/fixtures`;
@@ -20,13 +20,13 @@ type Match = {
   localTeamLogo: string;
   visitTeamLogo: string;
   timeClose: string;
-  isCardVisible: boolean; 
+  isCardVisible: boolean;
 };
 
 export default function Carrusel() {
   const [matches, setMatches] = useState<Match[]>([]);
-  const [loading, setLoading] = useState(true); 
-  const router = useRouter(); 
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchMatches = async () => {
@@ -82,13 +82,13 @@ export default function Carrusel() {
         } catch (error) {
           console.error("Error en la solicitud:", error);
         } finally {
-          setLoading(false); 
+          setLoading(false);
         }
       }
     };
 
     fetchMatches();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Función para manejar el error de carga de la imagen
@@ -109,58 +109,59 @@ export default function Carrusel() {
               <ClipLoader color={"#123abc"} loading={loading} size={50} />
             </div>
           ) : (
-            matches.map((match, index) => (
-              match.isCardVisible && (
-                <div key={index} className="carousel-item">
-                  <div className="card-content">
-                    <div id="topview-card">
-                      <div className="match-date-time">
+            matches.map(
+              (match, index) =>
+                match.isCardVisible && (
+                  <div key={index} className="carousel-item">
+                    <div className="card-content">
+                      <div id="topview-card">
+                        <div className="match-date-time">
+                          <Image
+                            priority={true}
+                            alt="Imagen de Liga española"
+                            className="logo-le"
+                            src={logoLE}
+                          />
+                          <div className="trapecio">
+                            <span className="topview-date">{match.date}</span>
+                          </div>
+                          <span className="topview-time">{match.time}</span>
+                        </div>
+                      </div>
+                      <div className="match-info">
+                        <div className="team-info">
+                          <img
+                            src={match.localTeamLogo}
+                            alt={match.localTeam}
+                            className="team-logo"
+                            onError={() => handleImageError(index)}
+                          />
+                          <span className="team-name">{match.localTeam}</span>
+                        </div>
                         <Image
                           priority={true}
-                          alt="Imagen de Liga española"
-                          className="logo-le"
-                          src={logoLE}
+                          alt="Imagen de VS"
+                          className="vsImage"
+                          src={vsImage}
                         />
-                        <div className="trapecio">
-                          <span className="topview-date">{match.date}</span>
+                        <div className="team-info">
+                          <img
+                            src={match.visitTeamLogo}
+                            alt={match.visitTeam}
+                            className="team-logo"
+                            onError={() => handleImageError(index)}
+                          />
+                          <span className="team-name">{match.visitTeam}</span>
                         </div>
-                        <span className="topview-time">{match.time}</span>
                       </div>
-                    </div>
-                    <div className="match-info">
-                      <div className="team-info">
-                        <img
-                          src={match.localTeamLogo}
-                          alt={match.localTeam}
-                          className="team-logo"
-                          onError={() => handleImageError(index)} 
-                        />
-                        <span className="team-name">{match.localTeam}</span>
+                      <div className="time-close">
+                        Tiempo restante para apostar
+                        <span className="timeCloseVar"> {match.timeClose}</span>
                       </div>
-                      <Image
-                        priority={true}
-                        alt="Imagen de VS"
-                        className="vsImage"
-                        src={vsImage}
-                      />
-                      <div className="team-info">
-                        <img
-                          src={match.visitTeamLogo}
-                          alt={match.visitTeam}
-                          className="team-logo"
-                          onError={() => handleImageError(index)}
-                        />
-                        <span className="team-name">{match.visitTeam}</span>
-                      </div>
-                    </div>
-                    <div className="time-close">
-                      Tiempo restante para apostar
-                      <span className="timeCloseVar"> {match.timeClose}</span>
                     </div>
                   </div>
-                </div>
-              )
-            ))
+                )
+            )
           )}
         </div>
       </div>

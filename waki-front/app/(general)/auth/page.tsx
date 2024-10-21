@@ -256,12 +256,12 @@ export default function AuthTabs() {
       });
   
       if (response.ok) {
-        const data = await response.json(); // Obtenemos el cuerpo de la respuesta
-        const token = data.token; // Extraemos el token del body
+        const data = await response.json(); 
+        const token = data.token;
   
         if (token) {
           // Guardar el token en localStorage
-          router.push("/partidos"); // Navegar a la página deseada
+          router.push("/partidos"); 
         } else {
           console.error("No se recibió token en la respuesta.");
         }
