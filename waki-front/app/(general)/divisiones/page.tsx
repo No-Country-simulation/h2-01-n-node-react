@@ -5,6 +5,7 @@ import MenuInferior from "@/app/components/MenuInferior/MenuInferior";
 import "./divisiones.css";
 import Header from "../../components/Navbar/Navbar";
 import divisionLogo from "../../assets/divisiones/division-bronce3.png";
+import BotomChat from '@/app/components/BotomChat/BotomChat'
 
 const Divisiones = () => {
   const [activeTab, setActiveTab] = useState("Ranking");
@@ -97,6 +98,7 @@ const Divisiones = () => {
           </div>
         )}
       </div>
+      <BotomChat/>
       <MenuInferior />
     </>
   );

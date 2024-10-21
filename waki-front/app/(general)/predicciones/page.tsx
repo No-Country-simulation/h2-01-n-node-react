@@ -16,6 +16,7 @@ import BarselonaImg from '@/app/assets/escudos/fc-barcelona.svg'
 import OsasunaImg from '@/app/assets/escudos/osasuna.svg'
 import IconCopa from '@/app/assets/iconCopa.png'
 import IconCheck from '@/app/assets/iconCheck.png'
+import BotomChat from '@/app/components/BotomChat/BotomChat'
 
 interface MatchStatistic {
   team: string
@@ -364,6 +365,7 @@ useEffect(() => {
 
 
     </div>
+    <BotomChat/>
     <MenuInferior />
     </>
   )
