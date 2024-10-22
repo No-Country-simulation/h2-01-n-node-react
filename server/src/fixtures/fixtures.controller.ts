@@ -25,6 +25,14 @@ export class FixturesController {
     description:
       'Time zone string (e.g. America/Argentina/Buenos_Aires). Default: America/Argentina/Buenos_Aires',
   })
+  @ApiQuery({
+    name: 'order',
+    required: false,
+    type: String,
+    description:
+      'Order direction for date sorting. Allowed values: asc, ASC, desc, DESC.',
+    enum: ['asc', 'ASC', 'desc', 'DESC'],
+  })
   findAll(@Query() query: FixturesPaginationDTO) {
     const { timezone } = query;
     if (!timezone) query.timezone = 'America/Argentina/Buenos_Aires';

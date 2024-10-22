@@ -13,7 +13,7 @@ export class FixturesService {
   ) {}
 
   async findAll(query: FixturesPaginationDTO) {
-    const { date, timezone } = query;
+    let { date, timezone, order } = query;
 
     const queryBuilder = this.fixturesRepository
       .createQueryBuilder('fixture')
@@ -29,13 +29,13 @@ export class FixturesService {
       )
       .leftJoinAndSelect('fixtureBet.fixtureBetOdds', 'fixtureBetOdd');
 
+    const localDate = DateTime.fromISO(date, { zone: timezone });
+
+    const startOfDay = localDate.startOf('day').toUTC();
+
+    const endOfDay = localDate.endOf('day').toUTC();
+
     if (date && timezone) {
-      const localDate = DateTime.fromISO(date, { zone: timezone });
-
-      const startOfDay = localDate.startOf('day').toUTC();
-
-      const endOfDay = localDate.endOf('day').toUTC();
-
       queryBuilder.andWhere(
         'fixture.date >= :startOfDay AND fixture.date <= :endOfDay',
         { startOfDay: startOfDay.toISO(), endOfDay: endOfDay.toISO() },
@@ -47,7 +47,35 @@ export class FixturesService {
       { betId: 1 },
     );
 
-    return await queryBuilder.getMany();
+    queryBuilder.orderBy(
+      'fixture.date',
+      order?.toUpperCase() === 'DESC' ? 'DESC' : 'ASC',
+    );
+
+    const fixtures = await queryBuilder.getMany();
+
+    let nextDate = null;
+
+    if (fixtures.length === 0) {
+      const nextDateQuery = this.fixturesRepository
+        .createQueryBuilder('fixture')
+        .select('fixture.date')
+        .where('fixture.date > :currentDate', {
+          currentDate: startOfDay.toISO(),
+        })
+        .orderBy('fixture.date', 'ASC')
+        .limit(1);
+
+      const nextFixture = await nextDateQuery.getOne();
+
+      if (nextFixture) {
+        nextDate = DateTime.fromJSDate(nextFixture.date)
+          .setZone(timezone)
+          .toFormat('yyyy-MM-dd');
+      }
+    }
+
+    return { fixtures, nextDate };
   }
 
   // TODO: future

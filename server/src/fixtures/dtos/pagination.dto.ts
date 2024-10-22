@@ -11,4 +11,9 @@ export class FixturesPaginationDTO {
   @IsString()
   @Transform(({ value }) => value?.trim())
   timezone?: string;
+
+  @IsOptional()
+  @IsString()
+  @Transform(({ value }) => value?.toUpperCase())
+  order?: 'DESC' | 'ASC';
 }
