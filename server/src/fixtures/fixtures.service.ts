@@ -66,7 +66,7 @@ export class FixturesService {
           betIds: [1, 92],
         },
       )
-      // .leftJoinAndSelect('fixtureBet.fixtureBetOdds', 'fixtureBetOdd')
+      .leftJoinAndSelect('fixtureBet.fixtureBetOdds', 'fixtureBetOdd')
       // .leftJoinAndSelect(
       //   'homeTeam.playerTeamRelationships',
       //   'homePlayerTeamRelationships',
