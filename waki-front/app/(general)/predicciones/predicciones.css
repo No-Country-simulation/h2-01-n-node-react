@@ -1,157 +1,215 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
-
-.top-curve{
-    background: linear-gradient( #49DF76 25%, #0DB37B 100%);
-    width: 100%;
-    height: 30vh;
-    border-bottom-left-radius: 60% 70%;
-    border-bottom-right-radius: 60% 70%;
-    text-align: center;
-    color: white;
-    
+.top-curve {
+  background: linear-gradient(#49df76 25%, #0db37b 100%);
+  width: 100%;
+  height: 30vh;
+  border-bottom-left-radius: 60% 70%;
+  border-bottom-right-radius: 60% 70%;
+  text-align: center;
+  color: white;
 }
 
-.subtitle-curve{
-    font-size: 16px;
-    font-family: 'Poppins', sans-serif;
-    padding-top: 10px;
-    font-style: italic;
-
+.subtitle-curve {
+  font-size: 16px;
+  font-family: "Poppins", sans-serif;
+  padding-top: 10px;
+  font-style: italic;
 }
 
-.container-curve{
-    display: flex;
-    margin-top: 50px;
-
+.container-curve {
+  display: flex;
+  margin-top: 0px;
+  margin-left: -5px;
 }
 
-.date-curve{
-    font-size: 22px;
-    font-family: 'Poppins', sans-serif;
-    justify-content: center;
-    text-align: center;
+.date-curve {
+  font-size: 22px;
+  font-family: "Poppins", sans-serif;
+  justify-content: center;
+  text-align: center;
 }
-.time-curve{
-    font-size: 40px;
-}
-
-.escudos-curve{
-    width: 100px;
-    height: 100px;
-    margin: 20px;
-    margin-left: 40px;
-    box-shadow: 0px 5px 0px #dadada;
+.time-curve {
+  font-size: 40px;
 }
 
-.header{
-    background-color: #2BC978;
-    height: 50px;
-    display: flex;
-}
-.flechaImg{
-    width: 20px;
-    height: 20px;
-    margin-left: 5px;
-    margin-top: 15px;
+.escudos-curve {
+  width: 50px;
+  height: 50px;
+  margin: 20px;
+  margin-left: 40px;
+  box-shadow: 0px 5px 0px #dadada;
 }
 
-.partidosAtras{
-    color: #3836D1;
-    margin-left: 4px;
-    margin-top: 15px;
+.header {
+  background-color: #2bc978;
+  height: 50px;
+  display: flex;
+}
+.flechaImg {
+  width: 20px;
+  height: 20px;
+  margin-left: 15px;
 }
 
+.partidosAtras {
+  color: #3836d1;
+  margin-left: 4px;
+}
 
 .icon-ball-container{
     display: flex;
-    margin-left: 150px;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #353333;
+    padding: 5px;
+    margin-left: 20px; 
+    margin-right: 30px; 
+    width: 120px;
+    height: 30px;
+    transform: skew(-5deg);
+    border-radius: 5px;
 }
 
 .icon-ball{
-    width: 30px;
-    height: 30px;
-    margin-top: 10px;
+    width: 25px;
+    height: 25px;
 }
 
 .counter-container{
- margin-top: 12px;
- width: 70px;
- height: 25px;
- background-color: gray;
- display: flex;
-
+    color: white;
+    font-size: 14px;
+    background-color: #0A0A0A;
+    opacity: 0.4;
+    width: 50px;
+    text-align: center;
+    border-radius: 5px;
 }
 
 .counter-life{
-    background: #2d2b2b;
     color: white;
-    margin-left: 10px;
-    width: 20px;
-    text-align: center;
+    z-index: 20;
+    font-size: 12px;
 }
 
-.buy-button{
-    margin-left: 15px;
-    border-radius: 2px;
-    background: #0DB37B;
-    color:white;
-    width: 20px;
-    height: 20px;
-    margin-top: 2px;
-    
-}
-
-.title-section{
-    font-family: 'Poppins', sans-serif;
-    font-size: 20px;
-    margin-top: 10px;
-    margin-left: 20px;
-    font-weight: 500;
-    
-}
-
-.predicciones-container{
-    display: flex;
-    border: 1px solid #cecece;
-    border-radius: 10px;
-    margin: 10px;
-
-}
-
-.sub-predicciones{
-    margin-top: 20px;
-    margin-left: 15px;
-    font-family: 'Poppins', sans-serif;
+.buy-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
     font-size: 14px;
+    border-radius: 50%;
+    cursor: pointer;
+    text-align: center;
+    width: 25px;
+    height: 25px;
+    line-height: 25px;
+    margin-left: 5px;
 }
 
-.btnPrediccion{
-    background: #8E2BFF;
-    width: 150px;
-    height: 40px;
-    margin-left: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 5px 0px #5000AC;
+
+.flex {
+  display: flex;
+  align-items: center; 
+}
+
+.icon-ball-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #353333;
+    padding: 5px;
+    margin-left: 40px; 
     margin-top: 10px;
-    margin-bottom: 10px;
-    font-family: "Poppins", sans-serif;
+    margin-right: 30px; 
+    width: 120px; 
+    height: 30px; 
+    transform: skew(-5deg);
+    border-radius: 5px;
+}
+
+.icon-ball {
+  width: 30px;
+  height: 30px;
+  margin-top: 0px;
+}
+
+.counter-container {
     color: white;
+    font-size: 14px;
+    background-color: #0A0A0A;
+    opacity: 0.4;
+    width: 50px; 
+    text-align: center;
+    border-radius: 5px;
 }
 
-.title-section2{
-    font-family: 'Poppins', sans-serif;
-    font-size: 20px;
-    margin-top: 30px;
-    margin-left: 20px;
-    font-weight: 500;
-    
+
+.counter-life {
+  background: #2d2b2b;
+  color: white;
+  margin-left: 0px;
+  width: 10px;
+  margin-top: 0px;
+  text-align: center;
 }
 
-#btnCard{
-    box-shadow: 0px 5px 0px #5000AC;
+.buy-button {
+  margin-left: 5px;
+  border-radius: 2px;
+  background: #0db37b;
+  color: white;
+  width: 22px;
+  height: 22px;
+  margin-top: 2px;
 }
 
-#btnCardCombinada{
-    box-shadow: 0px 5px 0px #8E2BFF;
+.title-section {
+  font-family: "Poppins", sans-serif;
+  font-size: 20px;
+  margin-top: 10px;
+  margin-left: 20px;
+  font-weight: 500;
+}
+
+.predicciones-container {
+  display: flex;
+  border: 1px solid #cecece;
+  border-radius: 10px;
+  margin: 10px;
+}
+
+.sub-predicciones {
+  margin-top: 20px;
+  margin-left: 15px;
+  font-family: "Poppins", sans-serif;
+  font-size: 14px;
+}
+
+.btnPrediccion {
+  background: #8e2bff;
+  width: 150px;
+  height: 40px;
+  margin-left: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 5px 0px #5000ac;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-family: "Poppins", sans-serif;
+  color: white;
+}
+
+.title-section2 {
+  font-family: "Poppins", sans-serif;
+  font-size: 20px;
+  margin-top: 30px;
+  margin-left: 20px;
+  font-weight: 500;
+}
+
+#btnCard {
+  box-shadow: 0px 5px 0px #5000ac;
+}
+
+#btnCardCombinada {
+  box-shadow: 0px 5px 0px #8e2bff;
 }

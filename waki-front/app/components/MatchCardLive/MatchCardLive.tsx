@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useState, useEffect } from "react";
+import { useState, useEffect, ReactNode } from "react";
 import Image from "next/image";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
@@ -7,39 +7,88 @@ import { FaChevronUp, FaChevronDown } from "react-icons/fa";
 import { Card, CardContent, CardHeader, Tooltip } from "@mui/material";
 import logoPL from "@/app/assets/ligas/logo-le.png";
 
-interface Team {
-  logo: string;
+interface Venue {
+  id: number;
   name: string;
+  address: string;
+  city: string;
+  capacity: number;
+  surface: string;
+  image: string;
 }
 
-interface Match {
+interface League {
   id: number;
+  name: string;
+  type: string;
+  logo: string;
+}
+
+interface Team {
+  id: number;
+  name: string;
+  code: string;
+  founded: number;
+  national: boolean;
+  logo: string;
+}
+
+interface FixtureBetOdds {
+  fixtureBetId: number;
+  value: string;
+  odd: string;
+}
+
+interface FixtureBet {
+  id: number;
+  leagueId: number;
+  fixtureId: number;
+  fixtureBetOdds: FixtureBetOdds[];
+}
+
+interface Fixture {
+  time: ReactNode;
+  id: number;
+  referee: string;
+  timezone: string;
+  date: string;
+  timestamp: number;
+  firstPeriod: number;
+  secondPeriod: number;
+  statusLong: string;
+  statusShort: string;
+  statusElapsed: number;
+  statusExtra: number;
+  season: number;
+  round: string;
+  homeTeamWinner: boolean;
+  awayTeamWinner: boolean;
+  homeGoals: number;
+  awayGoals: number;
+  homeScoreHalftime: number;
+  awayScoreHalftime: number;
+  homeScoreFulltime: number;
+  awayScoreFulltime: number;
+  homeScoreExtratime: number | null;
+  awayScoreExtratime: number | null;
+  homeScorePenalty: number | null;
+  awayScorePenalty: number | null;
+  venue: Venue;
+  league: League;
   homeTeam: Team;
   awayTeam: Team;
-  homeGoals: number;
-  awayGoals: number;
-  date: string;
+  fixtureBets: FixtureBet[];
 }
 
-interface FormattedMatch {
-  id: number;
-  date: string;
-  time: string;
-  localTeam: string;
-  visitTeam: string;
-  localTeamLogo: string;
-  visitTeamLogo: string;
-  homeGoals: number;
-  awayGoals: number;
+interface FixturesResponse {
+  fixtures: Fixture[];
 }
 
 export default function MatchCardLive() {
-  const [matches, setMatches] = useState<FormattedMatch[]>([]);
+  const [matches, setMatches] = useState<Fixture[]>([]);
   const [openStates, setOpenStates] = useState<Record<number, boolean>>({});
   const router = useRouter();
-  const [leagues, setLeagues] = useState<
-    { id: number; logo: string; name: string }[]
-  >([]);
+  const [leagues, setLeagues] = useState<{ id: number; logo: string; name: string }[]>([]);
   const [tooltip, setTooltip] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -62,7 +111,7 @@ export default function MatchCardLive() {
     const token = Cookies.get("authToken");
 
     if (!token) {
-      router.push("/auth"); // Redirigir al login si no hay token
+      router.push("/auth");
       return;
     }
 
@@ -78,8 +127,6 @@ export default function MatchCardLive() {
       if (response.ok) {
         const fixtureData = await response.json();
         console.log("Datos del fixture:", fixtureData);
-
-        // Redirigir a la página de predicciones con el id del fixture
         router.push(`/predicciones?fixtureId=${fixtureId}`);
       } else {
         const errorData = await response.json();
@@ -112,35 +159,37 @@ export default function MatchCardLive() {
         });
 
         if (response.ok) {
-          const data: Match[] = await response.json();
-          const formattedMatches: FormattedMatch[] = data
-            .filter(
-              (match) => match.homeGoals == null && match.awayGoals == null
-            )
-            .map((match) => {
-              const matchDate = new Date(match.date);
-              const date = matchDate.toLocaleDateString("es-ES", {
-                day: "2-digit",
-                month: "short",
-              });
-              const time = matchDate.toLocaleTimeString("es-ES", {
-                hour: "2-digit",
-                minute: "2-digit",
-              });
+          const data: FixturesResponse = await response.json();
+          console.log("Datos de fixtures:", data);
 
-              return {
-                id: match.id,
-                date: date,
-                time: time,
-                localTeam: match.homeTeam.name,
-                visitTeam: match.awayTeam.name,
-                localTeamLogo: match.homeTeam.logo,
-                visitTeamLogo: match.awayTeam.logo,
-                homeGoals: match.homeGoals,
-                awayGoals: match.awayGoals,
-              };
-            });
-          setMatches(formattedMatches);
+          if (Array.isArray(data.fixtures)) {
+            const formattedMatches = data.fixtures
+              .filter((match) => match.homeGoals == null && match.awayGoals == null)
+              .map((match) => {
+                const matchDate = new Date(match?.date);
+                const date = matchDate.toLocaleDateString("es-ES", {
+                  day: "2-digit",
+                  month: "short",
+                });
+                const time = matchDate.toLocaleTimeString("es-ES", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                });
+
+                return {
+                  id: match.id,
+                  date: date,
+                  time: time,
+                  homeGoals: match.homeGoals,  
+                  awayGoals: match.awayGoals,  
+                  homeTeam: match.homeTeam, 
+                  awayTeam: match.awayTeam,
+                };
+              });
+            setMatches(formattedMatches as Fixture[]);
+          } else {
+            console.error("Error: La respuesta no contiene un array de fixtures", data);
+          }
         } else {
           const errorData = await response.json();
           console.error("Error al obtener los datos:", errorData);
@@ -223,9 +272,7 @@ export default function MatchCardLive() {
           </button>
 
           <div
-            className={`overflow-hidden transition-all duration-300 ${
-              openStates[league.id] ? "max-h-screen" : "max-h-0"
-            }`}
+            className={`overflow-hidden transition-all duration-300 ${openStates[league.id] ? "max-h-screen" : "max-h-0"}`}
           >
             <div className="p-4 bg-[#F0F4FF] max-h-60 overflow-y-auto rounded-b-md">
               {matches.map((match, index) => (
@@ -245,24 +292,17 @@ export default function MatchCardLive() {
                     sx={{ border: "none", backgroundColor: "#F0F4FF" }}
                   >
                     <div className="flex justify-between items-center mb-3">
-                      {/* Información de los equipos y el partido */}
                       <div className="flex flex-col items-center">
                         <Image
-                          src={match.localTeamLogo}
-                          alt={`${match.localTeam} logo`}
+                          src={match.homeTeam?.logo}
+                          alt={`${match.homeTeam?.name} logo`}
                           width={32}
                           height={32}
                           className="mb-1"
                         />
-                        <Tooltip
-                          title={match.localTeam}
-                          open={tooltip === match.localTeam}
-                          onClose={handleTooltipClose}
-                          onClick={() => handleTooltipOpen(match.localTeam)}
-                          arrow
-                        >
+                        <Tooltip title={match.homeTeam?.name} open={tooltip === match.homeTeam?.name} onClose={handleTooltipClose} onClick={() => handleTooltipOpen(match.homeTeam?.name)} arrow>
                           <span className="font-semibold text-sm text-gray-800 overflow-hidden text-ellipsis whitespace-nowrap max-w-[50px] text-center cursor-pointer">
-                            {match.localTeam}
+                            {match.homeTeam?.name}
                           </span>
                         </Tooltip>
                       </div>
@@ -270,31 +310,25 @@ export default function MatchCardLive() {
                         <div className="font-bold text-gray-800 text-lg">
                           {match.homeGoals} VS {match.awayGoals}
                         </div>
-                        <div className="text-red-500 text-xs">{match.time}</div>
+                        <div className="text-red-500 text-xs">
+                          {match.time}
+                        </div>
                       </div>
                       <div className="flex flex-col items-center">
                         <Image
-                          src={match.visitTeamLogo}
-                          alt={`${match.visitTeam} logo`}
+                          src={match.awayTeam?.logo}
+                          alt={`${match.awayTeam?.name} logo`}
                           width={32}
                           height={32}
                           className="mb-1"
                         />
-                        <Tooltip
-                          title={match.visitTeam}
-                          open={tooltip === match.visitTeam}
-                          onClose={handleTooltipClose}
-                          onClick={() => handleTooltipOpen(match.visitTeam)}
-                          arrow
-                        >
+                        <Tooltip title={match.awayTeam?.name} open={tooltip === match.awayTeam?.name} onClose={handleTooltipClose} onClick={() => handleTooltipOpen(match.awayTeam?.name)} arrow>
                           <span className="font-semibold text-sm text-gray-800 overflow-hidden text-ellipsis whitespace-nowrap max-w-[50px] text-center cursor-pointer">
-                            {match.visitTeam}
+                            {match.awayTeam?.name}
                           </span>
                         </Tooltip>
                       </div>
                     </div>
-
-                    {/* Botón de apostar */}
                     <div className="text-center">
                       <button
                         onClick={() => handleApostar(match.id)}
@@ -304,6 +338,7 @@ export default function MatchCardLive() {
                         Apostar
                       </button>
                     </div>
+
                   </CardContent>
                 </Card>
               ))}
