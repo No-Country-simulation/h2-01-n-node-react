@@ -1,10 +1,12 @@
 import { Countries } from 'src/countries/countries.entity';
+import { PlayerTeamRelationships } from 'src/player-team-relationships/player-team-relationships.entity';
 import { Venues } from 'src/venues/venues.entity';
 import {
   Column,
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryColumn,
 } from 'typeorm';
@@ -36,4 +38,10 @@ export class Teams {
   @OneToOne(() => Venues, { nullable: true })
   @JoinColumn({ name: 'venueId' })
   venue: Venues | null;
+
+  @OneToMany(
+    () => PlayerTeamRelationships,
+    (playerTeamRelationship) => playerTeamRelationship.team,
+  )
+  playerTeamRelationships: PlayerTeamRelationships[];
 }

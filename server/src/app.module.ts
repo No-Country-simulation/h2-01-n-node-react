@@ -17,6 +17,8 @@ import { FixturesModule } from './fixtures/fixtures.module';
 import { BetsModule } from './bets/bets.module';
 import { FixtureBetsModule } from './fixture-bets/fixture-bets.module';
 import { FixtureBetOddsModule } from './fixture-bet-odds/fixture-bet-odds.module';
+import { PlayersModule } from './players/players.module';
+import { PlayerTeamRelationshipsModule } from './player-team-relationships/player-team-relationships.module';
 
 @Module({
   imports: [
@@ -51,6 +53,8 @@ import { FixtureBetOddsModule } from './fixture-bet-odds/fixture-bet-odds.module
     BetsModule,
     FixtureBetsModule,
     FixtureBetOddsModule,
+    PlayersModule,
+    PlayerTeamRelationshipsModule,
   ],
   controllers: [AppController],
 })

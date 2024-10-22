@@ -24,7 +24,7 @@ export class LeaguesService {
       relations: ['country', 'seasons'],
     });
 
-    if (!league) throw new NotFoundException('Country not found');
+    if (!league) throw new NotFoundException('League not found');
 
     return league;
   }
@@ -49,6 +49,7 @@ export class LeaguesService {
     return leagues;
   }
 
+  // TODO: check
   async findAllWithActiveSeasons() {
     return await this.leaguesRepository
       .createQueryBuilder('league')
@@ -59,7 +60,7 @@ export class LeaguesService {
         'season.current = :current',
         { current: true },
       )
-      .where('season.id IS NOT NULL')
+      // .where('season.id IS NOT NULL')
       .getMany();
   }
 }
