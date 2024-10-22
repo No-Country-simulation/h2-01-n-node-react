@@ -190,7 +190,7 @@ export default function MatchCard() {
               {matches.map((match, index) => (
                 <Card
                   key={index}
-                  className="my-2 mx-4"
+                  className="my-5 mx-4"
                   sx={{
                     boxShadow: "none",
                     border: "none",
