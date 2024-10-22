@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Fixtures } from './fixtures.entities';
 import { Repository } from 'typeorm';
@@ -50,8 +50,9 @@ export class FixturesService {
     return await queryBuilder.getMany();
   }
 
+  // TODO: future
   async findOneById(id: number) {
-    return await this.fixturesRepository
+    const fixture = await this.fixturesRepository
       .createQueryBuilder('fixture')
       .leftJoinAndSelect('fixture.venue', 'venue')
       .leftJoinAndSelect('fixture.league', 'league')
@@ -65,8 +66,58 @@ export class FixturesService {
           betIds: [1, 92],
         },
       )
-      .leftJoinAndSelect('fixtureBet.fixtureBetOdds', 'fixtureBetOdd')
+      // .leftJoinAndSelect('fixtureBet.fixtureBetOdds', 'fixtureBetOdd')
+      // .leftJoinAndSelect(
+      //   'homeTeam.playerTeamRelationships',
+      //   'homePlayerTeamRelationships',
+      //   `
+      // homePlayerTeamRelationships.leagueId = league.id AND
+      // homePlayerTeamRelationships.leagueSeason = fixture.season
+      // `,
+      // )
+      // .leftJoinAndSelect('homePlayerTeamRelationships.player', 'homePlayer')
+      // .leftJoinAndSelect(
+      //   'awayTeam.playerTeamRelationships',
+      //   'awayPlayerTeamRelationships',
+      //   `
+      // awayPlayerTeamRelationships.leagueId = league.id AND
+      // awayPlayerTeamRelationships.leagueSeason = fixture.season
+      // `,
+      // )
+      // .leftJoinAndSelect('awayPlayerTeamRelationships.player', 'awayPlayer')
       .where('fixture.id = :id', { id })
       .getOne();
+
+    if (!fixture) throw new NotFoundException('Fixture not found');
+
+    // let fixtureBetAnytimeScorer = fixture.fixtureBets.find((bet) => bet.id);
+
+    // if (fixtureBetAnytimeScorer) {
+    //   const homeTeamSet = new Set(
+    //     fixture.homeTeam.playerTeamRelationships.map((pr) => pr.player.name),
+    //   );
+
+    //   const awayTeamSet = new Set(
+    //     fixture.awayTeam.playerTeamRelationships.map((pr) => pr.player.name),
+    //   );
+
+    //   for (let player of fixtureBetAnytimeScorer.fixtureBetOdds) {
+    //     const playerWithTeam = player as {
+    //       value: string;
+    //       team?: 'home' | 'away';
+    //     };
+
+    //     if (homeTeamSet.has(playerWithTeam.value)) {
+    //       playerWithTeam.team = 'home';
+    //     } else if (awayTeamSet.has(playerWithTeam.value)) {
+    //       playerWithTeam.team = 'away';
+    //     }
+    //   }
+    // }
+
+    // delete fixture.homeTeam.playerTeamRelationships;
+    // delete fixture.awayTeam.playerTeamRelationships;
+
+    return fixture;
   }
 }

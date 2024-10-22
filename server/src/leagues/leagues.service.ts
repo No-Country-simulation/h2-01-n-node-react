@@ -24,7 +24,7 @@ export class LeaguesService {
       relations: ['country', 'seasons'],
     });
 
-    if (!league) throw new NotFoundException('Country not found');
+    if (!league) throw new NotFoundException('League not found');
 
     return league;
   }
