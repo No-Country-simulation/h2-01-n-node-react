@@ -84,11 +84,13 @@ interface FixturesResponse {
   fixtures: Fixture[];
 }
 
-export default function MatchCardLive() {
+export default function MatchCardLive({}) {
   const [matches, setMatches] = useState<Fixture[]>([]);
   const [openStates, setOpenStates] = useState<Record<number, boolean>>({});
   const router = useRouter();
-  const [leagues, setLeagues] = useState<{ id: number; logo: string; name: string }[]>([]);
+  const [leagues, setLeagues] = useState<
+    { id: number; logo: string; name: string }[]
+  >([]);
   const [tooltip, setTooltip] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -126,7 +128,12 @@ export default function MatchCardLive() {
 
       if (response.ok) {
         const fixtureData = await response.json();
-        
+        Cookies.set(`fixture`, JSON.stringify(fixtureData.id), {
+          expires: 7,
+        });
+
+
+
         router.push(`/predicciones?fixtureId=${fixtureId}`);
       } else {
         const errorData = await response.json();
@@ -160,10 +167,12 @@ export default function MatchCardLive() {
 
         if (response.ok) {
           const data: FixturesResponse = await response.json();
-          
+
           if (Array.isArray(data.fixtures)) {
             const formattedMatches = data.fixtures
-              .filter((match) => match.homeGoals == null && match.awayGoals == null)
+              .filter(
+                (match) => match.homeGoals == null && match.awayGoals == null
+              )
               .map((match) => {
                 const matchDate = new Date(match?.date);
                 const date = matchDate.toLocaleDateString("es-ES", {
@@ -179,15 +188,18 @@ export default function MatchCardLive() {
                   id: match.id,
                   date: date,
                   time: time,
-                  homeGoals: match.homeGoals,  
-                  awayGoals: match.awayGoals,  
-                  homeTeam: match.homeTeam, 
+                  homeGoals: match.homeGoals,
+                  awayGoals: match.awayGoals,
+                  homeTeam: match.homeTeam,
                   awayTeam: match.awayTeam,
                 };
               });
             setMatches(formattedMatches as Fixture[]);
           } else {
-            console.error("Error: La respuesta no contiene un array de fixtures", data);
+            console.error(
+              "Error: La respuesta no contiene un array de fixtures",
+              data
+            );
           }
         } else {
           const errorData = await response.json();
@@ -271,7 +283,9 @@ export default function MatchCardLive() {
           </button>
 
           <div
-            className={`overflow-hidden transition-all duration-300 ${openStates[league.id] ? "max-h-screen" : "max-h-0"}`}
+            className={`overflow-hidden transition-all duration-300 ${
+              openStates[league.id] ? "max-h-screen" : "max-h-0"
+            }`}
           >
             <div className="p-4 bg-[#F0F4FF] max-h-60 overflow-y-auto rounded-b-md">
               {matches.map((match, index) => (
@@ -299,7 +313,15 @@ export default function MatchCardLive() {
                           height={32}
                           className="mb-1"
                         />
-                        <Tooltip title={match.homeTeam?.name} open={tooltip === match.homeTeam?.name} onClose={handleTooltipClose} onClick={() => handleTooltipOpen(match.homeTeam?.name)} arrow>
+                        <Tooltip
+                          title={match.homeTeam?.name}
+                          open={tooltip === match.homeTeam?.name}
+                          onClose={handleTooltipClose}
+                          onClick={() =>
+                            handleTooltipOpen(match.homeTeam?.name)
+                          }
+                          arrow
+                        >
                           <span className="font-semibold text-sm text-gray-800 overflow-hidden text-ellipsis whitespace-nowrap max-w-[50px] text-center cursor-pointer">
                             {match.homeTeam?.name}
                           </span>
@@ -309,9 +331,7 @@ export default function MatchCardLive() {
                         <div className="font-bold text-gray-800 text-lg">
                           {match.homeGoals} VS {match.awayGoals}
                         </div>
-                        <div className="text-red-500 text-xs">
-                          {match.time}
-                        </div>
+                        <div className="text-red-500 text-xs">{match.time}</div>
                       </div>
                       <div className="flex flex-col items-center">
                         <Image
@@ -321,7 +341,15 @@ export default function MatchCardLive() {
                           height={32}
                           className="mb-1"
                         />
-                        <Tooltip title={match.awayTeam?.name} open={tooltip === match.awayTeam?.name} onClose={handleTooltipClose} onClick={() => handleTooltipOpen(match.awayTeam?.name)} arrow>
+                        <Tooltip
+                          title={match.awayTeam?.name}
+                          open={tooltip === match.awayTeam?.name}
+                          onClose={handleTooltipClose}
+                          onClick={() =>
+                            handleTooltipOpen(match.awayTeam?.name)
+                          }
+                          arrow
+                        >
                           <span className="font-semibold text-sm text-gray-800 overflow-hidden text-ellipsis whitespace-nowrap max-w-[50px] text-center cursor-pointer">
                             {match.awayTeam?.name}
                           </span>
@@ -331,13 +359,12 @@ export default function MatchCardLive() {
                     <div className="text-center">
                       <button
                         onClick={() => handleApostar(match.id)}
-                        style={{fontSize: "11px"}}
+                        style={{ fontSize: "11px" }}
                         className="px-4 py-2 bg-[#8E2BFF] text-white font-bold rounded transition duration-200"
                       >
                         Apostar
                       </button>
                     </div>
-
                   </CardContent>
                 </Card>
               ))}

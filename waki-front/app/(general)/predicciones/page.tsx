@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client";
-import React from "react";
+import React, { ReactNode } from "react";
 import { useState, useEffect } from "react";
 import "./predicciones.css";
 import Image from "next/image";
@@ -19,6 +19,8 @@ import IconCheck from "@/app/assets/iconCheck.png";
 import BotomChat from "@/app/components/BotomChat/BotomChat";
 import Link from "next/link";
 import IconBall from "@/app/assets/icon-ball.png";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 interface MatchStatistic {
   team: string;
@@ -29,6 +31,83 @@ interface MatchStatisticsCardProps {
   statistics: MatchStatistic[];
 }
 
+interface Venue {
+  id: number;
+  name: string;
+  address: string;
+  city: string;
+  capacity: number;
+  surface: string;
+  image: string;
+}
+
+interface League {
+  id: number;
+  name: string;
+  type: string;
+  logo: string;
+}
+
+interface Team {
+  id: number;
+  name: string;
+  code: string;
+  founded: number;
+  national: boolean;
+  logo: string;
+}
+
+interface FixtureBetOdds {
+  fixtureBetId: number;
+  value: string;
+  odd: string;
+}
+
+interface FixtureBet {
+  id: number;
+  leagueId: number;
+  fixtureId: number;
+  fixtureBetOdds: FixtureBetOdds[];
+}
+
+interface Fixture {
+  time: ReactNode;
+  id: number;
+  referee: string;
+  timezone: string;
+  date: string;
+  timestamp: number;
+  firstPeriod: number;
+  secondPeriod: number;
+  statusLong: string;
+  statusShort: string;
+  statusElapsed: number;
+  statusExtra: number;
+  season: number;
+  round: string;
+  homeTeamWinner: boolean;
+  awayTeamWinner: boolean;
+  homeGoals: number;
+  awayGoals: number;
+  homeScoreHalftime: number;
+  awayScoreHalftime: number;
+  homeScoreFulltime: number;
+  awayScoreFulltime: number;
+  homeScoreExtratime: number | null;
+  awayScoreExtratime: number | null;
+  homeScorePenalty: number | null;
+  awayScorePenalty: number | null;
+  venue: Venue;
+  league: League;
+  homeTeam: Team;
+  awayTeam: Team;
+  fixtureBets: FixtureBet[];
+}
+
+interface FixturesResponse {
+  fixtures: Fixture[];
+}
+
 export default function page() {
   const [activeTab, setActiveTab] = useState("Predicciones");
   const [isOpen, setIsOpen] = useState(false);
@@ -37,6 +116,9 @@ export default function page() {
   const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
   const [showConfirmationPopup, setShowConfirmationPopup] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [matches, setMatches] = useState<Fixture[]>([]);
+
+  const router = useRouter();
 
   const matchStatistics: MatchStatistic[] = [
     { team: "Osasuna", percentage: 48 },
@@ -87,6 +169,76 @@ export default function page() {
     }
   }, [showSuccessMessage]);
 
+
+ 
+
+  const fixtureId = Cookies.get("fixture");
+  const API_BASE_URL = "https://waki.onrender.com/api";
+  const FIXTURE_URL = `${API_BASE_URL}/fixtures/${fixtureId}`;
+  
+  useEffect(() => {
+    const fetchMatches = async () => {
+      const token = Cookies.get("authToken");
+  
+      if (!token) {
+        router.push("/auth");
+        return;
+      }
+  
+      try {
+        const response = await fetch(FIXTURE_URL, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+  
+        if (response.ok) {
+          const data = await response.json();
+  
+          if (data) {
+            // Ajustamos para manejar un solo fixture
+            const match = data;
+            const matchDate = new Date(match?.date);
+            const date = matchDate.toLocaleDateString("es-ES", {
+              day: "2-digit",
+              month: "short",
+            });
+            const time = matchDate.toLocaleTimeString("es-ES", {
+              hour: "2-digit",
+              minute: "2-digit",
+            });
+  
+            const formattedMatch = {
+              id: match.id,
+              date: date,
+              time: time,
+              homeGoals: match.homeGoals,
+              awayGoals: match.awayGoals,
+              homeTeam: match.homeTeam,
+              awayTeam: match.awayTeam,
+            };
+  
+            // Actualiza el estado con el fixture formateado
+            setMatches([formattedMatch as Fixture]);
+          } else {
+            console.error("Error: La respuesta no contiene un fixture válido", data);
+          }
+        } else {
+          const errorData = await response.json();
+          console.error("Error al obtener los datos:", errorData);
+        }
+      } catch (error) {
+        console.error("Error en la solicitud:", error);
+      }
+    };
+  
+    fetchMatches();
+  }, [FIXTURE_URL, router]);
+  
+
+
   return (
     <>
       <div>
@@ -108,9 +260,9 @@ export default function page() {
               width={35}
               height={35}
             />
-            
-              <h1 className="counter-life">5</h1>
-           
+
+            <h1 className="counter-life">5</h1>
+
             <button className="buy-button">+</button>
           </div>
         </div>
@@ -119,29 +271,47 @@ export default function page() {
           <h1 className="subtitle-curve">
             Eliminatorias, cuartos de final, primer partido
           </h1>
-          <div className="container-curve">
-            <Image
-              src={OsasunaImg}
-              alt="Resultado"
-              width={10}
-              height={10}
-              className="escudos-curve"
-            />
-            <div>
-              <h1 className="date-curve">Sep 24</h1>
-              <h1 className="time-curve">10:30</h1>
-            </div>
 
-            <Image
-              src={BarselonaImg}
-              alt="Resultado"
-              width={10}
-              height={10}
-              className="escudos-curve"
-            />
-          </div>
+          {matches.length > 0 ? (
+            matches.map((match, index) => (
+              <div key={index} className="container-curve">
+                <Image
+                  src={match.homeTeam.logo || OsasunaImg} 
+                  alt={`Logo del equipo local - ${match.homeTeam.name}`}
+                  width={10}
+                  height={10}
+                  className="escudos-curve"
+                />
+                <div>
+                  <h1 className="date-curve">
+                    {new Date(match.date).toLocaleDateString("es-ES", {
+                      day: "2-digit",
+                      month: "short",
+                    })}
+                  </h1>
+                  <h1 className="time-curve">
+                    {match.time}
+                  </h1>
+                </div>
+                <Image
+                  src={match.awayTeam.logo || BarselonaImg}
+                  alt={`Logo del equipo visitante - ${match.awayTeam.name}`}
+                  width={10}
+                  height={10}
+                  className="escudos-curve"
+                />
+              </div>
+            ))
+          ) : (
+            <p>{!matches ? "Cargando..." : ""}</p>
+          )}
         </div>
-        <Header tabs={tabs} onTabChange={handleTabChange} activeTab={activeTab}  />
+
+        <Header
+          tabs={tabs}
+          onTabChange={handleTabChange}
+          activeTab={activeTab}
+        />
         <h1 className="title-section">Tus Predicciones</h1>
         <div className="predicciones-container">
           <h1 className="sub-predicciones">¡Todavia estas a tiempo!</h1>
