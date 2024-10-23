@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./Navbar.css";
 
 type Tab = {
@@ -10,19 +10,18 @@ type Tab = {
 
 type HeaderProps = {
   tabs: Tab[];
+  activeTab: string;  // Recibir activeTab como prop
   onTabChange: (tabId: string) => void;
 };
 
-export default function Header({ tabs, onTabChange }: HeaderProps) {
-  const [activeTab, setActiveTab] = useState(tabs[0]?.id);
+export default function Header({ tabs, activeTab, onTabChange }: HeaderProps) {
   const [linePosition, setLinePosition] = useState(0);
   const [lineWidth, setLineWidth] = useState(0);
   const activeLineRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<(HTMLAnchorElement | null)[]>([]);
 
   const handleTabClick = (tabId: string) => {
-    setActiveTab(tabId);
-    onTabChange(tabId);
+    onTabChange(tabId);  // Solo llamar a onTabChange para actualizar el tab en el padre
   };
 
   useEffect(() => {
@@ -35,7 +34,7 @@ export default function Header({ tabs, onTabChange }: HeaderProps) {
   }, [activeTab, tabs]);
 
   return (
-    <div className="text-sm font-medium text-center text-gray-500 border-b-4 bg-white mb-2" style={{fontSize: "13px"}}>
+    <div className="text-sm font-medium text-center text-gray-500 border-b-4 bg-white mb-2" style={{ fontSize: "13px" }}>
       <div className="tabs-container">
         <ul className="flex flex-wrap justify-center md:justify-start -mb-px">
           {tabs.map((tab, index) => (

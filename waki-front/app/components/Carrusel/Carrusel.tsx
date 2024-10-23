@@ -112,11 +112,11 @@ export default function Carrusel({ activeTab }: { activeTab: string }) {
 
   let dateParam;
   switch (activeTab) {
-    case "Ayer":
-      dateParam = getFormattedDate(yesterday);
-      break;
     case "Hoy":
       dateParam = getFormattedDate(today);
+      break;
+    case "Ayer":
+      dateParam = getFormattedDate(yesterday);
       break;
     case "Manana":
       dateParam = getFormattedDate(tomorrow);
