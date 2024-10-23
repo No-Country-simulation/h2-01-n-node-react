@@ -53,7 +53,7 @@ export default function Carrusel() {
         }
 
         const data = await response.json();
-        console.log("Datos recibidos:", data); // Log para verificar la respuesta
+        
 
         // Verifica que 'data.fixtures' sea un array
         if (!Array.isArray(data.fixtures)) {

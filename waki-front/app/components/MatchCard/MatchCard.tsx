@@ -126,7 +126,7 @@ export default function MatchCard() {
 
       if (response.ok) {
         const fixtureData = await response.json();
-        console.log("Datos del fixture:", fixtureData);
+        
         router.push(`/predicciones?fixtureId=${fixtureId}`);
       } else {
         const errorData = await response.json();
@@ -160,7 +160,7 @@ export default function MatchCard() {
 
         if (response.ok) {
           const data: FixturesResponse = await response.json();
-          console.log("Datos de fixtures:", data);
+          
 
           if (Array.isArray(data.fixtures)) {
             const formattedMatches = data.fixtures
