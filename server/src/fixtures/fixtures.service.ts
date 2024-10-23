@@ -170,15 +170,12 @@ export class FixturesService {
     const today = DateTime.now().setZone('America/Argentina/Buenos_Aires');
 
     const todayFormatted = today.toFormat('yyyy-MM-dd');
-    console.log({ todayFormatted });
 
     const previousDay = today.minus({ days: 1 });
     const previousDayFormatted = previousDay.toFormat('yyyy-MM-dd');
 
     const fiveDaysFromToday = today.plus({ days: 5 });
     const fiveDaysFromTodayFormatted = fiveDaysFromToday.toFormat('yyyy-MM-dd');
-
-    console.log({ fiveDaysFromTodayFormatted });
 
     try {
       const { data } = await firstValueFrom(
