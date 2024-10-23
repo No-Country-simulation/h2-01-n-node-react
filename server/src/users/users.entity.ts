@@ -1,17 +1,6 @@
 import { Exclude } from 'class-transformer';
+import { USER_RANK, USER_ROLE } from 'src/types';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-
-export enum USER_ROLE {
-  USER = 'User',
-  PREMIUM = 'Premium',
-  ADMIN = 'Admin',
-}
-
-export enum USER_RANK {
-  BRONZE = 'Bronze',
-  SILVER = 'Silver',
-  GOLD = 'Gold',
-}
 
 @Entity('users')
 export class Users {

@@ -11,6 +11,7 @@ import { AxiosError } from 'axios';
 import { catchError, firstValueFrom } from 'rxjs';
 import { FixtureBets } from 'src/fixture-bets/fixture-bets.entity';
 import { FixtureBetOdds } from 'src/fixture-bet-odds/fixture-bet-odds.entity';
+
 @Injectable()
 export class FixturesService {
   constructor(
