@@ -161,7 +161,7 @@ export class FixturesService {
     return fixture;
   }
 
-  @Cron('35 0 * * *', {
+  @Cron('45 0 * * *', {
     timeZone: 'America/Argentina/Buenos_Aires',
   })
   async updateFixtures() {
