@@ -164,7 +164,7 @@ export class FixturesService {
   @Cron('0 0 * * *', {
     timeZone: 'America/Argentina/Buenos_Aires',
   })
-  async updateFixtures() {
+  async updateFixtures(retryCount = 0) {
     if (!this.configService.get<string>('apiKey')) return;
 
     const today = DateTime.now().setZone('America/Argentina/Buenos_Aires');
@@ -231,11 +231,7 @@ export class FixturesService {
 
       await this.fixturesRepository.save(formattedFixtures);
       console.log('Fixtures updated successfully.');
-    } catch (error: any) {
-      console.log(`Error when updating fixtures: ${error}`);
-    }
 
-    try {
       const { data: dataForToday } = await firstValueFrom(
         this.httpService
           .get(
@@ -323,7 +319,13 @@ export class FixturesService {
 
       console.log('Bets from fixtures updated successfully.');
     } catch (error: any) {
-      console.log(`Error when updating bets from fixtures: ${error}`);
+      console.log(`Error when updating fixtures and bets: ${error}`);
+      if (retryCount < 3) {
+        console.log('Retrying in 10 minutes...');
+        setTimeout(() => {
+          this.updateFixtures(retryCount + 1);
+        }, 720000);
+      }
     }
   }
 }
