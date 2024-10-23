@@ -16,6 +16,9 @@ const QA = [
     {question:"Como pago?", answer:"Puedes hacer clic en el boton '+' 😀"},
     {question:"Puedo cancelar mi prediccion?", answer:"NO 😎"},
     {question:"Como hago una predicción?", answer:"Puedes hacer una prediccion desde la pantalla Partidos."},
+     {question:"Que metodos de pago aceptan?", answer:"Aceptamos como metodo de pago Visa, Master y Transferencias."},
+     {question:"Como hago una trasnferencia", answer:"La transferencia debe hacerse a BBVA N° 5465463.."},
+    
 ]
 
 const PREGUNTAS_PREDEFINIDAS = ["Hola", "Como pago?", "Como hago una predicción?"]
