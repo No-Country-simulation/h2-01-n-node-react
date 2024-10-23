@@ -23,7 +23,7 @@ const Divisiones = () => {
   return (
     <>
       <h1 className="titulo-divisiones">Divisiones</h1>
-      <Header tabs={tabs} onTabChange={handleTabChange} />
+      <Header tabs={tabs} onTabChange={handleTabChange} activeTab={activeTab} />
       {/*ACA VAN LAS IMAGENES*/}
       <div className="divisiones-imagen">
         <Image
