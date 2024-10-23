@@ -129,7 +129,7 @@ export default function Page() {
       <div>
         <ChipsFilter />
       </div>
-      <Header tabs={tabs} onTabChange={handleTabChange} />
+      <Header tabs={tabs} onTabChange={handleTabChange} activeTab={activeTab}  />
 
       <div className="section-header">
         <h1 className="statePartido">En vivo</h1>

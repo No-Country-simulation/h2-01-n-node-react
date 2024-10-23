@@ -334,7 +334,7 @@ export default function AuthTabs() {
   
   return (
     <>
-      <Header tabs={tabs} onTabChange={handleTabChange} />
+      <Header tabs={tabs} onTabChange={handleTabChange} activeTab={activeTab} />
       <div className="bg-white min-h-screen flex flex-col items-center justify-center px-4">
         {activeTab === "InicioSesion" ? (
           // Pantalla de Iniciar Sesión

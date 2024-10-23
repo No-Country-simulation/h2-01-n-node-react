@@ -30,7 +30,7 @@ interface MatchStatisticsCardProps {
 }
 
 export default function page() {
-  const [activeTab, setActiveTab] = useState("Ranking");
+  const [activeTab, setActiveTab] = useState("Predicciones");
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
   const [showResultadoPopup, setShowResultadoPopup] = useState(false);
@@ -141,7 +141,7 @@ export default function page() {
             />
           </div>
         </div>
-        <Header tabs={tabs} onTabChange={handleTabChange} />
+        <Header tabs={tabs} onTabChange={handleTabChange} activeTab={activeTab}  />
         <h1 className="title-section">Tus Predicciones</h1>
         <div className="predicciones-container">
           <h1 className="sub-predicciones">¡Todavia estas a tiempo!</h1>
