@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import Image from "next/image";
@@ -10,23 +10,125 @@ import logoLE from "@/app/assets/ligas/logo-le.png";
 import "./carrusel.css";
 
 const API_BASE_URL = "https://waki.onrender.com/api";
-const FIXTURES_API_URL = `${API_BASE_URL}/fixtures`;
 
-type Match = {
+interface Venue {
+  id: number;
+  name: string;
+  address: string;
+  city: string;
+  capacity: number;
+  surface: string;
+  image: string;
+}
+
+interface League {
+  id: number;
+  name: string;
+  type: string;
+  logo: string;
+}
+
+interface Team {
+  id: number;
+  name: string;
+  code: string;
+  founded: number;
+  national: boolean;
+  logo: string;
+}
+
+interface FixtureBetOdds {
+  fixtureBetId: number;
+  value: string;
+  odd: string;
+}
+
+interface FixtureBet {
+  id: number;
+  leagueId: number;
+  fixtureId: number;
+  fixtureBetOdds: FixtureBetOdds[];
+}
+
+interface Fixture {
+  time: ReactNode;
+  id: number;
+  referee: string;
+  timezone: string;
   date: string;
-  time: string;
-  localTeam: string;
-  visitTeam: string;
-  localTeamLogo: string;
-  visitTeamLogo: string;
-  timeClose: string;
+  timestamp: number;
+  firstPeriod: number;
+  secondPeriod: number;
+  statusLong: string;
+  statusShort: string;
+  statusElapsed: number;
+  statusExtra: number;
+  season: number;
+  round: string;
+  homeTeamWinner: boolean;
+  awayTeamWinner: boolean;
+  homeGoals: number;
+  awayGoals: number;
+  homeScoreHalftime: number;
+  awayScoreHalftime: number;
+  homeScoreFulltime: number;
+  awayScoreFulltime: number;
+  homeScoreExtratime: number | null;
+  awayScoreExtratime: number | null;
+  homeScorePenalty: number | null;
+  awayScorePenalty: number | null;
+  venue: Venue;
+  league: League;
+  homeTeam: Team;
+  awayTeam: Team;
+  nextDate: string;
+  fixtureBets: FixtureBet[];
   isCardVisible: boolean;
-};
+}
 
-export default function Carrusel() {
-  const [matches, setMatches] = useState<Match[]>([]);
+export default function Carrusel({ activeTab }: { activeTab: string }) {
+  const [matches, setMatches] = useState<Fixture[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+
+  const getFormattedDate = (date: Date) => {
+    return date.toISOString().split("T")[0];
+  };
+
+  const today = new Date();
+  const yesterday = new Date(today);
+  const tomorrow = new Date(today);
+  const afterTomorrow = new Date(today);
+
+  yesterday.setDate(today.getDate() - 1);
+  tomorrow.setDate(today.getDate() + 1);
+
+  const afterTomorrowCookie = Cookies.get("afterTomorrow");
+  if (afterTomorrowCookie) {
+    afterTomorrow.setDate(new Date(afterTomorrowCookie).getDate());
+  } else {
+    afterTomorrow.setDate(today.getDate() + 2);
+  }
+
+  let dateParam;
+  switch (activeTab) {
+    case "Ayer":
+      dateParam = getFormattedDate(yesterday);
+      break;
+    case "Hoy":
+      dateParam = getFormattedDate(today);
+      break;
+    case "Manana":
+      dateParam = getFormattedDate(tomorrow);
+      break;
+    case "Siguiente Fecha":
+      dateParam = getFormattedDate(afterTomorrow);
+      break;
+    default:
+      dateParam = getFormattedDate(today);
+  }
+
+  const FIXTURES_API_URL = `${API_BASE_URL}/fixtures?date=${dateParam}`;
 
   useEffect(() => {
     const fetchMatches = async () => {
@@ -53,12 +155,14 @@ export default function Carrusel() {
         }
 
         const data = await response.json();
-        
 
-        // Verifica que 'data.fixtures' sea un array
         if (!Array.isArray(data.fixtures)) {
           console.error("La respuesta no es un array:", data.fixtures);
           return;
+        }
+
+        if (data.fixtures.length === 0 && data.nextDate) {
+          Cookies.set("nextDate", data.nextDate, { expires: 7 });
         }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -93,7 +197,7 @@ export default function Carrusel() {
     };
 
     fetchMatches();
-  }, [router]);
+  }, [router, FIXTURES_API_URL]);
 
   const handleImageError = (index: number) => {
     setMatches((prevMatches) => {
@@ -103,7 +207,8 @@ export default function Carrusel() {
     });
   };
 
-  const renderMatchCard = (match: Match, index: number) => (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const renderMatchCard = (match: any, index: number) => (
     <div key={index} className="carousel-item">
       <div className="card-content">
         <div id="topview-card">
@@ -162,9 +267,22 @@ export default function Carrusel() {
             <div className="loader-container">
               <ClipLoader color={"#123abc"} loading={loading} size={50} />
             </div>
+          ) : matches.length === 0 ? (
+            <div className="no-partidos-container">
+              <div className="no-matches-message ml-3 mt-5">
+                No hay partidos para esta fecha
+              </div>
+              <button
+                className="ver-proximos-btn mt-5 ml-12"
+                onClick={() => router.push("/proximos-partidos")}
+              >
+                Ver próximos partidos
+              </button>
+            </div>
           ) : (
             matches.map(
-              (match, index) => match.isCardVisible && renderMatchCard(match, index)
+              (match, index) =>
+                match.isCardVisible && renderMatchCard(match, index)
             )
           )}
         </div>
