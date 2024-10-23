@@ -6,7 +6,6 @@ import Cookies from "js-cookie";
 import Image from "next/image";
 import { ClipLoader } from "react-spinners";
 import vsImage from "@/app/assets/VS.png";
-import logoLE from "@/app/assets/ligas/logo-le.png";
 import "./carrusel.css";
 
 const API_BASE_URL = "https://waki.onrender.com/api";
@@ -185,6 +184,7 @@ export default function Carrusel({ activeTab }: { activeTab: string }) {
             visitTeamLogo: match.awayTeam.logo,
             timeClose: "90:00",
             isCardVisible: true,
+            leagueLogo: match.league.logo
           };
         });
 
@@ -213,11 +213,11 @@ export default function Carrusel({ activeTab }: { activeTab: string }) {
       <div className="card-content">
         <div id="topview-card">
           <div className="match-date-time">
-            <Image
-              priority={true}
+          <img
               alt="Imagen de Liga española"
               className="logo-le"
-              src={logoLE}
+              src={match.leagueLogo}
+
             />
             <div className="trapecio">
               <span className="topview-date">{match.date}</span>

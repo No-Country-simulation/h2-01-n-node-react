@@ -43,7 +43,7 @@ export default function ChatBot() {
   return (
     <div>
         <div className='titleContainer'>
-            <h1 className='titleChat'>Chat whit bot</h1>
+            <h1 className='titleChat'>Chat bot</h1>
         </div>
       <div className="w-full max-w-md mx-auto p-4 bg-background rounded-lg shadow">
       <ScrollArea className="h-[400px] mb-4 p-4 border rounded-md">
