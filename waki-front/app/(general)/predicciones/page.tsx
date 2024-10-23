@@ -95,9 +95,9 @@ export default function page() {
             <Image
               src={Flecha}
               alt="Flecha hacia atras"
-              className="flechaImg mr-2"
+              className="flechaImg mr-5"
             />
-            <span className="partidosAtras mr-5">Partidos</span>
+            <span className="partidosAtras">Partidos</span>
           </Link>
           <div className="icon-ball-container">
             <Image
@@ -108,9 +108,9 @@ export default function page() {
               width={35}
               height={35}
             />
-            <div className="counter-container">
+            
               <h1 className="counter-life">5</h1>
-            </div>
+           
             <button className="buy-button">+</button>
           </div>
         </div>

@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import MenuInferior from "@/app/components/MenuInferior/MenuInferior";
-import SplashScreen from "@/app/components/SplashScreen/SplashScreen";
 import TopView from "@/app/components/TopView/TopView";
 import Carrusel from "@/app/components/Carrusel/Carrusel";
 import ChipsFilter from "@/app/components/ChipsFilter/ChipsFilter";
@@ -21,6 +20,7 @@ export default function Page() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [activeTab, setActiveTab] = useState("Hoy");
   const router = useRouter();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
@@ -57,16 +57,12 @@ export default function Page() {
     setActiveTab(tabId);
   };
 
-  if (!isAuthenticated) {
-    // Mostramos una pantalla en blanco o un loader mientras verificamos la autenticación
-    return <SplashScreen />;
-  }
-
+ 
   return (
     <>
       <TopView />
       <h1 className="title">¡No te pierdas tus favoritos!</h1>
-      <Carrusel />
+      <Carrusel activeTab={activeTab}  />
       <div className="flex items-center justify-between title-container">
         <h1 className="partidosTitle">Partidos</h1>
         {/* <Filter /> */}
