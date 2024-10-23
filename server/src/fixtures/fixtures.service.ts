@@ -161,7 +161,7 @@ export class FixturesService {
     return fixture;
   }
 
-  @Cron('45 0 * * *', {
+  @Cron('55 0 * * *', {
     timeZone: 'America/Argentina/Buenos_Aires',
   })
   async updateFixtures() {
@@ -174,7 +174,7 @@ export class FixturesService {
     const previousDay = today.minus({ days: 1 });
     const previousDayFormatted = previousDay.toFormat('yyyy-MM-dd');
 
-    const fiveDaysFromToday = today.plus({ days: 4 });
+    const fiveDaysFromToday = today.plus({ days: 3 });
     const fiveDaysFromTodayFormatted = fiveDaysFromToday.toFormat('yyyy-MM-dd');
 
     try {
