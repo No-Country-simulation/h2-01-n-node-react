@@ -35,7 +35,7 @@ export default function Header({ tabs, onTabChange }: HeaderProps) {
   }, [activeTab, tabs]);
 
   return (
-    <div className="text-sm font-medium text-center text-gray-500 border-b-4 bg-white mb-2">
+    <div className="text-sm font-medium text-center text-gray-500 border-b-4 bg-white mb-2" style={{fontSize: "13px"}}>
       <div className="tabs-container">
         <ul className="flex flex-wrap justify-center md:justify-start -mb-px">
           {tabs.map((tab, index) => (

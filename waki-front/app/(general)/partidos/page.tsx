@@ -14,6 +14,7 @@ import Header from "@/app/components/Navbar/Navbar";
 // import Filter from "@/app/components/Filter/Filter";
 
 import BotomChat from '@/app/components/BotomChat/BotomChat'
+import MatchCardLive from "@/app/components/MatchCardLive/MatchCardLive";
 
 
 export default function Page() {
@@ -76,12 +77,21 @@ export default function Page() {
       <Header tabs={tabs} onTabChange={handleTabChange} />
 
       <div className="section-header">
-        <h1 className="statePartido">Por Jugar</h1>
+        <h1 className="statePartido">En vivo</h1>
         <div className="divider"></div>
       </div>
 
       <div className="match-card-container">
         <MatchCard />
+      </div>
+      <div className="section-header-match">
+        <h1 className="statePartido">Por Jugar</h1>
+        <div className="divider"></div>
+      </div>
+
+
+      <div className="match-live-card-container">
+        <MatchCardLive />
       </div>
 
       <BotomChat/>
