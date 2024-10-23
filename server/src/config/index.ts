@@ -9,4 +9,7 @@ export const envConfig = () => ({
   postgresDb: process.env.POSTGRES_DB,
   postgresPort: +process.env.POSTGRES_PORT,
   postgresHost: process.env.DB_HOST,
+  apiHeaderFieldName: process.env.API_HEADER_FIELD_NAME,
+  apiKey: process.env.API_KEY,
+  apiBaseUrl: process.env.API_BASE_URL,
 });

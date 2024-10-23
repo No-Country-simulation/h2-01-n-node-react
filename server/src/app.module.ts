@@ -19,9 +19,12 @@ import { FixtureBetsModule } from './fixture-bets/fixture-bets.module';
 import { FixtureBetOddsModule } from './fixture-bet-odds/fixture-bet-odds.module';
 import { PlayersModule } from './players/players.module';
 import { PlayerTeamRelationshipsModule } from './player-team-relationships/player-team-relationships.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       load: [envConfig],
       validationSchema: configSchema,
@@ -39,6 +42,18 @@ import { PlayerTeamRelationshipsModule } from './player-team-relationships/playe
         database: configService.get<string>('postgresDb'),
         autoLoadEntities: true,
         synchronize: configService.get<string>('environment') !== 'prod', // synchronize se establece en true solo si NODE_ENV no es 'prod'
+      }),
+    }),
+    HttpModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      global: true,
+      useFactory: async (configService: ConfigService) => ({
+        baseURL: configService.get<string>('apiBaseUrl'),
+        headers: {
+          [configService.get<string>('apiHeaderFieldName')]:
+            configService.get<string>('apiKey'),
+        },
       }),
     }),
     UsersModule,
