@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import DefaultAvatar from "@/app/assets/avatar/people1.jpeg";
 import IconBall from "@/app/assets/icon-ball.png";
-import Notification from "@/app/assets/notification.png";
 import Image from "next/image";
 import "./topview.css";
 import Cookies from "js-cookie";
@@ -68,17 +67,11 @@ export default function TopView() {
             width={35}
             height={35}
           />
-          <div className="counter-container">
+      
             <h1 className="counter-life">5</h1>
-          </div>
+          
           <button className="buy-button">+</button>
         </div>
-        <Image
-          priority={true}
-          alt="Icono de notificaciones"
-          className="notification-icon"
-          src={Notification}
-        />
       </div>
   );
 }
