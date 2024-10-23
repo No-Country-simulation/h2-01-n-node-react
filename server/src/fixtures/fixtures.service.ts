@@ -161,7 +161,7 @@ export class FixturesService {
     return fixture;
   }
 
-  @Cron('0 0 * * *', {
+  @Cron('15 0 * * *', {
     timeZone: 'America/Argentina/Buenos_Aires',
   })
   async updateFixtures() {
@@ -261,6 +261,8 @@ export class FixturesService {
             }),
           ),
       );
+
+      console.log({ dataForFiveDaysFromNow });
 
       const fixtureBetsForToday = dataForToday.response;
       const fixtureBetsForFiveDaysFromNow = dataForFiveDaysFromNow.response;
