@@ -24,6 +24,8 @@ export class AggregatePredictions {
   })
   status: PREDICTION_STATUS;
 
+  @Column()
+  userId: number;
   @ManyToOne(() => Users, (user) => user.id)
   @JoinColumn({ name: 'userId' })
   user: Users;

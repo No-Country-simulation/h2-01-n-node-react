@@ -4,13 +4,15 @@ import {
   Get,
   Param,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
 import { PredictionsService } from './predictions.service';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { CreatePredictionDTO } from './dtos/create-prediction.dto';
+import { PredictionsPaginationDTO } from './dtos/pagination.dto';
 
 @ApiTags('Predictions')
 @ApiBearerAuth()
@@ -31,8 +33,23 @@ export class PredictionsController {
   }
 
   @Get('/user')
-  findUserPredictions(@Req() req) {
-    return this.predictionsService.findAllPredictionsByUserId(req.user.userId);
+  @ApiQuery({
+    name: 'type',
+    required: false,
+    type: String,
+    description:
+      'Specifies the type of predictions to retrieve. Use "single" to fetch only predictions that do not point to aggregate predictions. Use "aggregate" to fetch only aggregate predictions along with their corresponding single predictions. If omitted, both types will be returned by default.',
+    enum: ['single', 'SINGLE', 'aggregate', 'AGGREGATE'],
+  })
+  findUserPredictions(@Req() req, @Query() query: PredictionsPaginationDTO) {
+    return this.predictionsService.findAllByUserId(req.user.userId, query);
+  }
+
+  @Get('/user/count')
+  countUserPredictionsForNextWeek(@Req() req) {
+    return this.predictionsService.countUserPredictionsForNextWeek(
+      req.user.userId,
+    );
   }
 
   @Get('/user/fixture/:id')

@@ -10,6 +10,7 @@ import { AggregatePredictions } from 'src/aggregate-predictions/aggregate-predic
 import { CreatePredictionDTO } from './dtos/create-prediction.dto';
 import { Fixtures } from 'src/fixtures/fixtures.entities';
 import { DateTime } from 'luxon';
+import { PredictionsPaginationDTO } from './dtos/pagination.dto';
 
 @Injectable()
 export class PredictionsService {
@@ -45,16 +46,11 @@ export class PredictionsService {
     );
 
     const isSameDay = createdAt.hasSame(fixtureDate, 'day');
+    const maxPredictions = isSameDay ? 5 : 2;
+    const date = isSameDay ? createdAt : fixtureDate;
 
-    let maxPredictions = isSameDay ? 5 : 2;
-
-    const startOfDay = isSameDay
-      ? createdAt.startOf('day').toJSDate()
-      : fixtureDate.startOf('day').toJSDate();
-
-    const endOfDay = isSameDay
-      ? createdAt.endOf('day').toJSDate()
-      : fixtureDate.endOf('day').toJSDate();
+    const startOfDay = date.startOf('day').toJSDate();
+    const endOfDay = date.endOf('day').toJSDate();
 
     const existingPredictionsCount = await this.predictionsRepository
       .createQueryBuilder('prediction')
@@ -68,7 +64,7 @@ export class PredictionsService {
 
     if (existingPredictionsCount >= maxPredictions) {
       throw new BadRequestException(
-        `Maximum ${maxPredictions} predictions allowed for ${createdAt.toISO()}`,
+        `Maximum ${maxPredictions} predictions allowed for ${date.toFormat('yyyy-MM-dd')}`,
       );
     }
 
@@ -84,33 +80,63 @@ export class PredictionsService {
   //   userId: number,
   // ) {}
 
-  async findAllPredictionsByUserId(userId: number) {
-    return await this.predictionsRepository.find({
-      where: { userId, aggregatePrediction: null },
-    });
-  }
-
-  async findAllAggregatePredictionsByUserId(id: number) {
-    return await this.aggregatePredictionsRepository.find({
-      where: { user: { id } },
-    });
-  }
-
-  async findAllByUserId(id: number) {
-    const predictions = await this.predictionsRepository.find({
-      where: {
-        user: { id },
-        aggregatePrediction: null,
-      },
-    });
-
-    const aggregatePredictions = await this.aggregatePredictionsRepository.find(
-      {
-        where: { user: { id } },
-      },
-    );
+  async findAllByUserId(userId: number, query: PredictionsPaginationDTO) {
+    const { type } = query;
+    let predictions = [];
+    let aggregatePredictions = [];
+    if (type === 'SINGLE' || type !== 'AGGREGATE') {
+      const p = await this.predictionsRepository.find({
+        where: { userId, aggregatePrediction: null },
+      });
+      predictions = [...p];
+    }
+    if (type === 'AGGREGATE' || type !== 'SINGLE') {
+      const a = await this.aggregatePredictionsRepository.find({
+        where: { userId },
+      });
+      aggregatePredictions = [...a];
+    }
 
     return { predictions, aggregatePredictions };
+  }
+
+  async countUserPredictionsForNextWeek(userId: number) {
+    const today = DateTime.now()
+      .startOf('day')
+      .setZone('America/Argentina/Buenos_Aires');
+    const endOfWeek = today.plus({ days: 6 }).endOf('day');
+
+    const predictions = await this.predictionsRepository
+      .createQueryBuilder('prediction')
+      .innerJoinAndSelect('prediction.fixture', 'fixture')
+      .where('prediction.userId = :userId', { userId })
+      .andWhere('fixture.date >= :startOfWeek', {
+        startOfWeek: today.toJSDate(),
+      })
+      .andWhere('fixture.date <= :endOfWeek', {
+        endOfWeek: endOfWeek.toJSDate(),
+      })
+      .select(['prediction', 'fixture.date'])
+      .getMany();
+
+    const totalPredictionsPerDate = [];
+
+    for (let i = 0; i < 7; i++) {
+      const date = today.plus({ days: i }).toFormat('yyyy-MM-dd');
+
+      totalPredictionsPerDate.push({
+        date,
+        count: predictions.filter(
+          (p) =>
+            DateTime.fromJSDate(p.fixture.date)
+              .setZone('America/Argentina/Buenos_Aires')
+              .startOf('day')
+              .toFormat('yyyy-MM-dd') === date,
+        ).length,
+      });
+    }
+
+    return { totalPredictionsPerDate };
   }
 
   async findAllByFixtureIdAndUserId(fixtureId: number, userId: number) {
