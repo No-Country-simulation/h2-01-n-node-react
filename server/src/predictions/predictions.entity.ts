@@ -30,14 +30,20 @@ export class Predictions {
   })
   status: PREDICTION_STATUS;
 
+  @Column()
+  betId: number;
   @ManyToOne(() => Bets, (bet) => bet.id)
   @JoinColumn({ name: 'betId' })
   bet: Bets;
 
-  @ManyToOne(() => Users, (user) => user.id)
+  @Column()
+  userId: number;
+  @ManyToOne(() => Users)
   @JoinColumn({ name: 'userId' })
   user: Users;
 
+  @Column()
+  fixtureId: number;
   @ManyToOne(() => Fixtures, (fixture) => fixture.id)
   @JoinColumn({ name: 'fixtureId' })
   fixture: Fixtures;

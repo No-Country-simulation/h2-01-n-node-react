@@ -9,6 +9,7 @@ import { Users } from './users.entity';
 import { RegisterUserDTO } from 'src/auth/dtos/register.dto';
 import * as bcrypt from 'bcrypt';
 import { plainToInstance } from 'class-transformer';
+import { DateTime } from 'luxon';
 
 @Injectable()
 export class UsersService {
@@ -28,7 +29,15 @@ export class UsersService {
       registerUserDto.password,
       salt,
     );
-    const user = await this.usersRepository.save(registerUserDto);
+
+    const createdAt = DateTime.now()
+      .setZone('America/Argentina/Buenos_Aires')
+      .toISO();
+
+    const user = await this.usersRepository.save({
+      ...registerUserDto,
+      createdAt,
+    });
 
     return plainToInstance(Users, user);
   }

@@ -20,5 +20,6 @@ import { Users } from 'src/users/users.entity';
   ],
   providers: [PredictionsService],
   controllers: [PredictionsController],
+  exports: [PredictionsService],
 })
 export class PredictionsModule {}

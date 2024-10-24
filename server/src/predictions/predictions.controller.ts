@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { PredictionsService } from './predictions.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
@@ -16,7 +24,7 @@ export class PredictionsController {
     @Body() createPredictionDto: CreatePredictionDTO,
     @Req() req,
   ) {
-    this.predictionsService.createPrediction(
+    return this.predictionsService.createPrediction(
       createPredictionDto,
       req.user.userId,
     );
@@ -24,11 +32,14 @@ export class PredictionsController {
 
   @Get('/user')
   findUserPredictions(@Req() req) {
-    this.predictionsService.findAllPredictionsByUserId(req.user.userId);
+    return this.predictionsService.findAllPredictionsByUserId(req.user.userId);
   }
 
-  // @Get('/fixture/:id')
-  // findAllByFixtureId(@Param('id') id: string) {
-  //   this.predictionsService.findAllByFixtureId(+id);
-  // }
+  @Get('/user/fixture/:id')
+  findAllByFixtureIdAndUserId(@Param('id') id: string, @Req() req) {
+    return this.predictionsService.findAllByFixtureIdAndUserId(
+      +id,
+      req.user.userId,
+    );
+  }
 }
