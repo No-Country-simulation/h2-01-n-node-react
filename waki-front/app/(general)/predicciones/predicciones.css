@@ -31,6 +31,7 @@
 }
 .time-curve {
   font-size: 40px;
+  margin-left: 10px;
 }
 
 .escudos-curve {
@@ -85,6 +86,18 @@
     text-align: center;
     border-radius: 5px;
 }
+
+.team-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: -20px;
+}
+
+.team-span{
+  margin-left: 5px;
+}
+
 
 .counter-life{
     color: white;

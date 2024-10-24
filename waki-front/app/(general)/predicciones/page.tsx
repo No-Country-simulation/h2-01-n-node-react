@@ -21,6 +21,9 @@ import Link from "next/link";
 import IconBall from "@/app/assets/icon-ball.png";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
+import { Tooltip } from "@mui/material";
+import { ClipLoader } from "react-spinners";
+
 
 interface MatchStatistic {
   team: string;
@@ -117,6 +120,8 @@ export default function page() {
   const [showConfirmationPopup, setShowConfirmationPopup] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [matches, setMatches] = useState<Fixture[]>([]);
+  const [openStates, setOpenStates] = useState<Record<number, boolean>>({});
+  const [loading, setLoading] = useState(true);
 
   const router = useRouter();
 
@@ -157,6 +162,17 @@ export default function page() {
     setShowSuccessMessage(true);
   };
 
+  const [tooltip, setTooltip] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const handleTooltipOpen = (teamName: string) => {
+    setTooltip(teamName);
+  };
+
+  const handleTooltipClose = () => {
+    setTooltip(null);
+  };
+
   useEffect(() => {
     if (showSuccessMessage) {
       const timer = setTimeout(() => {
@@ -169,22 +185,19 @@ export default function page() {
     }
   }, [showSuccessMessage]);
 
-
- 
-
   const fixtureId = Cookies.get("fixture");
   const API_BASE_URL = "https://waki.onrender.com/api";
   const FIXTURE_URL = `${API_BASE_URL}/fixtures/${fixtureId}`;
-  
+
   useEffect(() => {
     const fetchMatches = async () => {
       const token = Cookies.get("authToken");
-  
+
       if (!token) {
         router.push("/auth");
         return;
       }
-  
+
       try {
         const response = await fetch(FIXTURE_URL, {
           method: "GET",
@@ -193,10 +206,10 @@ export default function page() {
             "Content-Type": "application/json",
           },
         });
-  
+
         if (response.ok) {
           const data = await response.json();
-  
+
           if (data) {
             // Ajustamos para manejar un solo fixture
             const match = data;
@@ -209,7 +222,7 @@ export default function page() {
               hour: "2-digit",
               minute: "2-digit",
             });
-  
+
             const formattedMatch = {
               id: match.id,
               date: date,
@@ -219,11 +232,14 @@ export default function page() {
               homeTeam: match.homeTeam,
               awayTeam: match.awayTeam,
             };
-  
+
             // Actualiza el estado con el fixture formateado
             setMatches([formattedMatch as Fixture]);
           } else {
-            console.error("Error: La respuesta no contiene un fixture válido", data);
+            console.error(
+              "Error: La respuesta no contiene un fixture válido",
+              data
+            );
           }
         } else {
           const errorData = await response.json();
@@ -232,12 +248,14 @@ export default function page() {
       } catch (error) {
         console.error("Error en la solicitud:", error);
       }
+      finally {
+        setLoading(false);
+      }
     };
-  
-    fetchMatches();
-  }, [FIXTURE_URL, router]);
-  
 
+    fetchMatches();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [FIXTURE_URL, router]);
 
   return (
     <>
@@ -271,17 +289,34 @@ export default function page() {
           <h1 className="subtitle-curve">
             Eliminatorias, cuartos de final, primer partido
           </h1>
-
-          {matches.length > 0 ? (
+         
+          {loading ? (
+            <div className="loader-container">
+              <ClipLoader color={"#123abc"} loading={loading} size={50} />
+            </div>
+          ) : matches.length > 0 ? (
             matches.map((match, index) => (
               <div key={index} className="container-curve">
-                <Image
-                  src={match.homeTeam.logo || OsasunaImg} 
-                  alt={`Logo del equipo local - ${match.homeTeam.name}`}
-                  width={10}
-                  height={10}
-                  className="escudos-curve"
-                />
+                <div className="team-container">
+                  <Image
+                    src={match.homeTeam.logo || OsasunaImg}
+                    alt={`Logo del equipo local - ${match.homeTeam.name}`}
+                    width={10}
+                    height={10}
+                    className="escudos-curve"
+                  />
+                  <Tooltip
+                    title={match.homeTeam?.name}
+                    open={tooltip === match.homeTeam?.name}
+                    onClose={handleTooltipClose}
+                    onClick={() => handleTooltipOpen(match.homeTeam?.name)}
+                    arrow
+                  >
+                    <span className="font-semibold text-sm ml-5 overflow-hidden text-ellipsis whitespace-nowrap max-w-[50px] text-center cursor-pointer">
+                      {match.homeTeam?.name}
+                    </span>
+                  </Tooltip>
+                </div>
                 <div>
                   <h1 className="date-curve">
                     {new Date(match.date).toLocaleDateString("es-ES", {
@@ -289,17 +324,28 @@ export default function page() {
                       month: "short",
                     })}
                   </h1>
-                  <h1 className="time-curve">
-                    {match.time}
-                  </h1>
+                  <h1 className="time-curve">{match.time}</h1>
                 </div>
-                <Image
-                  src={match.awayTeam.logo || BarselonaImg}
-                  alt={`Logo del equipo visitante - ${match.awayTeam.name}`}
-                  width={10}
-                  height={10}
-                  className="escudos-curve"
-                />
+                <div className="team-container">
+                  <Image
+                    src={match.awayTeam.logo || BarselonaImg}
+                    alt={`Logo del equipo visitante - ${match.awayTeam.name}`}
+                    width={10}
+                    height={10}
+                    className="escudos-curve"
+                  />
+                  <Tooltip
+                    title={match.awayTeam.name}
+                    open={tooltip === match.awayTeam.name}
+                    onClose={handleTooltipClose}
+                    onClick={() => handleTooltipOpen(match.awayTeam.name)}
+                    arrow
+                  >
+                    <span className="font-semibold text-sm ml-5 overflow-hidden text-ellipsis whitespace-nowrap max-w-[50px] text-center cursor-pointer">
+                      {match.awayTeam.name}
+                    </span>
+                  </Tooltip>
+                </div>
               </div>
             ))
           ) : (
