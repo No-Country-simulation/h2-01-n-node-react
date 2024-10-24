@@ -88,6 +88,7 @@ interface Fixture {
 export default function Carrusel({ activeTab }: { activeTab: string }) {
   const [matches, setMatches] = useState<Fixture[]>([]);
   const [loading, setLoading] = useState(true);
+
   const router = useRouter();
 
   const getFormattedDate = (date: Date) => {
@@ -101,13 +102,6 @@ export default function Carrusel({ activeTab }: { activeTab: string }) {
 
   yesterday.setDate(today.getDate() - 1);
   tomorrow.setDate(today.getDate() + 1);
-
-  const afterTomorrowCookie = Cookies.get("afterTomorrow");
-  if (afterTomorrowCookie) {
-    afterTomorrow.setDate(new Date(afterTomorrowCookie).getDate());
-  } else {
-    afterTomorrow.setDate(today.getDate() + 2);
-  }
 
   let dateParam;
   switch (activeTab) {
@@ -272,12 +266,16 @@ export default function Carrusel({ activeTab }: { activeTab: string }) {
               <div className="no-matches-message ml-3 mt-5">
                 No hay partidos para esta fecha
               </div>
+              
+              {activeTab == "Manana" && loading && (
               <button
-                className="ver-proximos-btn mt-5 ml-12"
+                className="ver-proximos-btn mt-5 ml-12 {`bg-[#8E2BFF] btn-box-shadow hover:bg-[#6c22cc] text-white py-2 px-4 border-box w-full focus:outline-none focus:shadow-outline"
                 onClick={() => router.push("/proximos-partidos")}
               >
                 Ver próximos partidos
               </button>
+              )}
+
             </div>
           ) : (
             matches.map(

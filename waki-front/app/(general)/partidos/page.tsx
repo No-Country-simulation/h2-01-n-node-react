@@ -10,8 +10,6 @@ import MatchCard from "@/app/components/MatchCard/MatchCard";
 import "./partidos.css";
 import Header from "@/app/components/Navbar/Navbar";
 
-// import Filter from "@/app/components/Filter/Filter";
-
 import BotomChat from '@/app/components/BotomChat/BotomChat'
 import MatchCardLive from "@/app/components/MatchCardLive/MatchCardLive";
 
@@ -65,7 +63,6 @@ export default function Page() {
       <Carrusel activeTab={activeTab}  />
       <div className="flex items-center justify-between title-container">
         <h1 className="partidosTitle">Partidos</h1>
-        {/* <Filter /> */}
       </div>
       <div>
         <ChipsFilter />
@@ -78,7 +75,7 @@ export default function Page() {
       </div>
 
       <div className="match-card-container">
-        <MatchCard />
+        <MatchCard activeTab={activeTab}  />
       </div>
       <div className="section-header-match">
         <h1 className="statePartido">Por Jugar</h1>
@@ -87,7 +84,7 @@ export default function Page() {
 
 
       <div className="match-live-card-container">
-        <MatchCardLive />
+        <MatchCardLive activeTab={activeTab}  />
       </div>
 
       <BotomChat/>

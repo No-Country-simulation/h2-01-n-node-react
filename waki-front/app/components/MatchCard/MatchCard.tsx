@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { FaChevronUp, FaChevronDown } from "react-icons/fa";
 import { Card, CardContent, CardHeader, Tooltip } from "@mui/material";
 import logoPL from "@/app/assets/ligas/logo-le.png";
+import { ClipLoader } from "react-spinners";
 
 interface Venue {
   id: number;
@@ -79,16 +80,18 @@ interface Fixture {
   awayTeam: Team;
   fixtureBets: FixtureBet[];
 }
-
 interface FixturesResponse {
   fixtures: Fixture[];
+  nextDate: string;
 }
 
-export default function MatchCard() {
+export default function MatchCard({ activeTab }: { activeTab: string }) {
   const [matches, setMatches] = useState<Fixture[]>([]);
   const [openStates, setOpenStates] = useState<Record<number, boolean>>({});
   const router = useRouter();
-  const [leagues, setLeagues] = useState<{ id: number; logo: string; name: string }[]>([]);
+  const [leagues, setLeagues] = useState<
+    { id: number; logo: string; name: string }[]
+  >([]);
   const [tooltip, setTooltip] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -104,6 +107,36 @@ export default function MatchCard() {
   const handleTooltipClose = () => {
     setTooltip(null);
   };
+
+  const getFormattedDate = (date: Date) => {
+    return date.toISOString().split("T")[0];
+  };
+
+  const today = new Date();
+  const yesterday = new Date(today);
+  const tomorrow = new Date(today);
+  const afterTomorrow = new Date(today);
+
+  yesterday.setDate(today.getDate() - 1);
+  tomorrow.setDate(today.getDate() + 1);
+
+  let dateParam;
+  switch (activeTab) {
+    case "Hoy":
+      dateParam = getFormattedDate(today);
+      break;
+    case "Ayer":
+      dateParam = getFormattedDate(yesterday);
+      break;
+    case "Manana":
+      dateParam = getFormattedDate(tomorrow);
+      break;
+    case "Siguiente Fecha":
+      dateParam = getFormattedDate(afterTomorrow);
+      break;
+    default:
+      dateParam = getFormattedDate(today);
+  }
 
   const handleApostar = async (fixtureId: number) => {
     const API_BASE_URL = "https://waki.onrender.com/api";
@@ -126,7 +159,7 @@ export default function MatchCard() {
 
       if (response.ok) {
         const fixtureData = await response.json();
-        
+
         router.push(`/predicciones?fixtureId=${fixtureId}`);
       } else {
         const errorData = await response.json();
@@ -137,9 +170,10 @@ export default function MatchCard() {
     }
   };
 
+  const API_BASE_URL = "https://waki.onrender.com/api";
+  const FIXTURES_API_URL = `${API_BASE_URL}/fixtures?date=${dateParam}`;
+
   useEffect(() => {
-    const API_BASE_URL = "https://waki.onrender.com/api";
-    const FIXTURES_API_URL = `${API_BASE_URL}/fixtures`;
 
     const fetchMatches = async () => {
       const token = Cookies.get("authToken");
@@ -160,11 +194,14 @@ export default function MatchCard() {
 
         if (response.ok) {
           const data: FixturesResponse = await response.json();
-          
+
+          if (data.fixtures.length === 0 && data.nextDate) {
+            Cookies.set("nextDate", data.nextDate, { expires: 7 });
+          }
 
           if (Array.isArray(data.fixtures)) {
             const formattedMatches = data.fixtures
-              .filter((match) => match.homeGoals > 0 || match.awayGoals  > 0)
+              .filter((match) => match.homeGoals > 0 || match.awayGoals > 0)
               .map((match) => {
                 const matchDate = new Date(match?.date);
                 const date = matchDate.toLocaleDateString("es-ES", {
@@ -180,15 +217,18 @@ export default function MatchCard() {
                   id: match.id,
                   date: date,
                   time: time,
-                  homeGoals: match.homeGoals,  
-                  awayGoals: match.awayGoals,  
-                  homeTeam: match.homeTeam, 
+                  homeGoals: match.homeGoals,
+                  awayGoals: match.awayGoals,
+                  homeTeam: match.homeTeam,
                   awayTeam: match.awayTeam,
                 };
               });
             setMatches(formattedMatches as Fixture[]);
           } else {
-            console.error("Error: La respuesta no contiene un array de fixtures", data);
+            console.error(
+              "Error: La respuesta no contiene un array de fixtures",
+              data
+            );
           }
         } else {
           const errorData = await response.json();
@@ -200,7 +240,8 @@ export default function MatchCard() {
     };
 
     fetchMatches();
-  }, [router]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router, FIXTURES_API_URL]);
 
   useEffect(() => {
     const API_BASE_URL = "https://waki.onrender.com/api";
@@ -272,66 +313,96 @@ export default function MatchCard() {
           </button>
 
           <div
-            className={`overflow-hidden transition-all duration-300 ${openStates[league.id] ? "max-h-screen" : "max-h-0"}`}
+            className={`overflow-hidden transition-all duration-300 ${
+              openStates[league.id] ? "max-h-screen" : "max-h-0"
+            }`}
           >
             <div className="p-4 bg-[#F0F4FF] max-h-60 overflow-y-auto rounded-b-md">
-              {matches.map((match, index) => (
-                <Card
-                  key={index}
-                  className="my-5 mx-4"
-                  sx={{
-                    boxShadow: "none",
-                    border: "none",
-                    backgroundColor: "#F0F4FF",
-                  }}
-                >
-                  <CardHeader
-                    sx={{ borderBottom: "none", backgroundColor: "#F0F4FF" }}
-                  />
-                  <CardContent
-                    sx={{ border: "none", backgroundColor: "#F0F4FF" }}
+              {loading ? (
+                <div className="loader-container">
+                  <ClipLoader color={"#123abc"} loading={loading} size={50} />
+                </div>
+              ) : matches.length === 0 ? (
+                <div className="no-partidos-container">
+                  <div className="no-matches-message ">
+                    No hay partidos en vivo
+                  </div>
+                </div>
+              ) : (
+                matches.map((match, index) => (
+                  <Card
+                    key={index}
+                    className="my-5 mx-4"
+                    sx={{
+                      boxShadow: "none",
+                      border: "none",
+                      backgroundColor: "#F0F4FF",
+                    }}
                   >
-                    <div className="flex justify-between items-center mb-3">
-                      <div className="flex flex-col items-center">
-                        <Image
-                          src={match.homeTeam?.logo}
-                          alt={`${match.homeTeam?.name} logo`}
-                          width={32}
-                          height={32}
-                          className="mb-1"
-                        />
-                        <Tooltip title={match.homeTeam?.name} open={tooltip === match.homeTeam?.name} onClose={handleTooltipClose} onClick={() => handleTooltipOpen(match.homeTeam?.name)} arrow>
-                          <span className="font-semibold text-sm text-gray-800 overflow-hidden text-ellipsis whitespace-nowrap max-w-[50px] text-center cursor-pointer">
-                            {match.homeTeam?.name}
-                          </span>
-                        </Tooltip>
-                      </div>
-                      <div className="text-center space-y-0.5">
-                        <div className="font-bold text-gray-800 text-lg">
-                          {match.homeGoals} - {match.awayGoals}
+                    <CardHeader
+                      sx={{ borderBottom: "none", backgroundColor: "#F0F4FF" }}
+                    />
+                    <CardContent
+                      sx={{ border: "none", backgroundColor: "#F0F4FF" }}
+                    >
+                      <div className="flex justify-between items-center mb-3">
+                        <div className="flex flex-col items-center">
+                          <Image
+                            src={match.homeTeam?.logo}
+                            alt={`${match.homeTeam?.name} logo`}
+                            width={32}
+                            height={32}
+                            className="mb-1"
+                          />
+                          <Tooltip
+                            title={match.homeTeam?.name}
+                            open={tooltip === match.homeTeam?.name}
+                            onClose={handleTooltipClose}
+                            onClick={() =>
+                              handleTooltipOpen(match.homeTeam?.name)
+                            }
+                            arrow
+                          >
+                            <span className="font-semibold text-sm text-gray-800 overflow-hidden text-ellipsis whitespace-nowrap max-w-[50px] text-center cursor-pointer">
+                              {match.homeTeam?.name}
+                            </span>
+                          </Tooltip>
                         </div>
-                        <div className="text-red-500 text-xs">
-                          {match.time}
+                        <div className="text-center space-y-0.5">
+                          <div className="font-bold text-gray-800 text-lg">
+                            {match.homeGoals} - {match.awayGoals}
+                          </div>
+                          <div className="text-red-500 text-xs">
+                            {match.time}
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-center">
+                          <Image
+                            src={match.awayTeam?.logo}
+                            alt={`${match.awayTeam?.name} logo`}
+                            width={32}
+                            height={32}
+                            className="mb-1"
+                          />
+                          <Tooltip
+                            title={match.awayTeam?.name}
+                            open={tooltip === match.awayTeam?.name}
+                            onClose={handleTooltipClose}
+                            onClick={() =>
+                              handleTooltipOpen(match.awayTeam?.name)
+                            }
+                            arrow
+                          >
+                            <span className="font-semibold text-sm text-gray-800 overflow-hidden text-ellipsis whitespace-nowrap max-w-[50px] text-center cursor-pointer">
+                              {match.awayTeam?.name}
+                            </span>
+                          </Tooltip>
                         </div>
                       </div>
-                      <div className="flex flex-col items-center">
-                        <Image
-                          src={match.awayTeam?.logo}
-                          alt={`${match.awayTeam?.name} logo`}
-                          width={32}
-                          height={32}
-                          className="mb-1"
-                        />
-                        <Tooltip title={match.awayTeam?.name} open={tooltip === match.awayTeam?.name} onClose={handleTooltipClose} onClick={() => handleTooltipOpen(match.awayTeam?.name)} arrow>
-                          <span className="font-semibold text-sm text-gray-800 overflow-hidden text-ellipsis whitespace-nowrap max-w-[50px] text-center cursor-pointer">
-                            {match.awayTeam?.name}
-                          </span>
-                        </Tooltip>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                ))
+              )}
             </div>
           </div>
         </div>

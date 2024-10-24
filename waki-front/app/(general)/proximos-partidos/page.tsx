@@ -109,7 +109,6 @@ export default function Page() {
 
   const today = new Date();
   const afterTomorrow = new Date(today);
-  afterTomorrow.setDate(today.getDate() + 2);
 
   const tabs = [{ id: "Siguiente Fecha", label: `${formatDate(afterTomorrow)}` }];
 
@@ -137,7 +136,7 @@ export default function Page() {
       </div>
 
       <div className="match-card-container">
-        <MatchCard />
+        <MatchCard activeTab={activeTab} />
       </div>
       <div className="section-header-match">
         <h1 className="statePartido">Por Jugar</h1>
@@ -145,7 +144,7 @@ export default function Page() {
       </div>
 
       <div className="match-live-card-container">
-        <MatchCardLive />
+        <MatchCardLive activeTab={activeTab} />
       </div>
 
       <BotomChat />
