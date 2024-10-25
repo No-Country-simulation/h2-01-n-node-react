@@ -17,8 +17,13 @@ const QA = [
     {question:"Puedo cancelar mi prediccion?", answer:"NO 😎"},
     {question:"Como hago una predicción?", answer:"Puedes hacer una prediccion desde la pantalla Partidos."},
      {question:"Que metodos de pago aceptan?", answer:"Aceptamos como metodo de pago Visa, Master y Transferencias."},
-     {question:"Como hago una trasnferencia", answer:"La transferencia debe hacerse a BBVA N° 5465463.."},
-    
+     {question:"Como hago una transferencia", answer:"La transferencia debe hacerse a BBVA N° 5465463.."},
+     {question:"Puedo realizar una prediccion desde España?", answer:"Si, puedes realizar una predicción desde cualquier parte del mundo 🌍🌎🌏"},
+     {question:"Puedo realizar una prediccion desde Uruguay?", answer:"Si, puedes realizar una predicción desde cualquier parte del mundo 🌍🌎🌏"},
+     {question:"Como puedo cambiar mi foto de perfil?", answer:"Puedes hacer clic sobre tu imagen 👤"},
+     {question:"Como puedo cambiar mi nombre usuario?", answer:"Puedes hacer clic sobre tu nombre para cambiarlo."},
+     {question:"Como puedo cambiar mi contraseña?", answer:"Al cerrar sesion aparecera la opcion de 'He olvidado mi contraseña'"},
+     {question:"Como activo el modo oscuro?", answer:"Desde la pantalla del perfil del usuario puedes activar o desactivar  🌓 "},
 ]
 
 const PREGUNTAS_PREDEFINIDAS = ["Hola", "Como pago?", "Como hago una predicción?"]
