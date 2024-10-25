@@ -1,0 +1,25 @@
+body{
+    background: white;
+}
+.titulo-divisiones{
+    display: flex;
+    justify-content: center;
+    color: #317EF4;
+    font-weight: bold;
+    font-size: 22px;
+    font-family: "Poppins", sans-serif;
+    justify-content: center;
+    
+    background: white;
+}
+
+.titulo-container{
+    margin-top: 20px;
+    background: white;
+}
+
+.subtitle-jugadores{
+    background-color: white;
+    margin-top: 40px;
+    margin-left: 20px;
+}

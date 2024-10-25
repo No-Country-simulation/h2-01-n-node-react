@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import ScoutPlayers from "../../assets/Vector-2.png";
+import jugadoresPlayers from "../../assets/Vector-2.png";
 import Partidos from "../../assets/Vector-1.png";
 import Divisiones from "../../assets/Vector1.png";
 import Predicciones from "../../assets/predicciones.png";
@@ -19,10 +19,12 @@ const MenuInferior = () => {
       setActiveIcon("divisiones");
     } else if (pathname.includes('/predicciones')) {
       setActiveIcon("predicciones");
+    } else if (pathname.includes('/jugadores')) {
+      setActiveIcon("jugadores");
     } else if (pathname.includes('/partidos')) {
       setActiveIcon("partidos");
     } else {
-      setActiveIcon("scout");
+      setActiveIcon("jugadores");
     }
   }, [pathname]);
 
@@ -33,8 +35,10 @@ const MenuInferior = () => {
       router.push('/partidos');
     } else if (icon === 'predicciones'){
       router.push('/predicciones');
-    }
-    setActiveIcon(icon); 
+    }else if (icon === 'jugadores'){
+      router.push('/jugadores')
+
+    } setActiveIcon(icon); 
   };
   const isActive = (icon: string) => activeIcon === icon;
 
@@ -78,27 +82,27 @@ const MenuInferior = () => {
         <button
           type="button"
           className="inline-flex flex-col items-center justify-center px-5 group"
-          onClick={() => handleIconClick("scout")}
+          onClick={() => handleIconClick("jugadores")}
           style={{
-            backgroundColor: isActive("scout") ? "#317EF4" : "transparent",
-            transform: isActive("scout") ? "scale(1.1)" : "scale(1)",
-            boxShadow: isActive("scout") ? "0 4px 10px rgba(0, 0, 0, 0.3)" : "none",
-            borderRadius: isActive("scout") ? "5px" : "0px", 
+            backgroundColor: isActive("jugadores") ? "#317EF4" : "transparent",
+            transform: isActive("jugadores") ? "scale(1.1)" : "scale(1)",
+            boxShadow: isActive("jugadores") ? "0 4px 10px rgba(0, 0, 0, 0.3)" : "none",
+            borderRadius: isActive("jugadores") ? "5px" : "0px", 
             transition: "all 0.3s ease",
           }}
         >
           <Image
-            src={ScoutPlayers}
+            src={jugadoresPlayers}
             width={20}
             height={20}
-            alt="Scout Players"
+            alt="jugadores Players"
             className="w-5 h-5 mb-2"
             style={{
-              filter: isActive("scout") ? "brightness(0) invert(1)" : "none",
+              filter: isActive("jugadores") ? "brightness(0) invert(1)" : "none",
             }}
           />
           <span
-            className={`text-[10px] ${isActive("scout") ? "text-white" : "text-white opacity-30"}`}
+            className={`text-[10px] ${isActive("jugadores") ? "text-white" : "text-white opacity-30"}`}
           >
             Jugadores
           </span>
