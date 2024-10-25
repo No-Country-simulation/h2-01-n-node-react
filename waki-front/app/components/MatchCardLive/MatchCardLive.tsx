@@ -331,7 +331,7 @@ export default function MatchCardLive({ activeTab }: { activeTab: string }) {
               ) : matches.length === 0 ? (
                 <div className="no-partidos-container">
                   <div className="no-matches-message">
-                    No hay partidos que esten jugando
+                    No hay partidos por jugar
                   </div>
                 </div>
               ) : (

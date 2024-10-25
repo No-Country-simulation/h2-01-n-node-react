@@ -21,7 +21,7 @@ export default function Header({ tabs, activeTab, onTabChange }: HeaderProps) {
   const tabRefs = useRef<(HTMLAnchorElement | null)[]>([]);
 
   const handleTabClick = (tabId: string) => {
-    onTabChange(tabId);  // Solo llamar a onTabChange para actualizar el tab en el padre
+    onTabChange(tabId); 
   };
 
   useEffect(() => {
