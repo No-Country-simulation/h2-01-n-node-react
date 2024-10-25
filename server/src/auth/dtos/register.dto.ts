@@ -9,8 +9,8 @@ import {
   Matches,
   MaxLength,
 } from 'class-validator';
-import { USER_RANK, USER_ROLE } from 'src/users/users.entity';
 import { Match } from '../decorators/match.decorator';
+import { USER_RANK, USER_ROLE } from 'src/types';
 
 export class RegisterUserDTO {
   @ApiProperty({

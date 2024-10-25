@@ -21,6 +21,8 @@ import { PlayersModule } from './players/players.module';
 import { PlayerTeamRelationshipsModule } from './player-team-relationships/player-team-relationships.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { HttpModule } from '@nestjs/axios';
+import { PredictionsModule } from './predictions/predictions.module';
+import { AggregatePredictionsModule } from './aggregate-predictions/aggregate-predictions.module';
 
 @Module({
   imports: [
@@ -70,6 +72,8 @@ import { HttpModule } from '@nestjs/axios';
     FixtureBetOddsModule,
     PlayersModule,
     PlayerTeamRelationshipsModule,
+    PredictionsModule,
+    AggregatePredictionsModule,
   ],
   controllers: [AppController],
 })
