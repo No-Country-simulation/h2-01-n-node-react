@@ -312,7 +312,7 @@ export default function page() {
                     onClick={() => handleTooltipOpen(match.homeTeam?.name)}
                     arrow
                   >
-                    <span className="font-semibold text-sm ml-5 overflow-hidden text-ellipsis whitespace-nowrap max-w-[50px] text-center cursor-pointer">
+                    <span className="team-span font-semibold text-sm ml-5 overflow-hidden text-ellipsis whitespace-nowrap max-w-[50px] text-center cursor-pointer">
                       {match.homeTeam?.name}
                     </span>
                   </Tooltip>
@@ -341,7 +341,7 @@ export default function page() {
                     onClick={() => handleTooltipOpen(match.awayTeam.name)}
                     arrow
                   >
-                    <span className="font-semibold text-sm ml-5 overflow-hidden text-ellipsis whitespace-nowrap max-w-[50px] text-center cursor-pointer">
+                    <span className="team-span font-semibold text-sm ml-5 overflow-hidden text-ellipsis whitespace-nowrap max-w-[50px] text-center cursor-pointer">
                       {match.awayTeam.name}
                     </span>
                   </Tooltip>
