@@ -13,6 +13,7 @@ import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { CreatePredictionDTO } from './dtos/create-prediction.dto';
 import { PredictionsPaginationDTO } from './dtos/pagination.dto';
+import { CreateAggregatePredictionDTO } from './dtos/create-aggregate.dto';
 
 @ApiTags('Predictions')
 @ApiBearerAuth()
@@ -30,6 +31,27 @@ export class PredictionsController {
       createPredictionDto,
       req.user.userId,
     );
+  }
+
+  @Post('/aggregate')
+  createAggregatePrediction(
+    @Body() createAggregatePredictionDto: CreateAggregatePredictionDTO,
+    @Req() req,
+  ) {
+    return this.predictionsService.createAggregatePrediction(
+      createAggregatePredictionDto,
+      req.user.userId,
+    );
+  }
+
+  @Get('/single/:id')
+  findSinglePredictionById(@Param('id') id: string) {
+    return this.predictionsService.findSinglePredictionById(+id);
+  }
+
+  @Get('/aggregate/:id')
+  findAggregatePredictionById(@Param('id') id: string) {
+    return this.predictionsService.findAggregatePredictionById(+id);
   }
 
   @Get('/user')

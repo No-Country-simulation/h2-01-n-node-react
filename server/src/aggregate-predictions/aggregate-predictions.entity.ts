@@ -30,10 +30,6 @@ export class AggregatePredictions {
   @JoinColumn({ name: 'userId' })
   user: Users;
 
-  @ManyToOne(() => Fixtures, (fixture) => fixture.id)
-  @JoinColumn({ name: 'fixtureId' })
-  fixture: Fixtures;
-
   @OneToMany(() => Predictions, (prediction) => prediction.aggregatePrediction)
   predictions: Predictions[];
 

@@ -48,6 +48,8 @@ export class Predictions {
   @JoinColumn({ name: 'fixtureId' })
   fixture: Fixtures;
 
+  @Column({ nullable: true })
+  aggregatePredictionId: number;
   @ManyToOne(
     () => AggregatePredictions,
     (aggregatePrediction) => aggregatePrediction.predictions,
