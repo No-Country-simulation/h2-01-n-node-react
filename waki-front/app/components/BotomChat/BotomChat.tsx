@@ -18,13 +18,13 @@ export default function BotomChat() {
   };
   return (
     <div>
-      <div className="fixed bottom-6 right-6">
+      <div className="fixed bottom-6 right-2">
         <button
-          className="bg-black rounded-full w-16 h-16 shadow-lg hover:shadow-xl transition-shadow duration-300 flex items-center justify-center"
+          className="bg-black rounded-full w-12 h-12 shadow-lg hover:shadow-xl transition-shadow duration-300 flex items-center justify-center"
           onClick={() => handleIconClick("faqbot")}
           id="btmColor"
         >
-          <IoChatbubblesOutline className="w-8 h-8 text-white" />
+          <IoChatbubblesOutline className="w-6 h-6 text-white" />
           <span className="sr-only">Ir al chat FAQ</span>
         </button>
       </div>
