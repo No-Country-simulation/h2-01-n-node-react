@@ -15,6 +15,7 @@ export default function page() {
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setLanguage(e.target.value);
   };
+
   return (
     <div>
       <div className="min-h-screen">
@@ -47,7 +48,7 @@ export default function page() {
                   id="language"
                   value={language}
                   onChange={handleLanguageChange}
-                  className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-black dark:text-white"
                 >
                   <option value="es">Español</option>
                   <option value="en">English</option>

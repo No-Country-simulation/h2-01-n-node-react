@@ -1,5 +1,6 @@
+// RootLayout.js
 import type { Metadata } from "next";
-import { ThemeProvider } from '@/app/components/context/ThemeContext'
+import { ThemeProvider } from '@/app/components/context/ThemeContext';
 import localFont from "next/font/local";
 import "./globals.css";
 
@@ -30,7 +31,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider>
-          {children} {/* Ahora los children están envueltos por el ThemeProvider */}
+          {children} 
         </ThemeProvider>
       </body>
     </html>

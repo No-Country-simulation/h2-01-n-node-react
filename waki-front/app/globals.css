@@ -78,6 +78,8 @@ body {
 }
 
 
+
+
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 255, 255, 255;
@@ -91,6 +93,8 @@ body {
 }
 
 body {
+  @apply bg-white text-black dark:bg-gray-900 dark:text-white;
+
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
       to bottom,
