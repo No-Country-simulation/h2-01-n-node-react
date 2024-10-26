@@ -7,3 +7,12 @@
 #statisPercentage{
     background-color: white;
 }
+
+.team-span {
+    display: inline-block;
+    max-width: 50px; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    white-space: nowrap; 
+  }
+  

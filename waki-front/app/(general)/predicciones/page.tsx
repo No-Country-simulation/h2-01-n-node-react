@@ -24,7 +24,6 @@ import { useRouter } from "next/navigation";
 import { Tooltip } from "@mui/material";
 import { ClipLoader } from "react-spinners";
 
-
 interface MatchStatistic {
   team: string;
   percentage: number;
@@ -116,20 +115,29 @@ export default function page() {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
   const [showResultadoPopup, setShowResultadoPopup] = useState(false);
-  const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
+  const [selectedTeam, setSelectedTeam] = useState<{
+    name: string;
+    logo: string;
+  } | null>(null);
   const [showConfirmationPopup, setShowConfirmationPopup] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [matches, setMatches] = useState<Fixture[]>([]);
   const [openStates, setOpenStates] = useState<Record<number, boolean>>({});
   const [loading, setLoading] = useState(true);
+  const [matchStatistics, setMatchStatistics] = useState<MatchStatistic[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => {
+    setShowResultadoPopup(false)
+    setIsOpen(false)
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   const router = useRouter();
-
-  const matchStatistics: MatchStatistic[] = [
-    { team: "Osasuna", percentage: 48 },
-    { team: "Empate", percentage: 12 },
-    { team: "Barcelona", percentage: 40 },
-  ];
 
   const tabs = [
     { id: "Predicciones", label: "Predicciones" },
@@ -147,8 +155,8 @@ export default function page() {
       setShowResultadoPopup(true);
     }
   };
-  /*FUNCION CONFIRMAR*/
-  const handleTeamSelect = (team: string) => {
+
+  const handleTeamSelect = (team: { name: string; logo: string }) => {
     setSelectedTeam(team);
   };
 
@@ -157,9 +165,93 @@ export default function page() {
       setShowConfirmationPopup(true);
     }
   };
-  const handleConfirm = () => {
-    setShowConfirmationPopup(false);
-    setShowSuccessMessage(true);
+
+  const handleConfirm = async () => {
+    const AGGREGATE_URL = `${API_BASE_URL}/predictions/aggregate`;
+    const token = Cookies.get("authToken");
+
+    if (!token) {
+      router.push("/auth");
+      return;
+    }
+
+    try {
+      // Primero, obtendremos los detalles del fixture
+      const fixtureResponse = await fetch(FIXTURE_URL, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!fixtureResponse.ok) {
+        const errorData = await fixtureResponse.json();
+        console.error("Error al obtener los detalles del fixture:", errorData);
+        return;
+      }
+
+      const fixtureData = await fixtureResponse.json();
+      console.log(fixtureData);
+      const fixtureId = fixtureData.id;
+
+      // Ahora, construimos el payload con las predicciones
+      const payload = {
+        predictions: [
+          {
+            value: fixtureData.fixtureBets[0].fixtureBetOdds[0].value,
+            odd: fixtureData.fixtureBets[0].fixtureBetOdds[0].odd,
+            betId: fixtureData.fixtureBets[0].betId,
+            fixtureId: fixtureId,
+          },
+          {
+            value: fixtureData.fixtureBets[0].fixtureBetOdds[2].value,
+            odd: fixtureData.fixtureBets[0].fixtureBetOdds[2].odd,
+            betId: fixtureData.fixtureBets[0].betId,
+            fixtureId: fixtureId,
+          },
+        ],
+      };
+
+      const response = await fetch(AGGREGATE_URL, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+
+        setShowConfirmationPopup(false);
+        setShowSuccessMessage(true);
+        // Verifica si la respuesta contiene predicciones válidas
+        if (data && data.predictions && data.predictions.length > 0) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const formattedPredictions = data.predictions.map(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (prediction: any) => ({
+              value: prediction.value,
+              odd: prediction.odd,
+              betId: prediction.betId,
+              fixtureId: prediction.fixtureId,
+            })
+          );
+        } else {
+          console.error(
+            "Error: La respuesta no contiene predicciones válidas",
+            data
+          );
+        }
+      } else {
+        const errorData = await response.json();
+        console.error("Error al obtener los datos:", errorData);
+      }
+    } catch (error) {
+      console.error("Error en la solicitud:", error);
+    }
   };
 
   const [tooltip, setTooltip] = useState<string | null>(null);
@@ -211,8 +303,22 @@ export default function page() {
           const data = await response.json();
 
           if (data) {
-            // Ajustamos para manejar un solo fixture
             const match = data;
+            const newStatistics: MatchStatistic[] = [
+              {
+                team: data.homeTeam.name,
+                percentage: data.fixtureBets[0].fixtureBetOdds[0].odd,
+              },
+              {
+                team: "Empate",
+                percentage: data.fixtureBets[0].fixtureBetOdds[1].odd,
+              },
+              {
+                team: data.awayTeam.name,
+                percentage: data.fixtureBets[0].fixtureBetOdds[2].odd,
+              },
+            ];
+            setMatchStatistics(newStatistics);
             const matchDate = new Date(match?.date);
             const date = matchDate.toLocaleDateString("es-ES", {
               day: "2-digit",
@@ -247,14 +353,13 @@ export default function page() {
         }
       } catch (error) {
         console.error("Error en la solicitud:", error);
-      }
-      finally {
+      } finally {
         setLoading(false);
       }
     };
 
     fetchMatches();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [FIXTURE_URL, router]);
 
   return (
@@ -289,7 +394,7 @@ export default function page() {
           <h1 className="subtitle-curve">
             Eliminatorias, cuartos de final, primer partido
           </h1>
-         
+
           {loading ? (
             <div className="loader-container">
               <ClipLoader color={"#123abc"} loading={loading} size={50} />
@@ -468,52 +573,87 @@ export default function page() {
                   Selecciona una opción
                 </p>
                 <div className="grid grid-cols-2 gap-4 mb-4">
-                  <button
-                    className={`p-4 border rounded-lg flex flex-col items-center ${
-                      selectedTeam === "Osasuna" ? "border-blue-500" : ""
-                    }`}
-                    onClick={() => handleTeamSelect("Osasuna")}
-                  >
-                    <Image
-                      src={OsasunaImg}
-                      alt="Osasuna"
-                      width={48}
-                      height={48}
-                      className="mb-2"
-                    />
-                    <span>Osasuna</span>
-                    <span className="text-sm text-gray-500">13</span>
-                  </button>
-                  <button
-                    className={`p-4 border rounded-lg flex flex-col items-center ${
-                      selectedTeam === "Barcelona" ? "border-blue-500" : ""
-                    }`}
-                    onClick={() => handleTeamSelect("Barcelona")}
-                  >
-                    <Image
-                      src={BarselonaImg}
-                      alt="Barcelona"
-                      width={48}
-                      height={48}
-                      className="mb-2"
-                    />
-                    <span>Barcelona</span>
-                    <span className="text-sm text-gray-500">10</span>
-                  </button>
+                  {matches.map((match) => (
+                    <React.Fragment key={match.id}>
+                      <button
+                        className={`p-4 border rounded-lg flex flex-col items-center ${
+                          selectedTeam?.name === match.homeTeam.name
+                            ? "border-blue-500"
+                            : ""
+                        }`}
+                        onClick={() =>
+                          handleTeamSelect({
+                            name: match.homeTeam.name,
+                            logo: match.homeTeam.logo,
+                          })
+                        }
+                      >
+                        <Image
+                          src={match.homeTeam.logo}
+                          alt={match.homeTeam.name}
+                          width={48}
+                          height={48}
+                          className="mb-2"
+                        />
+                        <span>{match.homeTeam.name}</span>
+                        <span className="text-sm text-gray-500">
+                          {matchStatistics.find(
+                            (stat) => stat.team === match.homeTeam.name
+                          )?.percentage || "Sin datos"}
+                        </span>
+                      </button>
+                      <button
+                        className={`p-4 border rounded-lg flex flex-col items-center ${
+                          selectedTeam?.name === match.awayTeam.name
+                            ? "border-blue-500"
+                            : ""
+                        }`}
+                        onClick={() =>
+                          handleTeamSelect({
+                            name: match.awayTeam.name,
+                            logo: match.awayTeam.logo,
+                          })
+                        }
+                      >
+                        <Image
+                          src={match.awayTeam.logo}
+                          alt={match.awayTeam.name}
+                          width={48}
+                          height={48}
+                          className="mb-2"
+                        />
+                        <span>{match.awayTeam.name}</span>
+                        <span className="text-sm text-gray-500">
+                          {matchStatistics.find(
+                            (stat) => stat.team === match.awayTeam.name
+                          )?.percentage || "Sin datos"}
+                        </span>
+                      </button>
+                    </React.Fragment>
+                  ))}
                 </div>
                 <button
                   className={`w-full p-4 border rounded-lg flex flex-col items-center mb-4 ${
-                    selectedTeam === "Empate" ? "border-blue-500" : ""
+                    selectedTeam?.name === "Empate" ? "border-blue-500" : ""
                   }`}
-                  onClick={() => handleTeamSelect("Empate")}
+                  onClick={() =>
+                    handleTeamSelect({
+                      name: "Empate",
+                      logo: "/assets/default-logo.png",
+                    })
+                  }
                 >
                   <span>Empate</span>
-                  <span className="text-sm text-gray-500">21</span>
+                  <span className="text-sm text-gray-500">
+                    {matchStatistics.find((stat) => stat.team === "Empate")
+                      ?.percentage || "Sin datos"}
+                  </span>
                 </button>
                 <div className="flex justify-between">
                   <button
                     className="px-4 py-2 border rounded-lg text-gray-500"
                     id="btnCardCombinada"
+                    onClick={openModal}
                   >
                     Hacer combinada
                   </button>
@@ -529,10 +669,14 @@ export default function page() {
                   <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
                     <div
                       className="bg-purple-600 h-2.5 rounded-full"
-                      style={{ width: "0%" }}
+                      style={{
+                        width: `${((selectedOption ? 1 : 0) / 5) * 100}%`,
+                      }}
                     ></div>
                   </div>
-                  <span className="text-sm text-purple-600 ml-2">0/5</span>
+                  <span className="text-sm text-purple-600 ml-2">
+                    {selectedOption ? 1 : 0}/5
+                  </span>
                 </div>
               </div>
             </div>
@@ -573,29 +717,33 @@ export default function page() {
                 <h2 className="text-xl font-bold mb-6 text-center">
                   ¿Estás seguro de tu predicción?
                 </h2>
-                <div className="bg-blue-100 rounded-lg p-4 flex items-center mb-6">
-                  {/*ARREGLAR ESTA SECCION PARA MOSTRAR EL LOGO CORRECTAMENTE*/}
-                  <Image
-                    src={`/assets/${selectedTeam?.toLowerCase()}-logo.png`}
-                    alt={selectedTeam || ""}
-                    width={64}
-                    height={64}
-                    className="mr-4"
-                  />
-                  <div>
-                    <p className="font-bold">{selectedTeam}</p>
-                    <p className="text-sm">
+                {selectedTeam && (
+                  <div className="bg-blue-100 rounded-lg p-4 flex items-center mb-6">
+                    {selectedTeam.name !== "Empate" && (
                       <Image
-                        src={IconCopa}
-                        alt="Trophy"
-                        width={16}
-                        height={16}
-                        className="inline mr-1"
+                        src={selectedTeam.logo}
+                        alt={selectedTeam.name}
+                        width={64}
+                        height={64}
+                        className="mr-4"
                       />
-                      x 10
-                    </p>
+                    )}
+                    <div>
+                      <p className="font-bold">{selectedTeam.name}</p>
+                      <p className="text-sm">
+                        <Image
+                          src={IconCopa}
+                          alt="Trophy"
+                          width={16}
+                          height={16}
+                          className="inline mr-1"
+                        />
+                        x 10
+                      </p>
+                    </div>
                   </div>
-                </div>
+                )}
+
                 <button
                   className="w-full py-3 bg-purple-500 text-white rounded-lg font-bold"
                   onClick={handleConfirm}
