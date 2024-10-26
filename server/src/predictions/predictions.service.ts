@@ -3,15 +3,22 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { Predictions } from './predictions.entity';
-import { Repository } from 'typeorm';
+import { Between, EntityManager, In, Not, Repository } from 'typeorm';
 import { AggregatePredictions } from 'src/aggregate-predictions/aggregate-predictions.entity';
 import { CreatePredictionDTO } from './dtos/create-prediction.dto';
 import { Fixtures } from 'src/fixtures/fixtures.entities';
 import { DateTime } from 'luxon';
 import { PredictionsPaginationDTO } from './dtos/pagination.dto';
 import { CreateAggregatePredictionDTO } from './dtos/create-aggregate.dto';
+import { Cron } from '@nestjs/schedule';
+import { ConfigService } from '@nestjs/config';
+import { catchError, firstValueFrom } from 'rxjs';
+import { HttpService } from '@nestjs/axios';
+import { AxiosError } from 'axios';
+import { formatFixtures } from 'src/util/format';
+import { PREDICTION_STATUS } from 'src/types';
 
 @Injectable()
 export class PredictionsService {
@@ -22,6 +29,9 @@ export class PredictionsService {
     private aggregatePredictionsRepository: Repository<AggregatePredictions>,
     @InjectRepository(Fixtures)
     private fixturesRepository: Repository<Fixtures>,
+    private configService: ConfigService,
+    private httpService: HttpService,
+    @InjectEntityManager() private readonly entityManager: EntityManager,
   ) {}
 
   // TODO: update to fetch bet from api to get updated odds before creating
@@ -246,5 +256,214 @@ export class PredictionsService {
     });
 
     return { predictions };
+  }
+
+  async findAllSinglePredictionsByFixtureId(fixtureId: number) {
+    const predictions = await this.predictionsRepository.find({
+      where: {
+        fixture: { id: fixtureId },
+        aggregatePredictionId: null,
+      },
+    });
+
+    return { predictions };
+  }
+
+  async findAllPendingAggregatePredictionsByFixtureId(fixtureId: number) {
+    const aggregatePredictions = await this.aggregatePredictionsRepository
+      .createQueryBuilder('aggregatePrediction')
+      .leftJoinAndSelect('aggregatePrediction.predictions', 'prediction')
+      .where('prediction.fixtureId = :fixtureId', { fixtureId })
+      .andWhere('aggregatePrediction.status = :status', {
+        status: PREDICTION_STATUS.PENDING,
+      })
+      .getMany();
+
+    return { aggregatePredictions };
+  }
+
+  @Cron('30 16 * * *', {
+    timeZone: 'America/Argentina/Buenos_Aires',
+  })
+  async solvePredictionsOfRecentlyCompletedFixtures() {
+    if (!this.configService.get<string>('apiKey')) return;
+
+    const timezone = 'America/Argentina/Buenos_Aires';
+
+    const today = DateTime.now()
+      .startOf('day')
+      .setZone(timezone)
+      .minus({ days: 1 });
+    const endOfToday = today.endOf('day');
+
+    const finishedStatuses = ['FT', 'AET', 'PEN'];
+
+    try {
+      // obtain fixtures that ended today from external api
+      const { data } = await firstValueFrom(
+        this.httpService
+          .get(
+            `fixtures?date=${today.toFormat('yyyy-MM-dd')}&league=128&season=2024&timezone=America%2FArgentina%2FBuenos_Aires&status=FT-AET-PEN`,
+          )
+          .pipe(
+            catchError((error: AxiosError) => {
+              console.log(error);
+              throw 'An error happened!';
+            }),
+          ),
+      );
+
+      const externalFixtures = data.response;
+      if (externalFixtures.length === 0) return;
+
+      // obtain fixtures that haven't been marked done today from db
+      const fixtures = await this.fixturesRepository.find({
+        where: {
+          date: Between(today.toJSDate(), endOfToday.toJSDate()),
+          leagueId: 128,
+          statusShort: Not(In(finishedStatuses)),
+        },
+        relations: ['fixtureBets', 'fixtureBets.fixtureBetOdds'],
+      });
+
+      const formattedExternalFixtures = formatFixtures(externalFixtures);
+
+      // save to db
+      const fixturesToBeCompleted = [];
+
+      // save to db
+      const usersPoints = new Map<number, number>();
+
+      for (const eFixture of formattedExternalFixtures) {
+        const fixtureToBeCompleted = fixtures.find((f) => f.id === eFixture.id);
+        // solve each fixture
+        if (fixtureToBeCompleted) {
+          try {
+            fixturesToBeCompleted.push(eFixture);
+            // obtain all single predictions
+            const { predictions } =
+              await this.findAllSinglePredictionsByFixtureId(
+                fixtureToBeCompleted.id,
+              );
+            // obtain all aggregate predictions predictions
+            const { aggregatePredictions } =
+              await this.findAllPendingAggregatePredictionsByFixtureId(
+                fixtureToBeCompleted.id,
+              );
+
+            // winning value
+            let winningValue: string;
+            if (eFixture.homeTeamWinner) {
+              winningValue = 'Home';
+            } else if (eFixture.awayTeamWinner) {
+              winningValue = 'Away';
+            } else {
+              winningValue = 'Draw';
+            }
+
+            // solve predictions
+            predictions.forEach((prediction) => {
+              const isPredictionCorrect = prediction.value === winningValue;
+              if (isPredictionCorrect) {
+                prediction.status = PREDICTION_STATUS.WON;
+                const predictionPoints = parseFloat(prediction.odd) * 10;
+                prediction.points = predictionPoints;
+                if (!usersPoints.has(prediction.userId)) {
+                  usersPoints.set(prediction.userId, predictionPoints);
+                } else {
+                  usersPoints.set(
+                    prediction.userId,
+                    usersPoints.get(prediction.userId) + predictionPoints,
+                  );
+                }
+              } else {
+                prediction.status = PREDICTION_STATUS.LOST;
+              }
+            });
+
+            // save to db
+            const predictionsToSave = [...predictions];
+
+            aggregatePredictions.forEach((aggregate) => {
+              let predictionOddsResult = 1;
+              aggregate.predictions.forEach((prediction) => {
+                predictionOddsResult =
+                  predictionOddsResult * parseFloat(prediction.odd);
+                if (prediction.fixtureId === fixtureToBeCompleted.id) {
+                  const isPredictionCorrect = prediction.value === winningValue;
+                  prediction.status = isPredictionCorrect
+                    ? PREDICTION_STATUS.WON
+                    : PREDICTION_STATUS.LOST;
+                  predictionsToSave.push(prediction);
+                }
+              });
+
+              // if one prediction is lost, set aggregate to lost
+              if (
+                aggregate.predictions.some(
+                  (prediction) => (prediction.status = PREDICTION_STATUS.LOST),
+                )
+              ) {
+                aggregate.status = PREDICTION_STATUS.LOST;
+              } else if (
+                aggregate.predictions.every(
+                  (prediction) => (prediction.status = PREDICTION_STATUS.WON),
+                )
+              ) {
+                aggregate.status = PREDICTION_STATUS.WON;
+                const aggregatePoints =
+                  predictionOddsResult * (10 * aggregate.predictions.length);
+                aggregate.points = aggregatePoints;
+                if (!usersPoints.has(aggregate.userId)) {
+                  usersPoints.set(aggregate.userId, aggregatePoints);
+                } else {
+                  usersPoints.set(
+                    aggregate.userId,
+                    usersPoints.get(aggregate.userId) + aggregatePoints,
+                  );
+                }
+              }
+            });
+
+            await this.entityManager.transaction(
+              async (transactionManager: EntityManager) => {
+                await transactionManager.save(predictions);
+
+                await transactionManager.save(aggregatePredictions);
+
+                if (usersPoints.size > 0) {
+                  const updates = Array.from(usersPoints.entries())
+                    .map(([userId, points]) => {
+                      return `WHEN id = ${userId} THEN points + ${points}`;
+                    })
+                    .join(' ');
+
+                  const userIds = Array.from(usersPoints.keys()).join(', ');
+
+                  await transactionManager.query(`
+              UPDATE users
+              SET points = CASE
+                ${updates}
+              END
+              WHERE id IN (${userIds})
+            `);
+                }
+
+                await transactionManager.save(Fixtures, fixturesToBeCompleted);
+              },
+            );
+          } catch (error: any) {
+            console.error(
+              `Error while solving fixture ${eFixture.id}: ${error}`,
+            );
+            throw error;
+          }
+        }
+      }
+    } catch (error: any) {
+      console.log(
+        `Error when solving predictions of recently completed fixtures: ${error}`,
+      );
+    }
   }
 }

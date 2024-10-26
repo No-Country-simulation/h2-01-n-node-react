@@ -17,12 +17,12 @@ export class FixturesService {
   constructor(
     @InjectRepository(Fixtures)
     private fixturesRepository: Repository<Fixtures>,
-    private configService: ConfigService,
-    private httpService: HttpService,
     @InjectRepository(FixtureBets)
     private fixtureBetsRepository: Repository<FixtureBets>,
     @InjectRepository(FixtureBetOdds)
     private fixtureBetOddsRepository: Repository<FixtureBetOdds>,
+    private configService: ConfigService,
+    private httpService: HttpService,
   ) {}
 
   async findAll(query: FixturesPaginationDTO) {

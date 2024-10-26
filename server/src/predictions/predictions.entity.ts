@@ -30,6 +30,9 @@ export class Predictions {
   })
   status: PREDICTION_STATUS;
 
+  @Column({ nullable: true })
+  points: number;
+
   @Column()
   betId: number;
   @ManyToOne(() => Bets, (bet) => bet.id)
