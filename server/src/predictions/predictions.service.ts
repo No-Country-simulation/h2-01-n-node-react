@@ -282,7 +282,7 @@ export class PredictionsService {
     return { aggregatePredictions };
   }
 
-  @Cron('45 16 * * *', {
+  @Cron('0 17 * * *', {
     timeZone: 'America/Argentina/Buenos_Aires',
   })
   async solvePredictionsOfRecentlyCompletedFixtures() {
@@ -299,71 +299,6 @@ export class PredictionsService {
     const finishedStatuses = ['FT', 'AET', 'PEN'];
 
     try {
-      await this.fixturesRepository.save([
-        {
-          id: 1158924,
-          referee: null,
-          timezone: 'America/Argentina/Buenos_Aires',
-          date: '2024-10-25T15:00:00-03:00',
-          timestamp: 1729879200,
-          firstPeriod: null,
-          secondPeriod: null,
-          venueId: 66,
-          statusLong: 'Not Started',
-          statusShort: 'NS',
-          statusElapsed: null,
-          statusExtra: null,
-          leagueId: 128,
-          season: 2024,
-          round: '2nd Phase - 19',
-          homeTeamId: 2432,
-          awayTeamId: 450,
-          homeTeamWinner: null,
-          awayTeamWinner: null,
-          homeGoals: null,
-          awayGoals: null,
-          homeScoreHalftime: null,
-          awayScoreHalftime: null,
-          homeScoreFulltime: null,
-          awayScoreFulltime: null,
-          homeScoreExtratime: null,
-          awayScoreExtratime: null,
-          homeScorePenalty: null,
-          awayScorePenalty: null,
-        },
-        {
-          id: 1158921,
-          referee: null,
-          timezone: 'America/Argentina/Buenos_Aires',
-          date: '2024-10-25T21:00:00-03:00',
-          timestamp: 1729900800,
-          firstPeriod: null,
-          secondPeriod: null,
-          venueId: 59,
-          statusLong: 'Not Started',
-          statusShort: 'NS',
-          statusElapsed: null,
-          statusExtra: null,
-          leagueId: 128,
-          season: 2024,
-          round: '2nd Phase - 19',
-          homeTeamId: 442,
-          awayTeamId: 435,
-          homeTeamWinner: null,
-          awayTeamWinner: null,
-          homeGoals: null,
-          awayGoals: null,
-          homeScoreHalftime: null,
-          awayScoreHalftime: null,
-          homeScoreFulltime: null,
-          awayScoreFulltime: null,
-          homeScoreExtratime: null,
-          awayScoreExtratime: null,
-          homeScorePenalty: null,
-          awayScorePenalty: null,
-        },
-      ]);
-
       // obtain fixtures that ended today from external api
       const { data } = await firstValueFrom(
         this.httpService
