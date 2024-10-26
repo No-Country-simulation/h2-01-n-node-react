@@ -2,7 +2,7 @@ import React from 'react'
 import './jugadores.css'
 import MenuInferior from "@/app/components/MenuInferior/MenuInferior";
 import TopView from "@/app/components/TopView/TopView";
-import { ChevronRight, Shield } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
 import divisionImg from '@/app/assets/divisiones/division-oro1.png'
 import Image from 'next/image'
 
