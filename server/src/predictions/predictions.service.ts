@@ -282,10 +282,11 @@ export class PredictionsService {
     return { aggregatePredictions };
   }
 
-  @Cron('0 17 * * *', {
+  @Cron('10 17 * * *', {
     timeZone: 'America/Argentina/Buenos_Aires',
   })
   async solvePredictionsOfRecentlyCompletedFixtures() {
+    console.log('solvePredictionsOfRecentlyCompletedFixtures running');
     if (!this.configService.get<string>('apiKey')) return;
 
     const timezone = 'America/Argentina/Buenos_Aires';
