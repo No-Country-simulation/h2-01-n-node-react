@@ -1,4 +1,3 @@
-import { Fixtures } from 'src/fixtures/fixtures.entities';
 import { Predictions } from 'src/predictions/predictions.entity';
 import { PREDICTION_STATUS } from 'src/types';
 import { Users } from 'src/users/users.entity';
@@ -23,6 +22,9 @@ export class AggregatePredictions {
     nullable: false,
   })
   status: PREDICTION_STATUS;
+
+  @Column({ nullable: true })
+  points: number;
 
   @Column()
   userId: number;

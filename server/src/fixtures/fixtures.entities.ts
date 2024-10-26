@@ -50,6 +50,8 @@ export class Fixtures {
   @Column({ nullable: true })
   statusExtra: number | null;
 
+  @Column()
+  leagueId: number;
   @ManyToOne(() => Leagues, { nullable: false })
   @JoinColumn({ name: 'leagueId' })
   league: Leagues;
