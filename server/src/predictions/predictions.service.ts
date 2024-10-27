@@ -402,7 +402,7 @@ export class PredictionsService {
       });
 
       const formattedExternalFixtures = formatFixtures(externalFixtures);
-      console.log({ formattedExternalFixtures });
+      console.log({ fixtures, formattedExternalFixtures });
 
       // save to db
       const fixturesToBeCompleted = [];
