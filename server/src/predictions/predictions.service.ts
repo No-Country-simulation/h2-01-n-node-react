@@ -364,7 +364,6 @@ export class PredictionsService {
               await this.findAllPendingAggregatePredictionsByFixtureId(
                 fixtureToBeCompleted.id,
               );
-            console.log({ predictions, aggregatePredictions });
             // winning value
             let winningValue: string;
             if (eFixture.homeTeamWinner) {
