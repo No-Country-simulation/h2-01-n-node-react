@@ -56,7 +56,6 @@ export class Predictions {
   @ManyToOne(
     () => AggregatePredictions,
     (aggregatePrediction) => aggregatePrediction.predictions,
-    { nullable: true },
   )
   @JoinColumn({ name: 'aggregatePredictionId' })
   aggregatePrediction: AggregatePredictions;

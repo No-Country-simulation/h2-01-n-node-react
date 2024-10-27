@@ -259,12 +259,11 @@ export class PredictionsService {
   }
 
   async findAllSinglePredictionsByFixtureId(fixtureId: number) {
-    const predictions = await this.predictionsRepository.find({
-      where: {
-        fixture: { id: fixtureId },
-        aggregatePredictionId: null,
-      },
-    });
+    const predictions = await this.predictionsRepository
+      .createQueryBuilder('prediction')
+      .where('prediction.aggregatePredictionId IS NULL')
+      .andWhere('prediction.fixtureId = :fixtureId', { fixtureId })
+      .getMany();
 
     return { predictions };
   }
@@ -272,22 +271,97 @@ export class PredictionsService {
   async findAllPendingAggregatePredictionsByFixtureId(fixtureId: number) {
     const aggregatePredictions = await this.aggregatePredictionsRepository
       .createQueryBuilder('aggregatePrediction')
-      .leftJoinAndSelect('aggregatePrediction.predictions', 'prediction')
-      .where('prediction.fixtureId = :fixtureId', { fixtureId })
-      .andWhere('aggregatePrediction.status = :status', {
+      .where('aggregatePrediction.status = :status', {
         status: PREDICTION_STATUS.PENDING,
       })
+      .andWhere((qb) => {
+        const subQuery = qb
+          .subQuery()
+          .select('1')
+          .from('predictions', 'p')
+          .where('p.fixtureId = :fixtureId', { fixtureId })
+          .andWhere('p.aggregatePredictionId = aggregatePrediction.id')
+          .getQuery();
+
+        return 'EXISTS ' + subQuery;
+      })
+      .leftJoinAndSelect('aggregatePrediction.predictions', 'prediction')
       .getMany();
 
     return { aggregatePredictions };
   }
 
-  @Cron('10 17 * * *', {
+  @Cron('*/3 * * * *', {
     timeZone: 'America/Argentina/Buenos_Aires',
   })
   async solvePredictionsOfRecentlyCompletedFixtures() {
-    console.log('solvePredictionsOfRecentlyCompletedFixtures running');
     if (!this.configService.get<string>('apiKey')) return;
+
+    await this.fixturesRepository.save([
+      {
+        id: 1158924,
+        referee: null,
+        timezone: 'America/Argentina/Buenos_Aires',
+        date: '2024-10-25T15:00:00-03:00',
+        timestamp: 1729879200,
+        firstPeriod: null,
+        secondPeriod: null,
+        venueId: 66,
+        statusLong: 'Not Started',
+        statusShort: 'NS',
+        statusElapsed: null,
+        statusExtra: null,
+        leagueId: 128,
+        season: 2024,
+        round: '2nd Phase - 19',
+        homeTeamId: 2432,
+        awayTeamId: 450,
+        homeTeamWinner: null,
+        awayTeamWinner: null,
+        homeGoals: null,
+        awayGoals: null,
+        homeScoreHalftime: null,
+        awayScoreHalftime: null,
+        homeScoreFulltime: null,
+        awayScoreFulltime: null,
+        homeScoreExtratime: null,
+        awayScoreExtratime: null,
+        homeScorePenalty: null,
+        awayScorePenalty: null,
+      },
+      {
+        id: 1158921,
+        referee: null,
+        timezone: 'America/Argentina/Buenos_Aires',
+        date: '2024-10-25T21:00:00-03:00',
+        timestamp: 1729900800,
+        firstPeriod: null,
+        secondPeriod: null,
+        venueId: 59,
+        statusLong: 'Not Started',
+        statusShort: 'NS',
+        statusElapsed: null,
+        statusExtra: null,
+        leagueId: 128,
+        season: 2024,
+        round: '2nd Phase - 19',
+        homeTeamId: 442,
+        awayTeamId: 435,
+        homeTeamWinner: null,
+        awayTeamWinner: null,
+        homeGoals: null,
+        awayGoals: null,
+        homeScoreHalftime: null,
+        awayScoreHalftime: null,
+        homeScoreFulltime: null,
+        awayScoreFulltime: null,
+        homeScoreExtratime: null,
+        awayScoreExtratime: null,
+        homeScorePenalty: null,
+        awayScorePenalty: null,
+      },
+    ]);
+    console.log('solvePredictionsOfRecentlyCompletedFixtures running');
 
     const timezone = 'America/Argentina/Buenos_Aires';
 
@@ -391,10 +465,14 @@ export class PredictionsService {
                 predictionOddsResult =
                   predictionOddsResult * parseFloat(prediction.odd);
                 if (prediction.fixtureId === fixtureToBeCompleted.id) {
+                  console.log({ prediction });
+
                   const isPredictionCorrect = prediction.value === winningValue;
                   prediction.status = isPredictionCorrect
                     ? PREDICTION_STATUS.WON
                     : PREDICTION_STATUS.LOST;
+
+                  console.log({ prediction });
                   predictionsToSave.push(prediction);
                 }
               });
@@ -402,13 +480,13 @@ export class PredictionsService {
               // if one prediction is lost, set aggregate to lost
               if (
                 aggregate.predictions.some(
-                  (prediction) => (prediction.status = PREDICTION_STATUS.LOST),
+                  (prediction) => prediction.status === PREDICTION_STATUS.LOST,
                 )
               ) {
                 aggregate.status = PREDICTION_STATUS.LOST;
               } else if (
                 aggregate.predictions.every(
-                  (prediction) => (prediction.status = PREDICTION_STATUS.WON),
+                  (prediction) => prediction.status === PREDICTION_STATUS.WON,
                 )
               ) {
                 aggregate.status = PREDICTION_STATUS.WON;
@@ -424,33 +502,19 @@ export class PredictionsService {
                   );
                 }
               }
+              delete aggregate.predictions;
             });
+
+            console.log({ predictionsToSave, aggregatePredictions });
 
             await this.entityManager.transaction(
               async (transactionManager: EntityManager) => {
-                await transactionManager.save(predictions);
+                await transactionManager.save(Predictions, predictionsToSave);
 
-                await transactionManager.save(aggregatePredictions);
-
-                if (usersPoints.size > 0) {
-                  const updates = Array.from(usersPoints.entries())
-                    .map(([userId, points]) => {
-                      return `WHEN id = ${userId} THEN points + ${points}`;
-                    })
-                    .join(' ');
-
-                  const userIds = Array.from(usersPoints.keys()).join(', ');
-
-                  await transactionManager.query(`
-              UPDATE users
-              SET points = CASE
-                ${updates}
-              END
-              WHERE id IN (${userIds})
-            `);
-                }
-
-                await transactionManager.save(Fixtures, fixturesToBeCompleted);
+                await transactionManager.save(
+                  AggregatePredictions,
+                  aggregatePredictions,
+                );
               },
             );
           } catch (error: any) {
@@ -460,6 +524,29 @@ export class PredictionsService {
             throw error;
           }
         }
+        await this.entityManager.transaction(
+          async (transactionManager: EntityManager) => {
+            if (usersPoints.size > 0) {
+              const updates = Array.from(usersPoints.entries())
+                .map(([userId, points]) => {
+                  return `WHEN id = ${userId} THEN points + ${points}`;
+                })
+                .join(' ');
+
+              const userIds = Array.from(usersPoints.keys()).join(', ');
+
+              await transactionManager.query(`
+          UPDATE users
+          SET points = CASE
+            ${updates}
+          END
+          WHERE id IN (${userIds})
+        `);
+            }
+
+            await transactionManager.save(Fixtures, fixturesToBeCompleted);
+          },
+        );
       }
     } catch (error: any) {
       console.log(
