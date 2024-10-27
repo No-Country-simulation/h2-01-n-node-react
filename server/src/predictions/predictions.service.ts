@@ -294,7 +294,7 @@ export class PredictionsService implements OnModuleInit {
 
   @Cron('*/3 * * * *', {
     timeZone: 'America/Argentina/Buenos_Aires',
-    disabled: true,
+    // disabled: true,
   })
   async solvePredictionsOfRecentlyCompletedFixtures() {
     if (!this.configService.get<string>('apiKey')) return;
