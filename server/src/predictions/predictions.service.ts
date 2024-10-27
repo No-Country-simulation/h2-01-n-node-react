@@ -302,21 +302,20 @@ export class PredictionsService implements OnModuleInit {
 
     const timezone = 'America/Argentina/Buenos_Aires';
 
-    const today = DateTime.now()
-      .startOf('day')
-      .setZone(timezone)
-      .minus({ days: 1 })
-      .toUTC();
-    const endOfToday = today.endOf('day');
+    const today = DateTime.now().setZone(timezone).minus({ days: 1 });
+
+    const startOfDay = today.startOf('day').toUTC();
+    const endOfToday = today.endOf('day').toUTC();
 
     const finishedStatuses = ['FT', 'AET', 'PEN'];
 
+    console.log(today.toString());
     try {
       // obtain fixtures that ended today from external api
       const { data } = await firstValueFrom(
         this.httpService
           .get(
-            `fixtures?date=${today.toFormat('yyyy-MM-dd')}&league=128&season=2024&timezone=America%2FArgentina%2FBuenos_Aires&status=FT-AET-PEN`,
+            `fixtures?date=${startOfDay.toFormat('yyyy-MM-dd')}&league=128&season=2024&timezone=America%2FArgentina%2FBuenos_Aires&status=FT-AET-PEN`,
           )
           .pipe(
             catchError((error: AxiosError) => {
@@ -330,14 +329,19 @@ export class PredictionsService implements OnModuleInit {
       if (externalFixtures.length === 0) return;
 
       // obtain fixtures that haven't been marked done today from db
-      const fixtures = await this.fixturesRepository.find({
-        where: {
-          date: Between(today.toJSDate(), endOfToday.toJSDate()),
-          leagueId: 128,
-          statusShort: Not(In(finishedStatuses)),
-        },
-        relations: ['fixtureBets', 'fixtureBets.fixtureBetOdds'],
-      });
+      const fixtures = await this.fixturesRepository
+        .createQueryBuilder('fixture')
+        .where('fixture.date BETWEEN :startDate AND :endDate', {
+          startDate: startOfDay.toJSDate(),
+          endDate: endOfToday.toJSDate(),
+        })
+        .andWhere('fixture.leagueId = :leagueId', { leagueId: 128 })
+        .andWhere('fixture.statusShort NOT IN (:...finishedStatuses)', {
+          finishedStatuses,
+        })
+        .leftJoinAndSelect('fixture.fixtureBets', 'fixtureBets')
+        .leftJoinAndSelect('fixtureBets.fixtureBetOdds', 'fixtureBetOdds')
+        .getMany();
 
       const formattedExternalFixtures = formatFixtures(externalFixtures);
       console.log({ fixtures, formattedExternalFixtures });
