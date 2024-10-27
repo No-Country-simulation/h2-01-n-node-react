@@ -294,6 +294,7 @@ export class PredictionsService implements OnModuleInit {
 
   @Cron('*/3 * * * *', {
     timeZone: 'America/Argentina/Buenos_Aires',
+    disabled: true,
   })
   async solvePredictionsOfRecentlyCompletedFixtures() {
     if (!this.configService.get<string>('apiKey')) return;
@@ -304,7 +305,8 @@ export class PredictionsService implements OnModuleInit {
     const today = DateTime.now()
       .startOf('day')
       .setZone(timezone)
-      .minus({ days: 1 });
+      .minus({ days: 1 })
+      .toUTC();
     const endOfToday = today.endOf('day');
 
     const finishedStatuses = ['FT', 'AET', 'PEN'];
