@@ -2,11 +2,10 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
-  OnModuleInit,
 } from '@nestjs/common';
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { Predictions } from './predictions.entity';
-import { Between, EntityManager, In, Not, Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { AggregatePredictions } from 'src/aggregate-predictions/aggregate-predictions.entity';
 import { CreatePredictionDTO } from './dtos/create-prediction.dto';
 import { Fixtures } from 'src/fixtures/fixtures.entities';
@@ -22,7 +21,7 @@ import { formatFixtures } from 'src/util/format';
 import { PREDICTION_STATUS } from 'src/types';
 
 @Injectable()
-export class PredictionsService implements OnModuleInit {
+export class PredictionsService {
   constructor(
     @InjectRepository(Predictions)
     private predictionsRepository: Repository<Predictions>,
@@ -292,9 +291,8 @@ export class PredictionsService implements OnModuleInit {
     return { aggregatePredictions };
   }
 
-  @Cron('*/3 * * * *', {
+  @Cron('45 9-23 * * *', {
     timeZone: 'America/Argentina/Buenos_Aires',
-    disabled: true,
   })
   async solvePredictionsOfRecentlyCompletedFixtures() {
     if (!this.configService.get<string>('apiKey')) return;
@@ -302,14 +300,13 @@ export class PredictionsService implements OnModuleInit {
 
     const timezone = 'America/Argentina/Buenos_Aires';
 
-    const today = DateTime.now().setZone(timezone).minus({ days: 1 });
+    const today = DateTime.now().setZone(timezone);
 
     const startOfDay = today.startOf('day').toUTC();
     const endOfToday = today.endOf('day').toUTC();
 
     const finishedStatuses = ['FT', 'AET', 'PEN'];
 
-    console.log(today.toString());
     try {
       // obtain fixtures that ended today from external api
       const { data } = await firstValueFrom(
@@ -344,7 +341,6 @@ export class PredictionsService implements OnModuleInit {
         .getMany();
 
       const formattedExternalFixtures = formatFixtures(externalFixtures);
-      console.log({ fixtures, formattedExternalFixtures });
 
       // save to db
       const fixturesToBeCompleted = [];
@@ -490,72 +486,5 @@ export class PredictionsService implements OnModuleInit {
         `Error when solving predictions of recently completed fixtures: ${error}`,
       );
     }
-  }
-
-  async onModuleInit() {
-    await this.fixturesRepository.save([
-      {
-        id: 1158924,
-        referee: null,
-        timezone: 'America/Argentina/Buenos_Aires',
-        date: '2024-10-25T15:00:00-03:00',
-        timestamp: 1729879200,
-        firstPeriod: null,
-        secondPeriod: null,
-        venueId: 66,
-        statusLong: 'Not Started',
-        statusShort: 'NS',
-        statusElapsed: null,
-        statusExtra: null,
-        leagueId: 128,
-        season: 2024,
-        round: '2nd Phase - 19',
-        homeTeamId: 2432,
-        awayTeamId: 450,
-        homeTeamWinner: null,
-        awayTeamWinner: null,
-        homeGoals: null,
-        awayGoals: null,
-        homeScoreHalftime: null,
-        awayScoreHalftime: null,
-        homeScoreFulltime: null,
-        awayScoreFulltime: null,
-        homeScoreExtratime: null,
-        awayScoreExtratime: null,
-        homeScorePenalty: null,
-        awayScorePenalty: null,
-      },
-      {
-        id: 1158921,
-        referee: null,
-        timezone: 'America/Argentina/Buenos_Aires',
-        date: '2024-10-25T21:00:00-03:00',
-        timestamp: 1729900800,
-        firstPeriod: null,
-        secondPeriod: null,
-        venueId: 59,
-        statusLong: 'Not Started',
-        statusShort: 'NS',
-        statusElapsed: null,
-        statusExtra: null,
-        leagueId: 128,
-        season: 2024,
-        round: '2nd Phase - 19',
-        homeTeamId: 442,
-        awayTeamId: 435,
-        homeTeamWinner: null,
-        awayTeamWinner: null,
-        homeGoals: null,
-        awayGoals: null,
-        homeScoreHalftime: null,
-        awayScoreHalftime: null,
-        homeScoreFulltime: null,
-        awayScoreFulltime: null,
-        homeScoreExtratime: null,
-        awayScoreExtratime: null,
-        homeScorePenalty: null,
-        awayScorePenalty: null,
-      },
-    ]);
   }
 }
