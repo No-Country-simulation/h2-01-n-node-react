@@ -187,7 +187,7 @@ export class FixturesService {
           .pipe(
             catchError((error: AxiosError) => {
               console.log(error);
-              throw 'An error happened!';
+              throw 'An error happened';
             }),
           ),
       );
@@ -241,7 +241,7 @@ export class FixturesService {
           .pipe(
             catchError((error: AxiosError) => {
               console.log(error);
-              throw 'An error happened!';
+              throw 'An error happened';
             }),
           ),
       );
@@ -254,7 +254,7 @@ export class FixturesService {
           .pipe(
             catchError((error: AxiosError) => {
               console.log(error);
-              throw 'An error happened!';
+              throw 'An error happened';
             }),
           ),
       );
