@@ -11,14 +11,6 @@ export class CreatePredictionDTO {
   value: string;
 
   @ApiProperty({
-    example: '5.00',
-    description: 'Odds of bet',
-  })
-  @IsString()
-  @IsNotEmpty()
-  odd: string;
-
-  @ApiProperty({
     example: 1,
     description: 'ID of bet',
   })
