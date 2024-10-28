@@ -22,4 +22,9 @@ export class UsersController {
   getProfile(@Request() req) {
     return this.usersService.findOneById(req.user.userId);
   }
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Get('rank')
+  getRank(@Request() req) {
+    return this.usersService.findUserRank(req.user.userId);
+  }
 }
