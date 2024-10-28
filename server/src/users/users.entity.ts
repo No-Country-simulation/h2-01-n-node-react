@@ -1,6 +1,13 @@
 import { Exclude } from 'class-transformer';
+import Ranks from 'src/ranks/ranks.entities';
 import { USER_RANK, USER_ROLE } from 'src/types';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('users')
 export class Users {
@@ -25,13 +32,11 @@ export class Users {
   })
   role: USER_ROLE;
 
-  @Column({
-    type: 'enum',
-    enum: USER_RANK,
-    default: USER_RANK.BRONZE,
-    nullable: false,
-  })
-  rank: USER_RANK;
+  @Column()
+  rank: string;
+  @ManyToOne(() => Ranks, (rank) => rank.users)
+  @JoinColumn({ name: 'rank', referencedColumnName: 'name' })
+  rankInfo: Ranks;
 
   @Column({ type: 'integer', default: 0, nullable: false })
   points: number;

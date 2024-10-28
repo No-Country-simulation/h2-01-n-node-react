@@ -10,12 +10,15 @@ import { RegisterUserDTO } from 'src/auth/dtos/register.dto';
 import * as bcrypt from 'bcrypt';
 import { plainToInstance } from 'class-transformer';
 import { DateTime } from 'luxon';
+import Ranks from 'src/ranks/ranks.entities';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(Users)
     private usersRepository: Repository<Users>,
+    @InjectRepository(Ranks)
+    private ranksRepository: Repository<Ranks>,
   ) {}
   async create(registerUserDto: RegisterUserDTO) {
     const userExists = await this.usersRepository.findOneBy({
@@ -60,5 +63,23 @@ export class UsersService {
     if (!user) throw new UnauthorizedException('User not found');
 
     return user;
+  }
+
+  async findUserRank(id: number) {
+    const user = await this.usersRepository.findOneBy({
+      id,
+    });
+
+    if (!user) throw new UnauthorizedException('User not found');
+
+    const rank = await this.ranksRepository
+      .createQueryBuilder('rank')
+      .leftJoinAndSelect('rank.users', 'user')
+      .where('rank.name = :rankName', { rankName: user.rank })
+      .select(['rank', 'user.id', 'user.username', 'user.image', 'user.points'])
+      .orderBy('user.points', 'DESC')
+      .getOne();
+
+    return rank;
   }
 }

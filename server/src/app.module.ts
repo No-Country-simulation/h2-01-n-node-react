@@ -23,6 +23,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { HttpModule } from '@nestjs/axios';
 import { PredictionsModule } from './predictions/predictions.module';
 import { AggregatePredictionsModule } from './aggregate-predictions/aggregate-predictions.module';
+import { RanksModule } from './ranks/ranks.module';
 
 @Module({
   imports: [
@@ -74,6 +75,7 @@ import { AggregatePredictionsModule } from './aggregate-predictions/aggregate-pr
     PlayerTeamRelationshipsModule,
     PredictionsModule,
     AggregatePredictionsModule,
+    RanksModule,
   ],
   controllers: [AppController],
 })
