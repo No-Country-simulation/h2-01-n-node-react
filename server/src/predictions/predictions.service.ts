@@ -116,24 +116,105 @@ export class PredictionsService {
     const { predictions } = createAggregatePredictionDto;
     const notAllowedStatuses = ['FT', 'AET', 'PEN'];
     const fixturesMap = new Map<string, DateTime>();
-    for (const prediction of predictions) {
-      const fixture = await this.fixturesRepository.findOne({
-        where: { id: prediction.fixtureId },
-      });
-      if (!fixture)
-        throw new NotFoundException(
-          `Fixture with id ${prediction.fixtureId} not found`,
+    const predictionsWithOdds = await Promise.all(
+      predictions.map(async (prediction) => {
+        const fixture = await this.fixturesRepository.findOne({
+          where: { id: prediction.fixtureId },
+        });
+        if (!fixture)
+          throw new NotFoundException(
+            `Fixture with id ${prediction.fixtureId} not found`,
+          );
+        if (notAllowedStatuses.includes(fixture.statusShort))
+          throw new BadRequestException(
+            `Predictions cannot be placed after the fixture with id ${fixture.id} has ended`,
+          );
+        const fixtureDate = DateTime.fromJSDate(fixture.date).setZone(
+          'America/Argentina/Buenos_Aires',
         );
-      if (notAllowedStatuses.includes(fixture.statusShort))
-        throw new BadRequestException(
-          `Predictions cannot be placed after the fixture with id ${fixture.id} has ended`,
-        );
-      const fixtureDate = DateTime.fromJSDate(fixture.date).setZone(
-        'America/Argentina/Buenos_Aires',
-      );
 
-      fixturesMap.set(fixture.id.toString(), fixtureDate);
-    }
+        fixturesMap.set(fixture.id.toString(), fixtureDate);
+
+        const { data } = await firstValueFrom(
+          this.httpService
+            .get(
+              `odds?fixture=${prediction.fixtureId}&league=128&season=2024&bookmaker=8&bet=${prediction.betId}`,
+            )
+            .pipe(
+              catchError((error: AxiosError) => {
+                console.log(error);
+                throw new ConflictException(
+                  'An error occurred while fetching odds',
+                );
+              }),
+            ),
+        );
+
+        if (data?.response.length === 0) {
+          throw new ConflictException('Bet does not exist');
+        }
+
+        const value = data.response[0].bookmakers[0].bets[0].values.find(
+          (obj) => obj.value === prediction.value,
+        );
+
+        if (!value) {
+          throw new ConflictException('Value not found');
+        }
+
+        return {
+          ...prediction,
+          odd: value.odd,
+        };
+      }),
+    );
+    // for (let prediction of predictions) {
+    //   const fixture = await this.fixturesRepository.findOne({
+    //     where: { id: prediction.fixtureId },
+    //   });
+    //   if (!fixture)
+    //     throw new NotFoundException(
+    //       `Fixture with id ${prediction.fixtureId} not found`,
+    //     );
+    //   if (notAllowedStatuses.includes(fixture.statusShort))
+    //     throw new BadRequestException(
+    //       `Predictions cannot be placed after the fixture with id ${fixture.id} has ended`,
+    //     );
+    //   const fixtureDate = DateTime.fromJSDate(fixture.date).setZone(
+    //     'America/Argentina/Buenos_Aires',
+    //   );
+
+    //   fixturesMap.set(fixture.id.toString(), fixtureDate);
+
+    //   const { data } = await firstValueFrom(
+    //     this.httpService
+    //       .get(
+    //         `odds?fixture=${prediction.fixtureId}&league=128&season=2024&bookmaker=8&bet=${prediction.betId}`,
+    //       )
+    //       .pipe(
+    //         catchError((error: AxiosError) => {
+    //           console.log(error);
+    //           throw new ConflictException(
+    //             'An error occurred while fetching odds',
+    //           );
+    //         }),
+    //       ),
+    //   );
+
+    //   if (data?.response.length === 0) {
+    //     throw new ConflictException('Bet does not exist');
+    //   }
+
+    //   const value = data.response[0].bookmakers[0].bets[0].values.find(
+    //     (obj) => obj.value === prediction.value,
+    //   );
+
+    //   if (!value) {
+    //     throw new ConflictException('Value not found');
+    //   }
+
+    //   (prediction as PredictionWithOdd).odd = value.odd;
+    // }
 
     const createdAt = DateTime.now().setZone('America/Argentina/Buenos_Aires');
 
@@ -175,7 +256,7 @@ export class PredictionsService {
     });
 
     return await this.predictionsRepository.save(
-      predictions.map((prediction) => ({
+      predictionsWithOdds.map((prediction) => ({
         ...prediction,
         aggregatePredictionId: aggregatePrediction.id,
         userId,
