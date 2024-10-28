@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 import { useTheme } from "@/app/components/context/ThemeContext";
@@ -39,7 +40,7 @@ export default function page() {
               </p>
             </div>
 
-            <div className="space-y-4">
+            {/* <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <label htmlFor="language" className="font-medium">
                   Idioma
@@ -77,7 +78,7 @@ export default function page() {
                   )}
                 </button>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

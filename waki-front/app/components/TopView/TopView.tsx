@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import DefaultAvatar from "@/app/assets/avatar/people1.jpeg";
 import IconBall from "@/app/assets/icon-ball.png";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import "./topview.css";
 import Cookies from "js-cookie";
 
@@ -12,6 +13,8 @@ export default function TopView() {
     username: "Usuario",
     profileImage: null,
   });
+  
+  const router = useRouter(); 
 
   const fetchUserProfile = async () => {
     const token = Cookies.get("authToken");
@@ -47,31 +50,37 @@ export default function TopView() {
     fetchUserProfile(); 
   }, []);
 
+  const handleUsernameClick = () => {
+    router.push("/profile"); 
+  };
+
   return (
-      <div className="component-imagen">
+    <div className="component-imagen">
+      <Image
+        priority={true}
+        alt="Imagen de Perfil"
+        className="avatarImg"
+        src={userProfile.profileImage || DefaultAvatar}
+        width={50}
+        height={50}
+      />
+      <div className="welcome-user" onClick={handleUsernameClick} style={{ cursor: 'pointer' }}>
+        {userProfile.username} 
+      </div>
+      <div className="icon-ball-container">
         <Image
           priority={true}
-          alt="Imagen de Perfil"
-          className="avatarImg"
-          src={userProfile.profileImage || DefaultAvatar}
-          width={50}
-          height={50}
+          alt="Icono de balón"
+          className="icon-ball"
+          src={IconBall}
+          width={35}
+          height={35}
         />
-        <div className="welcome-user">¡Hola, {userProfile.username}! </div>
-        <div className="icon-ball-container">
-          <Image
-            priority={true}
-            alt="Icono de balón"
-            className="icon-ball"
-            src={IconBall}
-            width={35}
-            height={35}
-          />
       
-            <h1 className="counter-life">5</h1>
-          
-          <button className="buy-button">+</button>
-        </div>
+        <h1 className="counter-life">5</h1>
+        
+        <button className="buy-button">+</button>
       </div>
+    </div>
   );
 }
