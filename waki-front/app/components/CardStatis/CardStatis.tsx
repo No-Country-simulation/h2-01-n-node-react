@@ -71,14 +71,14 @@ export default function CardStatis({
 
   return (
     <div
-      className="w-full max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl"
+      className="w-full max-w-md mx-auto rounded-xl shadow-md overflow-hidden md:max-w-2xl"
       id="cardStatis"
     >
       <div className="p-8">
         <div className="uppercase tracking-wide text-sm text-gray-700 font-semibold mb-4">
           Resultado final
         </div>
-        <div className="bg-blue-50 rounded-lg p-4">
+        <div className=" rounded-lg p-4">
           <div className="grid grid-cols-3 gap-4">
             {matchStatistics.length > 0 ? (
               matchStatistics.map((stat, index) => (
@@ -91,7 +91,7 @@ export default function CardStatis({
                   key={index}
                 >
                   <div className="text-center">
-                    <div className="text-sm font-medium text-gray-700">
+                    <div className="text-sm font-medium">
                       <span
                         className="team-span font-semibold text-sm overflow-hidden text-ellipsis whitespace-nowrap max-w-[50px] text-center cursor-pointer"
                       >
@@ -99,7 +99,7 @@ export default function CardStatis({
                       </span>
                     </div>
                     <div
-                      className="text-2xl font-bold text-gray-900"
+                      className="text-2xl font-bold"
                       id="statisPercentage"
                     >
                       {stat.percentage}

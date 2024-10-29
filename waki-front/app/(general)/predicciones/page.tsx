@@ -499,7 +499,7 @@ export default function page() {
                   <button
                     className={`p-4 rounded-lg flex flex-col items-center ${
                       selectedOption === "Resultado"
-                        ? "bg-blue-500 text-white"
+                        ? "bg-blue-500"
                         : "bg-gray-200"
                     }`}
                     onClick={() => handleOptionClick("Resultado")}
@@ -516,7 +516,7 @@ export default function page() {
                   <button
                     className={`p-4 rounded-lg flex flex-col items-center ${
                       selectedOption === "Gol por jugador"
-                        ? "bg-blue-500 text-white"
+                        ? "bg-blue-500"
                         : "bg-gray-200"
                     }`}
                     onClick={() => setSelectedOption("Gol por jugador")}
@@ -658,7 +658,7 @@ export default function page() {
                     Hacer combinada
                   </button>
                   <button
-                    className="px-4 py-2 bg-purple-500 text-white rounded-lg"
+                    className="px-4 py-2 bg-purple-500 rounded-lg"
                     id="btnCard"
                     onClick={handleContinue}
                   >
@@ -745,7 +745,7 @@ export default function page() {
                 )}
 
                 <button
-                  className="w-full py-3 bg-purple-500 text-white rounded-lg font-bold"
+                  className="w-full py-3 bg-purple-500 rounded-lg font-bold"
                   onClick={handleConfirm}
                 >
                   Sí, predecir
