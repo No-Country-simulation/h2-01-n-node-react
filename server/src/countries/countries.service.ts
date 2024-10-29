@@ -11,7 +11,9 @@ export class CountriesService {
   ) {}
 
   async findAll() {
-    return await this.countriesRepository.find();
+    const countries = await this.countriesRepository.find();
+
+    return { countries };
   }
 
   async findOneByName(name: string) {
@@ -19,6 +21,6 @@ export class CountriesService {
 
     if (!country) throw new NotFoundException('Country not found');
 
-    return country;
+    return { country };
   }
 }

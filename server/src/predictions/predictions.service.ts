@@ -19,7 +19,8 @@ import { catchError, firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import { AxiosError } from 'axios';
 import { formatFixtures } from 'src/util/format';
-import { PREDICTION_STATUS } from 'src/types';
+import { PREDICTION_STATUS, USER_ROLE } from 'src/types';
+import { Users } from 'src/users/users.entity';
 
 @Injectable()
 export class PredictionsService {
@@ -30,6 +31,8 @@ export class PredictionsService {
     private aggregatePredictionsRepository: Repository<AggregatePredictions>,
     @InjectRepository(Fixtures)
     private fixturesRepository: Repository<Fixtures>,
+    @InjectRepository(Users)
+    private usersRepository: Repository<Users>,
     private configService: ConfigService,
     private httpService: HttpService,
     @InjectEntityManager() private readonly entityManager: EntityManager,
@@ -39,6 +42,17 @@ export class PredictionsService {
     createPredictionDto: CreatePredictionDTO,
     userId: number,
   ) {
+    let user = await this.usersRepository.findOneBy({
+      id: userId,
+    });
+
+    if (!user) throw new NotFoundException('User not found');
+
+    const predictionLimits = {
+      today: user.role === USER_ROLE.PREMIUM ? 10 : 5,
+      future: user.role === USER_ROLE.PREMIUM ? 4 : 2,
+    };
+
     const fixture = await this.fixturesRepository.findOne({
       where: { id: createPredictionDto.fixtureId },
     });
@@ -57,7 +71,9 @@ export class PredictionsService {
     );
 
     const isSameDay = createdAt.hasSame(fixtureDate, 'day');
-    const maxPredictions = isSameDay ? 5 : 2;
+    const maxPredictions = isSameDay
+      ? predictionLimits.today
+      : predictionLimits.future;
     const date = isSameDay ? createdAt : fixtureDate;
 
     const startOfDay = date.startOf('day').toJSDate();
@@ -101,18 +117,31 @@ export class PredictionsService {
 
     if (!value) throw new ConflictException('Value not found');
 
-    return await this.predictionsRepository.save({
+    const prediction = await this.predictionsRepository.save({
       ...createPredictionDto,
       odd: value.odd,
       userId,
       createdAt: createdAt.toISO(),
     });
+
+    return { prediction };
   }
 
   async createAggregatePrediction(
     createAggregatePredictionDto: CreateAggregatePredictionDTO,
     userId: number,
   ) {
+    let user = await this.usersRepository.findOneBy({
+      id: userId,
+    });
+
+    if (!user) throw new NotFoundException('User not found');
+
+    const predictionLimits = {
+      today: user.role === USER_ROLE.PREMIUM ? 10 : 5,
+      future: user.role === USER_ROLE.PREMIUM ? 4 : 2,
+    };
+
     const { predictions } = createAggregatePredictionDto;
     const notAllowedStatuses = ['FT', 'AET', 'PEN'];
     const fixturesMap = new Map<string, DateTime>();
@@ -242,11 +271,14 @@ export class PredictionsService {
       const totalCount = existingCount + newCount;
 
       const isSameDay = createdAt.hasSame(DateTime.fromISO(dateKey), 'day');
-      const maxPredictions = isSameDay ? 5 : 2;
+      const maxPredictions = isSameDay
+        ? predictionLimits.today
+        : predictionLimits.future;
 
       if (totalCount > maxPredictions) {
         throw new BadRequestException(
-          `Maximum ${maxPredictions} predictions reached for ${dateKey}. You already have ${existingCount} predictions plus ${newCount} being added.`,
+          `Maximum ${maxPredictions} predictions reached for ${dateKey}.`,
+          // `Maximum ${maxPredictions} predictions reached for ${dateKey}. You already have ${existingCount} predictions plus ${newCount} being added.`,
         );
       }
     }
@@ -255,7 +287,7 @@ export class PredictionsService {
       userId,
     });
 
-    return await this.predictionsRepository.save(
+    const _predictions = await this.predictionsRepository.save(
       predictionsWithOdds.map((prediction) => ({
         ...prediction,
         aggregatePredictionId: aggregatePrediction.id,
@@ -263,6 +295,9 @@ export class PredictionsService {
         createdAt: createdAt.toISO(),
       })),
     );
+
+    aggregatePrediction.predictions = _predictions;
+    return { aggregatePrediction };
   }
 
   async findSinglePredictionById(id: number) {

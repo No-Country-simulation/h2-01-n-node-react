@@ -44,6 +44,9 @@ export class Users {
   @Column({ nullable: true })
   image: string;
 
+  @Column({ nullable: true })
+  premiumExpireDate: Date;
+
   @Column({
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',

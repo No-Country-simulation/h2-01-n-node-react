@@ -159,7 +159,7 @@ export class FixturesService {
     // delete fixture.homeTeam.playerTeamRelationships;
     // delete fixture.awayTeam.playerTeamRelationships;
 
-    return fixture;
+    return { fixture };
   }
 
   @Cron('0 0 * * *', {

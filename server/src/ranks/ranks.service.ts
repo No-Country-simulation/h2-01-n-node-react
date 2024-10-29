@@ -16,7 +16,9 @@ export class RanksService {
   ) {}
 
   async findAll() {
-    return await this.ranksRepository.find();
+    const ranks = await this.ranksRepository.find();
+
+    return { ranks };
   }
 
   async findOneByName(name: string) {
@@ -30,7 +32,7 @@ export class RanksService {
       .orderBy('user.points', 'DESC')
       .getOne();
 
-    return rank;
+    return { rank };
   }
 
   @Cron('55 23 * * *', {

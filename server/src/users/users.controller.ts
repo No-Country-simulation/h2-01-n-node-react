@@ -2,6 +2,7 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
+  Put,
   Request,
   UseGuards,
   UseInterceptors,
@@ -22,9 +23,16 @@ export class UsersController {
   getProfile(@Request() req) {
     return this.usersService.findOneById(req.user.userId);
   }
+
   @UseInterceptors(ClassSerializerInterceptor)
   @Get('rank')
   getRank(@Request() req) {
     return this.usersService.findUserRank(req.user.userId);
+  }
+
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Put('premium')
+  upgradeUserToPremium(@Request() req) {
+    return this.usersService.upgradeUserToPremium(req.user.userId);
   }
 }
