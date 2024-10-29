@@ -11,6 +11,7 @@ import * as bcrypt from 'bcrypt';
 import { plainToInstance } from 'class-transformer';
 import { DateTime } from 'luxon';
 import Ranks from 'src/ranks/ranks.entities';
+import { USER_ROLE } from 'src/types';
 
 @Injectable()
 export class UsersService {
@@ -52,7 +53,7 @@ export class UsersService {
 
     if (!user) throw new UnauthorizedException('User not found');
 
-    return user;
+    return { user };
   }
 
   async findOneById(id: number) {
@@ -62,7 +63,7 @@ export class UsersService {
 
     if (!user) throw new UnauthorizedException('User not found');
 
-    return user;
+    return { user };
   }
 
   async findUserRank(id: number) {
@@ -80,6 +81,29 @@ export class UsersService {
       .orderBy('user.points', 'DESC')
       .getOne();
 
-    return rank;
+    return { rank };
+  }
+
+  async upgradeUserToPremium(id: number) {
+    let user = await this.usersRepository.findOneBy({
+      id,
+    });
+
+    if (!user) throw new UnauthorizedException('User not found');
+
+    if (user.role === USER_ROLE.PREMIUM)
+      throw new ConflictException('User is already premium');
+
+    user.role = USER_ROLE.PREMIUM;
+    user.premiumExpireDate = DateTime.now()
+      .setZone('America/Argentina/Buenos_Aires')
+      .plus({ month: 1 })
+      .toJSDate();
+
+    const updatedUser = await this.usersRepository.save(user);
+
+    delete updatedUser.password;
+
+    return { user: updatedUser };
   }
 }

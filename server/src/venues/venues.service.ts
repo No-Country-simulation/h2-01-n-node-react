@@ -15,7 +15,9 @@ export class VenuesService {
   ) {}
 
   async findAll() {
-    return await this.venuesRepository.find({ relations: ['country'] });
+    const venues = await this.venuesRepository.find({ relations: ['country'] });
+
+    return { venues };
   }
 
   async findOneById(id: number) {
@@ -26,7 +28,7 @@ export class VenuesService {
 
     if (!venue) throw new NotFoundException('Venue not found');
 
-    return venue;
+    return { venue };
   }
 
   async findManyByCountryName(name: string) {
@@ -41,6 +43,6 @@ export class VenuesService {
       relations: ['country'],
     });
 
-    return venues;
+    return { venues };
   }
 }

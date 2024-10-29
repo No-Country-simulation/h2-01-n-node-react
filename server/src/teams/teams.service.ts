@@ -13,30 +13,32 @@ export class TeamsService {
   ) {}
 
   async findAll() {
-    return await this.teamsRepository.find({
+    const teams = await this.teamsRepository.find({
       relations: ['country'],
     });
+
+    return { teams };
   }
 
   async findOneById(id: number) {
-    const team = this.teamsRepository.findOne({
+    const team = await this.teamsRepository.findOne({
       where: { id },
       relations: ['country', 'venue'],
     });
 
     if (!team) throw new NotFoundException('Team not found');
 
-    return team;
+    return { team };
   }
 
   async findManyByCountryName(name: string) {
-    const country = await this.countriesService.findOneByName(name);
+    const { country } = await this.countriesService.findOneByName(name);
 
     const leagues = await this.teamsRepository.find({
       where: { country: { name: country.name } },
       relations: ['country'],
     });
 
-    return leagues;
+    return { leagues };
   }
 }
