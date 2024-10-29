@@ -201,7 +201,7 @@ export default function MatchCard({ activeTab }: { activeTab: string }) {
 
           if (Array.isArray(data.fixtures)) {
             const formattedMatches = data.fixtures
-              .filter((match) => match.homeGoals > 0 || match.awayGoals > 0)
+              .filter((match) => match.homeGoals >= 0 || match.awayGoals >= 0)
               .map((match) => {
                 const matchDate = new Date(match?.date);
                 const date = matchDate.toLocaleDateString("es-ES", {

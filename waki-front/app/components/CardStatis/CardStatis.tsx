@@ -99,7 +99,7 @@ export default function CardStatis({
                       </span>
                     </div>
                     <div
-                      className="text-2xl font-bold text-gray-900"
+                      className="text-2x2 text-sm font-bold text-gray-900"
                       id="statisPercentage"
                     >
                       {stat.percentage}
