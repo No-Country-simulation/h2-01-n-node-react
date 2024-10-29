@@ -16,9 +16,9 @@ interface PlayerData {
 }
 
 const PlayerRow = ({ player, isEven }: { player: PlayerData; isEven: boolean }) => (
-  <div className={`flex items-center justify-between p-3 ${isEven ? 'bg-gray-100' : 'bg-white'}`}>
+  <div className={`flex items-center justify-between p-3 ${isEven ? '' : ''}`}>
     <div className="flex items-center space-x-3">
-      <span className="text-gray-500 w-6">{player.rank}</span>
+      <span className=" w-6">{player.rank}</span>
       <span className="font-medium">{player.name}</span>
     </div>
     <div className="flex items-center space-x-4">
@@ -29,9 +29,9 @@ const PlayerRow = ({ player, isEven }: { player: PlayerData; isEven: boolean }) 
         height={20} 
         className="object-contain"
       />
-      <span className="text-gray-600">{player.publications}k</span>
+      <span className="">{player.publications}k</span>
       <span className="font-medium">{player.price}</span>
-      <ChevronRight className="w-5 h-5 text-gray-400" />
+      <ChevronRight className="w-5 h-5 " />
     </div>
   </div>
 )
@@ -57,8 +57,8 @@ export default function page() {
         </div>
         <h1 className='subtitle-jugadores'>Ranking de jugadores</h1>
         <div className='table-jugadores'>
-        <div className="max-w-md mx-auto bg-white rounded-xl overflow-hidden shadow-lg">
-      <div className="bg-purple-600 text-white p-3 flex justify-between items-center">
+        <div className="max-w-md mx-auto rounded-xl overflow-hidden shadow-lg">
+      <div className="bg-purple-600 p-3 flex justify-between items-center">
         <span className="font-medium"># Jugador</span>
         <div className="flex space-x-4">
           <span>Div.</span>
@@ -66,7 +66,7 @@ export default function page() {
           <span>Precio</span>
         </div>
       </div>
-      <div className="divide-y divide-gray-200">
+      <div className="divide-y">
         {players.map((player, index) => (
           <PlayerRow key={index} player={player} isEven={index % 2 === 0} />
         ))}
