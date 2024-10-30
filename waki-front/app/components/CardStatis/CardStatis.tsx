@@ -24,12 +24,12 @@ export default function CardStatis({
   useEffect(() => {
     const fetchMatches = async () => {
       const token = Cookies.get("authToken");
-
+  
       if (!token) {
         console.error("No hay token, redirigiendo a la autenticación.");
         return;
       }
-
+  
       try {
         const response = await fetch(FIXTURE_URL, {
           method: "GET",
@@ -38,17 +38,23 @@ export default function CardStatis({
             "Content-Type": "application/json",
           },
         });
-
+  
         if (response.ok) {
           const data = await response.json();
-          if (data) {
+  
+          const fixture = data.fixture;
+  
+          if (fixture && fixture.fixtureBets.length > 0) {
+            const fixtureBets = fixture.fixtureBets[0];
             const newStatistics: MatchStatistic[] = [
-              { team: data.homeTeam.name, percentage: data.fixtureBets[0].fixtureBetOdds[0].odd },
-              { team: "Empate", percentage: data.fixtureBets[0].fixtureBetOdds[1].odd },
-              { team: data.awayTeam.name, percentage: data.fixtureBets[0].fixtureBetOdds[2].odd },
+              { team: fixture.homeTeam.name, percentage: fixtureBets.fixtureBetOdds[0].odd },
+              { team: "Empate", percentage: fixtureBets.fixtureBetOdds[1].odd },
+              { team: fixture.awayTeam.name, percentage: fixtureBets.fixtureBetOdds[2].odd },
             ];
-
+  
             setMatchStatistics(newStatistics);
+          } else {
+            console.error("No hay apuestas disponibles para este fixture");
           }
         } else {
           console.error("Error al obtener los datos:", await response.json());
@@ -57,10 +63,9 @@ export default function CardStatis({
         console.error("Error en la solicitud:", error);
       }
     };
-
+  
     fetchMatches();
   }, [FIXTURE_URL]);
-
   const handleTooltipOpen = (teamName: string) => {
     setTooltip(teamName);
   };
@@ -99,7 +104,7 @@ export default function CardStatis({
                       </span>
                     </div>
                     <div
-                      className="text-2x2 text-sm font-bold text-gray-900"
+                      className="text-2x2 text-sm font-bold"
                       id="statisPercentage"
                     >
                       {stat.percentage}

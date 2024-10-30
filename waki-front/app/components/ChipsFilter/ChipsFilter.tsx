@@ -39,7 +39,7 @@ export default function ChipsFilter() {
           });
           if (response.ok) {
             const data = await response.json();
-            setLeagues(data.leagues); // Ahora accedemos a la propiedad leagues
+            setLeagues(data.leagues); 
           } else {
             console.error('Error al obtener las ligas');
           }
