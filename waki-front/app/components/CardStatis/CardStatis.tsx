@@ -113,7 +113,7 @@ export default function CardStatis({
                 </Tooltip>
               ))
             ) : (
-              <div className="text-center">Cargando estadísticas...</div>
+              <div className="text-center">No hay estadisticas de este partido</div>
             )}
           </div>
         </div>
