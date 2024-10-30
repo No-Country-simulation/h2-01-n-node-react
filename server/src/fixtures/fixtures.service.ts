@@ -176,7 +176,7 @@ export class FixturesService {
     const previousDay = today.minus({ days: 1 });
     const previousDayFormatted = previousDay.toFormat('yyyy-MM-dd');
 
-    const fiveDaysFromToday = today.plus({ days: 3 }).endOf('day');
+    const fiveDaysFromToday = today.plus({ days: 5 }).endOf('day');
     const fiveDaysFromTodayFormatted = fiveDaysFromToday.toFormat('yyyy-MM-dd');
 
     try {
