@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useEffect, ReactNode } from "react";
 import Image from "next/image";
@@ -140,153 +141,101 @@ export default function MatchCardLive({ activeTab }: { activeTab: string }) {
       dateParam = getFormattedDate(today);
   }
 
-  const handleApostar = async (fixtureId: number) => {
-    const API_BASE_URL = "https://waki.onrender.com/api";
-    const FIXTURE_URL = `${API_BASE_URL}/fixtures/${fixtureId}`;
-    const token = Cookies.get("authToken");
+  const API_BASE_URL = "https://waki.onrender.com/api";
 
+  const fetchData = async (url: string, method = "GET") => {
+    const token = Cookies.get("authToken");
     if (!token) {
       router.push("/auth");
-      return;
+      throw new Error("Usuario no autenticado");
     }
-
+  
     try {
-      const response = await fetch(FIXTURE_URL, {
-        method: "GET",
+      const response = await fetch(url, {
+        method,
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
-
-      if (response.ok) {
-        const fixtureData = await response.json();
-        Cookies.set(`fixture`, JSON.stringify(fixtureData.id), {
-          expires: 7,
-        });
-
-        router.push(`/predicciones?fixtureId=${fixtureId}`);
-      } else {
+  
+      if (!response.ok) {
         const errorData = await response.json();
-        console.error("Error al obtener los datos:", errorData);
+        console.error("Error en la solicitud:", errorData);
+        return null;
       }
+      return await response.json();
     } catch (error) {
       console.error("Error en la solicitud:", error);
+      return null;
     }
   };
-
-  const API_BASE_URL = "https://waki.onrender.com/api";
-  const FIXTURES_API_URL = `${API_BASE_URL}/fixtures?date=${dateParam}`;
-
+  
+  // Función para manejar la lógica de "Apostar"
+  const handleApostar = async (fixtureId: number) => {
+    const fixtureData = await fetchData(`${API_BASE_URL}/fixtures/${fixtureId}`);
+    
+    if (fixtureData && fixtureData.fixture) {
+      Cookies.set("fixture", JSON.stringify(fixtureData.fixture.id), { expires: 7 });
+      router.push(`/predicciones?fixtureId=${fixtureId}`);
+    }
+  };
+  
+  // Hook para obtener y procesar los "Fixtures"
   useEffect(() => {
-
     const fetchMatches = async () => {
-      const token = Cookies.get("authToken");
-
-      if (!token) {
-        router.push("/auth");
-        return;
-      }
-
-      try {
-        const response = await fetch(FIXTURES_API_URL, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (response.ok) {
-          const data: FixturesResponse = await response.json();
-
-          if (data.fixtures.length === 0 && data.nextDate) {
-            Cookies.set("nextDate", data.nextDate, { expires: 7 });
-          }
-          
-          if (Array.isArray(data.fixtures)) {
-            const formattedMatches = data.fixtures
-              .filter(
-                (match) => match.homeGoals == null && match.awayGoals == null
-              )
-              .map((match) => {
-                const matchDate = new Date(match?.date);
-                const date = matchDate.toLocaleDateString("es-ES", {
-                  day: "2-digit",
-                  month: "short",
-                });
-                const time = matchDate.toLocaleTimeString("es-ES", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                });
-
-                return {
-                  id: match.id,
-                  date: date,
-                  time: time,
-                  homeGoals: match.homeGoals,
-                  awayGoals: match.awayGoals,
-                  homeTeam: match.homeTeam,
-                  awayTeam: match.awayTeam,
-                };
-              });
-            setMatches(formattedMatches as Fixture[]);
-          } else {
-            console.error(
-              "Error: La respuesta no contiene un array de fixtures",
-              data
-            );
-          }
-        } else {
-          const errorData = await response.json();
-          console.error("Error al obtener los datos:", errorData);
+      const fixturesData = await fetchData(`${API_BASE_URL}/fixtures?date=${dateParam}`);
+  
+      if (fixturesData && fixturesData.fixtures) {
+        const fixtures = fixturesData.fixtures;
+  
+        if (fixtures.length === 0 && fixturesData.nextDate) {
+          Cookies.set("nextDate", fixturesData.nextDate, { expires: 7 });
         }
-      } catch (error) {
-        console.error("Error en la solicitud:", error);
-      }
-    };
-
-    fetchMatches();
-  }, [router, FIXTURES_API_URL]);
-
-  useEffect(() => {
-    const API_BASE_URL = "https://waki.onrender.com/api";
-    const LEAGUES_API_URL = `${API_BASE_URL}/leagues/current`;
-
-    const fetchLeagues = async () => {
-      const token = Cookies.get("authToken");
-      if (!token) {
-        router.push("/auth");
+  
+        const formattedMatches = fixtures
+          .filter((match: { homeGoals: null; awayGoals: null; }) => match.homeGoals == null && match.awayGoals == null)
+          .map((match: { date: string | number | Date; id: any; homeGoals: any; awayGoals: any; homeTeam: any; awayTeam: any; }) => {
+            const matchDate = new Date(match.date);
+            return {
+              id: match.id,
+              date: matchDate.toLocaleDateString("es-ES", { day: "2-digit", month: "short" }),
+              time: matchDate.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" }),
+              homeGoals: match.homeGoals,
+              awayGoals: match.awayGoals,
+              homeTeam: match.homeTeam,
+              awayTeam: match.awayTeam,
+            };
+          });
+  
+        setMatches(formattedMatches as Fixture[]);
       } else {
-        setIsAuthenticated(true);
-      }
-
-      try {
-        const response = await fetch(LEAGUES_API_URL, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          const leaguesArray = Array.isArray(data) ? data : [data];
-          setLeagues(leaguesArray);
-        } else {
-          const errorData = await response.json();
-          console.error("Error obteniendo las ligas:", errorData);
-        }
-      } catch (error) {
-        console.error("Error en la solicitud de ligas:", error);
-      } finally {
-        setLoading(false);
+        console.error("Error: La respuesta no contiene un array de fixtures", fixturesData);
       }
     };
-
+  
+    fetchMatches();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router, dateParam]);
+  
+  // Hook para obtener y procesar las "Leagues"
+  useEffect(() => {
+    const fetchLeagues = async () => {
+      const leaguesData = await fetchData(`${API_BASE_URL}/leagues/current`);
+  
+      if (leaguesData && leaguesData.leagues) {
+        setLeagues(leaguesData.leagues);
+      } else {
+        console.error("Error: La respuesta no contiene un array de leagues", leaguesData);
+      }
+  
+      setLoading(false);
+    };
+  
     fetchLeagues();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
+  
 
   return (
     <div className="max-w-md mx-auto mt-10 bg-white shadow-lg overflow-hidden rounded-lg">

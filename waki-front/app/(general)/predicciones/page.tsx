@@ -121,7 +121,8 @@ export default function page() {
   } | null>(null);
   const [showConfirmationPopup, setShowConfirmationPopup] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const [matches, setMatches] = useState<Fixture[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [matches, setMatches] = useState<any[]>([]);
   const [openStates, setOpenStates] = useState<Record<number, boolean>>({});
   const [loading, setLoading] = useState(true);
   const [matchStatistics, setMatchStatistics] = useState<MatchStatistic[]>([]);
@@ -280,16 +281,16 @@ export default function page() {
   const fixtureId = Cookies.get("fixture");
   const API_BASE_URL = "https://waki.onrender.com/api";
   const FIXTURE_URL = `${API_BASE_URL}/fixtures/${fixtureId}`;
-
+  
   useEffect(() => {
     const fetchMatches = async () => {
       const token = Cookies.get("authToken");
-
+  
       if (!token) {
         router.push("/auth");
         return;
       }
-
+  
       try {
         const response = await fetch(FIXTURE_URL, {
           method: "GET",
@@ -298,28 +299,33 @@ export default function page() {
             "Content-Type": "application/json",
           },
         });
-
+  
         if (response.ok) {
           const data = await response.json();
-
-          if (data) {
-            const match = data;
+  
+          if (data && data.fixture) { // Asegúrate de que 'fixture' existe
+            const fixture = data.fixture;
+  
+            // Formateo de estadísticas
+            const fixtureBets = fixture.fixtureBets[0]?.fixtureBetOdds || [];
             const newStatistics: MatchStatistic[] = [
               {
-                team: data.homeTeam.name,
-                percentage: data.fixtureBets[0].fixtureBetOdds[0].odd,
+                team: fixture.homeTeam.name,
+                percentage: fixtureBets[0]?.odd || 0,
               },
               {
                 team: "Empate",
-                percentage: data.fixtureBets[0].fixtureBetOdds[1].odd,
+                percentage: fixtureBets[1]?.odd || 0,
               },
               {
-                team: data.awayTeam.name,
-                percentage: data.fixtureBets[0].fixtureBetOdds[2].odd,
+                team: fixture.awayTeam.name,
+                percentage: fixtureBets[2]?.odd || 0,
               },
             ];
             setMatchStatistics(newStatistics);
-            const matchDate = new Date(match?.date);
+  
+            // Formateo de fecha y hora del partido
+            const matchDate = new Date(fixture.date);
             const date = matchDate.toLocaleDateString("es-ES", {
               day: "2-digit",
               month: "short",
@@ -328,24 +334,24 @@ export default function page() {
               hour: "2-digit",
               minute: "2-digit",
             });
-
+  
+            // Formateo del objeto del partido
             const formattedMatch = {
-              id: match.id,
+              id: fixture.id,
               date: date,
               time: time,
-              homeGoals: match.homeGoals,
-              awayGoals: match.awayGoals,
-              homeTeam: match.homeTeam,
-              awayTeam: match.awayTeam,
+              homeGoals: fixture.homeGoals ?? 0,
+              awayGoals: fixture.awayGoals ?? 0,
+              homeTeam: fixture.homeTeam,
+              awayTeam: fixture.awayTeam,
+              venue: fixture.venue,
+              league: fixture.league,
             };
+  
+            setMatches([formattedMatch]); 
 
-            // Actualiza el estado con el fixture formateado
-            setMatches([formattedMatch as Fixture]);
           } else {
-            console.error(
-              "Error: La respuesta no contiene un fixture válido",
-              data
-            );
+            console.error("Error: La respuesta no contiene un fixture válido", data);
           }
         } else {
           const errorData = await response.json();
@@ -357,11 +363,13 @@ export default function page() {
         setLoading(false);
       }
     };
-
+  
     fetchMatches();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [FIXTURE_URL, router]);
-
+  
+  
+  
   return (
     <>
       <div>

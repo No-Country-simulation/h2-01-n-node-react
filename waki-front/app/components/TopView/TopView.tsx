@@ -34,9 +34,10 @@ export default function TopView() {
 
       if (response.ok) {
         const data = await response.json();
+        // Acceder a la propiedad `user` en el objeto principal
         setUserProfile({
-          username: data.username,
-          profileImage: data.profileImage || null, 
+          username: data.user.username,
+          profileImage: data.user.profileImage || null, 
         });
       } else {
         console.error("Error al obtener perfil:", await response.json());

@@ -142,12 +142,12 @@ export default function MatchCard({ activeTab }: { activeTab: string }) {
     const API_BASE_URL = "https://waki.onrender.com/api";
     const FIXTURE_URL = `${API_BASE_URL}/fixtures/${fixtureId}`;
     const token = Cookies.get("authToken");
-
+  
     if (!token) {
       router.push("/auth");
       return;
     }
-
+  
     try {
       const response = await fetch(FIXTURE_URL, {
         method: "GET",
@@ -156,10 +156,10 @@ export default function MatchCard({ activeTab }: { activeTab: string }) {
           "Content-Type": "application/json",
         },
       });
-
+  
       if (response.ok) {
-        const fixtureData = await response.json();
-
+        const data = await response.json();
+        const fixtureData = data.fixture; 
         router.push(`/predicciones?fixtureId=${fixtureId}`);
       } else {
         const errorData = await response.json();
@@ -169,20 +169,20 @@ export default function MatchCard({ activeTab }: { activeTab: string }) {
       console.error("Error en la solicitud:", error);
     }
   };
+  
 
   const API_BASE_URL = "https://waki.onrender.com/api";
   const FIXTURES_API_URL = `${API_BASE_URL}/fixtures?date=${dateParam}`;
 
   useEffect(() => {
-
     const fetchMatches = async () => {
       const token = Cookies.get("authToken");
-
+  
       if (!token) {
         router.push("/auth");
         return;
       }
-
+  
       try {
         const response = await fetch(FIXTURES_API_URL, {
           method: "GET",
@@ -191,17 +191,17 @@ export default function MatchCard({ activeTab }: { activeTab: string }) {
             "Content-Type": "application/json",
           },
         });
-
+  
         if (response.ok) {
           const data: FixturesResponse = await response.json();
-
+  
           if (data.fixtures.length === 0 && data.nextDate) {
             Cookies.set("nextDate", data.nextDate, { expires: 7 });
           }
-
+  
           if (Array.isArray(data.fixtures)) {
             const formattedMatches = data.fixtures
-              .filter((match) => match.homeGoals >= 0 || match.awayGoals >= 0)
+              .filter((match) => match.homeGoals !== null || match.awayGoals !== null)
               .map((match) => {
                 const matchDate = new Date(match?.date);
                 const date = matchDate.toLocaleDateString("es-ES", {
@@ -212,7 +212,7 @@ export default function MatchCard({ activeTab }: { activeTab: string }) {
                   hour: "2-digit",
                   minute: "2-digit",
                 });
-
+  
                 return {
                   id: match.id,
                   date: date,
@@ -238,15 +238,15 @@ export default function MatchCard({ activeTab }: { activeTab: string }) {
         console.error("Error en la solicitud:", error);
       }
     };
-
+  
     fetchMatches();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router, FIXTURES_API_URL]);
+  
 
   useEffect(() => {
     const API_BASE_URL = "https://waki.onrender.com/api";
     const LEAGUES_API_URL = `${API_BASE_URL}/leagues/current`;
-
+  
     const fetchLeagues = async () => {
       const token = Cookies.get("authToken");
       if (!token) {
@@ -254,7 +254,7 @@ export default function MatchCard({ activeTab }: { activeTab: string }) {
       } else {
         setIsAuthenticated(true);
       }
-
+  
       try {
         const response = await fetch(LEAGUES_API_URL, {
           method: "GET",
@@ -263,10 +263,10 @@ export default function MatchCard({ activeTab }: { activeTab: string }) {
             "Content-Type": "application/json",
           },
         });
-
+  
         if (response.ok) {
           const data = await response.json();
-          const leaguesArray = Array.isArray(data) ? data : [data];
+          const leaguesArray = Array.isArray(data.leagues) ? data.leagues : [];
           setLeagues(leaguesArray);
         } else {
           const errorData = await response.json();
@@ -278,9 +278,10 @@ export default function MatchCard({ activeTab }: { activeTab: string }) {
         setLoading(false);
       }
     };
-
+  
     fetchLeagues();
   }, [router]);
+  
 
   return (
     <div className="max-w-md mx-auto mt-10 bg-white shadow-lg overflow-hidden rounded-lg">

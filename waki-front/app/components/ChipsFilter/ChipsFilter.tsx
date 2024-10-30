@@ -4,7 +4,6 @@ import './chipsfilter.css';
 import Cookies from "js-cookie";
 import { useRouter } from 'next/navigation';
 
-// Interfaces
 interface Country {
   name: string;
   code: string;
@@ -20,7 +19,6 @@ interface League {
 }
 
 export default function ChipsFilter() {
-  // Usamos la interfaz League[] para definir el estado
   const [leagues, setLeagues] = useState<League[]>([]);
   const router = useRouter();
 
@@ -40,8 +38,8 @@ export default function ChipsFilter() {
             },
           });
           if (response.ok) {
-            const data: League[] = await response.json();
-            setLeagues(data);
+            const data = await response.json();
+            setLeagues(data.leagues); // Ahora accedemos a la propiedad leagues
           } else {
             console.error('Error al obtener las ligas');
           }
