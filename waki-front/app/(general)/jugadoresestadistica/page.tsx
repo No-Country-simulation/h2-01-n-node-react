@@ -2,6 +2,8 @@
 import { useState } from "react";
 import Image from "next/image";
 import Jugador from '@/app/assets/jugador.png'
+import CardRed from '@/app/assets/cardred.png'
+import CardYellow from '@/app/assets/cardyellow.png' 
 import BanderaPais from '@/app/assets/argentina.png'
 import escudoClub from '@/app/assets/escudos/fc-barcelona.svg'
 import MenuInferior from "@/app/components/MenuInferior/MenuInferior";
@@ -22,6 +24,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts"
+import { Square, AlertTriangle } from "lucide-react"
 
 
 
@@ -97,6 +100,7 @@ export default function page() {
         <div className="jugadorPerfil">
         <div className="InfoGeneral">
             <h1 className="nombreJugador">Nombre del Jugador</h1>
+            
             <div className="containerInfo">
             <p className="tituloInfo">Edad</p>
             <p className="info">37</p>
@@ -137,8 +141,102 @@ export default function page() {
           <div>
             <h2 className="text-xs font-bold mb-4">Estadisticas</h2>
             {/* Pantalla Detalles */}
-
+            <div className="grid grid-cols-4 md:grid-cols-4 gap-4">
+            <Card>
+            <CardContent className="p-4 text-center">
+              <div className="text-sm text-gray-500">Goles</div>
+              <div className="text-2xl font-bold mt-1">672</div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-4 text-center">
+              <div className="text-sm text-gray-500">Partidos</div>
+              <div className="text-2xl font-bold mt-1">779</div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-4 text-center">
+              <div className="text-sm text-gray-500">Minutos</div>
+              <div className="text-2xl font-bold mt-1">779</div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-4 text-center">
+              <div className="text-sm text-gray-500">Asistencia</div>
+              <div className="text-2xl font-bold mt-1">779</div>
+            </CardContent>
+          </Card>
           </div>
+          
+
+          {/*ARREGLAR ESTO ver DIVS*/}
+
+        <div className="CardContainer">
+
+          <div className="cardInfoY" id="cardInfoY">
+              <Image
+                priority={true}
+                alt="Bandera del pais"
+                className="CardIcon"
+                src={CardYellow}
+            />       
+              <span className="font-medium">Tarjetas amarillas</span> 
+            <span className="font-semibold">12</span>
+          </div>
+
+          <div className="cardInfoR">     
+              <Image
+                priority={true}
+                alt="Bandera del pais"
+                className="CardIcon"
+                src={CardRed}
+                />           
+              <span className="font-medium">Tarjetas rojas</span>
+            <span className="font-semibold">12</span>
+          </div>
+          
+    </div>
+    <div>
+    <h2 className="subtitle">Logros</h2>
+    <Card className="cardLogros">
+        <CardContent className=" text-center">
+            <div className="text-sm text-gray-500">Balon de Oro</div>
+            <div className="text-2xl font-bold mt-1">2019</div>
+        </CardContent>
+        </Card>
+        <Card>
+        <CardContent className="text-center">
+            <div className="text-sm text-gray-500">Citacion a seleccion nacional</div>
+            <div className="text-2xl font-bold mt-1">2019</div>
+        </CardContent>
+        </Card>
+        <Card>
+        <CardContent className="p-4 text-center">
+            <div className="text-sm text-gray-500">Citacion a seleccion nacional</div>
+            <div className="text-2xl font-bold mt-1">2019</div>
+        </CardContent>
+        </Card>
+        <Card>
+        <CardContent className="p-4 text-center">
+            <div className="text-sm text-gray-500">Citacion a seleccion nacional</div>
+            <div className="text-2xl font-bold mt-1">2019</div>
+        </CardContent>
+        </Card>
+        <Card>
+        <CardContent className="p-4 text-center">
+            <div className="text-sm text-gray-500">Copa America</div>
+            <div className="text-2xl font-bold mt-1">2019</div>
+        </CardContent>
+        </Card>
+
+    </div>
+    </div>
+    
+     
+
         )}
         {activeTab === "Tokens" && (
           <div>

@@ -46,3 +46,26 @@
     color: black;
     margin-left: 10px;
 }
+
+.CardContainer{
+    
+    margin-left: 30%;
+}
+
+.cardInfoY{
+    border: 1px solid #f8070700;
+    display: flex;
+    margin-top: 20px;
+}
+
+
+.cardInfoR{
+    margin-top: 20px;
+    display: flex;
+}
+
+.font-medium{
+    margin-left: 4px;
+    margin-right: 4px;
+}
+
