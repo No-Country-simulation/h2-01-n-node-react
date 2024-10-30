@@ -1,12 +1,12 @@
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { TeamsService } from './teams.service';
 import { CountryNameDTO } from 'src/dtos/country-name.dto';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 @ApiTags('Teams')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(RolesGuard)
 @Controller('teams')
 export class TeamsController {
   constructor(private teamsService: TeamsService) {}
