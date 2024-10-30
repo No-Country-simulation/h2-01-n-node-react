@@ -1,0 +1,192 @@
+"use client"
+import { useState } from "react";
+import MenuInferior from "@/app/components/MenuInferior/MenuInferior";
+import './jugadoresestadistica.css'
+import TopView from "@/app/components/TopView/TopView";
+import Header from "../../components/Navbar/Navbar";
+import BotomChat from '@/app/components/BotomChat/BotomChat'
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts"
+
+
+
+export default function page() {
+
+    const [activeTab, setActiveTab] = useState("Detalles");
+
+  const tabs = [
+    { id: "Detalles", label: "Detalles" },
+    { id: "Tokens", label: "Tokens" },
+   
+  ];
+
+  const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId);
+  };
+
+  const accumulatedData = [
+    {year: 2010, value:11000},
+    {year:2011, value:13000},
+    {year:2012, value:15000},
+    {year:2013, value:18000},
+    {year:2014, value:20000},
+    {year:2015, value:21000},
+    {year:2016, value: 21500},
+    {year:2017, value:24000},
+    { year: 2018, value: 25000 },
+    { year: 2019, value: 50000 },
+    { year: 2020, value: 75000 },
+    { year: 2021, value: 100000 },
+    { year: 2022, value: 125000 },
+    { year: 2023, value: 150000 },
+  ]
+  
+  const annualData = [
+    {year: 2010, value:100},
+    {year:2011, value:1000},
+    {year:2012, value:1500},
+    {year:2013, value:2000},
+    {year:2014, value:2400},
+    {year:2015, value:5000},
+    {year:2016, value: 3000},
+    {year:2017, value:4000},
+    { year: 2018, value: 10000 },
+    { year: 2019, value: 8000 },
+    { year: 2020, value: 4000 },
+    { year: 2021, value: 2000 },
+    { year: 2022, value: 6000 },
+    { year: 2023, value: 2000 },
+  ]
+  
+  const comparisonData = [
+    { year: 2010, released: 100, burned: 20 },
+    { year: 2011, released: 1000, burned: 3000 },
+    { year: 2012, released: 1500, burned: 4000 },
+    { year: 2013, released: 2000, burned: 5000 },
+    { year: 2014, released: 4000, burned: 6000 },
+    { year: 2015, released: 5000, burned: 7000 },
+    { year: 2016, released: 3000, burned: 6000 },
+    { year: 2017, released: 4000, burned: 7000 },
+    { year: 2018, released: 10000, burned: 2000 },
+    { year: 2019, released: 8000, burned: 3000 },
+    { year: 2020, released: 4000, burned: 4000 },
+    { year: 2021, released: 2000, burned: 5000 },
+    { year: 2022, released: 6000, burned: 6000 },
+    { year: 2023, released: 2000, burned: 7000 },
+  ]
+
+  return (
+    <>
+    <div>
+        <TopView />
+        <div className="jugadorPerfil">
+
+    
+        </div>
+        <Header tabs={tabs} onTabChange={handleTabChange} activeTab={activeTab} />
+        {activeTab === "Detalles" && (
+          <div>
+            <h2 className="text-xs font-bold mb-4">Estadisticas</h2>
+            {/* Pantalla Detalles */}
+
+          </div>
+        )}
+        {activeTab === "Tokens" && (
+          <div>
+            
+            {/* Pantalla Tokens */}
+            <Card>
+        <CardHeader>
+          <CardTitle>Liberación Acumulada del Token Anual</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={accumulatedData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="year" />
+                <YAxis />
+                <Tooltip />
+                <Line
+                  type="monotone"
+                  dataKey="value"
+                  stroke="#8884d8"
+                  dot={{ fill: "#8884d8" }}
+                  strokeWidth={2}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Liberación de Tokens Anual</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={annualData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="year" />
+                <YAxis />
+                <Tooltip />
+                <Line
+                  type="monotone"
+                  dataKey="value"
+                  stroke="#8884d8"
+                  dot={{ fill: "#8884d8" }}
+                  strokeWidth={2}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Tokens Liberados vs. Quemados</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={comparisonData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="year" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="released" name="Token liberados" fill="#8884d8" />
+                <Bar dataKey="burned" name="Token quemados" fill="#82ca9d" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="container-footer">
+        
+      </div>
+
+
+          </div>
+        )}
+    </div>
+    <BotomChat/>
+    <MenuInferior />
+    </>
+  )
+}
