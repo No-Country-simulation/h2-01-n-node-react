@@ -12,6 +12,7 @@ import { plainToInstance } from 'class-transformer';
 import { DateTime } from 'luxon';
 import Ranks from 'src/ranks/ranks.entities';
 import { USER_ROLE } from 'src/types';
+import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class UsersService {
@@ -105,5 +106,35 @@ export class UsersService {
     delete updatedUser.password;
 
     return { user: updatedUser };
+  }
+
+  @Cron('5 0 * * *')
+  async checkUsersExpireDate() {
+    try {
+      let premiumUsers = await this.usersRepository.find({
+        where: { role: USER_ROLE.PREMIUM },
+      });
+
+      const today = DateTime.now()
+        .setZone('America/Argentina/Buenos_Aires')
+        .startOf('day');
+
+      for (let user of premiumUsers) {
+        if (
+          user.premiumExpireDate &&
+          user.premiumExpireDate <= today.toJSDate()
+        ) {
+          user.role = USER_ROLE.USER;
+          user.premiumExpireDate = null;
+        }
+      }
+
+      await this.usersRepository.save(premiumUsers);
+      console.log(`[checkUsersExpireDate] Ran successfully`);
+    } catch (error: any) {
+      console.log(
+        `[checkUsersExpireDate] An error occurred: ${error?.message}`,
+      );
+    }
   }
 }
