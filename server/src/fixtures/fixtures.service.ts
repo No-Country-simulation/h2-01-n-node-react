@@ -162,20 +162,21 @@ export class FixturesService {
     return { fixture };
   }
 
-  @Cron('0 0 * * *', {
+  @Cron('*/3 * * * *', {
     timeZone: 'America/Argentina/Buenos_Aires',
   })
   async updateFixtures(retryCount = 0) {
     if (!this.configService.get<string>('apiKey')) return;
 
-    const today = DateTime.now().setZone('America/Argentina/Buenos_Aires');
-
+    const today = DateTime.now()
+      .setZone('America/Argentina/Buenos_Aires')
+      .startOf('day');
     const todayFormatted = today.toFormat('yyyy-MM-dd');
 
     const previousDay = today.minus({ days: 1 });
     const previousDayFormatted = previousDay.toFormat('yyyy-MM-dd');
 
-    const fiveDaysFromToday = today.plus({ days: 5 });
+    const fiveDaysFromToday = today.plus({ days: 2 }).endOf('day');
     const fiveDaysFromTodayFormatted = fiveDaysFromToday.toFormat('yyyy-MM-dd');
 
     try {
