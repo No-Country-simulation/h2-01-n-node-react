@@ -19,7 +19,6 @@ body{
 }
 
 .division-var{
-    color: black;
     display: flex;
     justify-content: center;
     font-size: 18px;

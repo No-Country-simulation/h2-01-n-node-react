@@ -9,6 +9,8 @@ import { Card, CardContent, CardHeader, Tooltip } from "@mui/material";
 import logoPL from "@/app/assets/ligas/logo-le.png";
 import "./matchcardlive.css";
 import { ClipLoader } from "react-spinners";
+import { useTheme } from "@/app/components/context/ThemeContext";
+
 
 interface Venue {
   id: number;
@@ -98,6 +100,8 @@ export default function MatchCardLive({ activeTab }: { activeTab: string }) {
   const [tooltip, setTooltip] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
+  const { isDarkMode, toggleDarkMode } = useTheme();
+
 
   const toggleDropdown = (id: number) => {
     setOpenStates((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -238,139 +242,132 @@ export default function MatchCardLive({ activeTab }: { activeTab: string }) {
   
 
   return (
-    <div className="max-w-md mx-auto mt-10 bg-white shadow-lg overflow-hidden rounded-lg">
-      {leagues.map((league) => (
-        <div key={league.id} className="rounded-md">
-          <button
-            onClick={() => toggleDropdown(league.id)}
-            className="flex items-center justify-between w-full px-4 py-3 text-left bg-white rounded-md hover:bg-gray-200 transition duration-200 ease-in-out"
-          >
-            <div className="flex items-center">
-              <Image
-                src={league.logo || logoPL}
-                alt="Liga logo"
-                width={24}
-                height={24}
-                className="rounded-full mr-2"
-              />
-              <span className="text-gray-800 text-sm font-medium">
-                {league.name}
-              </span>
-            </div>
-
-            <div className="ml-4">
-              {openStates[league.id] ? (
-                <FaChevronUp className="text-blue-600" />
-              ) : (
-                <FaChevronDown className="text-blue-600" />
-              )}
-            </div>
-          </button>
-
-          <div
-            className={`overflow-hidden transition-all duration-300 ${
-              openStates[league.id] ? "max-h-screen" : "max-h-0"
-            }`}
-          >
-            <div className="p-4 bg-[#F0F4FF] max-h-60 overflow-y-auto rounded-b-md">
-              {loading ? (
-                <div className="loader-container">
-                  <ClipLoader color={"#123abc"} loading={loading} size={50} />
-                </div>
-              ) : matches.length === 0 ? (
-                <div className="no-partidos-container">
-                  <div className="no-matches-message">
-                    No hay partidos por jugar
-                  </div>
-                </div>
-              ) : (
-                matches.map((match, index) => (
-                  <Card
-                    key={index}
-                    className="my-5 mx-4"
-                    sx={{
-                      boxShadow: "none",
-                      border: "none",
-                      backgroundColor: "#F0F4FF",
-                    }}
-                  >
-                    <CardHeader
-                      sx={{ borderBottom: "none", backgroundColor: "#F0F4FF" }}
-                    />
-                    <CardContent
-                      sx={{ border: "none", backgroundColor: "#F0F4FF" }}
-                    >
-                      <div className="flex justify-between items-center mb-3">
-                        <div className="flex flex-col items-center">
-                          <Image
-                            src={match.homeTeam?.logo}
-                            alt={`${match.homeTeam?.name} logo`}
-                            width={32}
-                            height={32}
-                            className="mb-1"
-                          />
-                          <Tooltip
-                            title={match.homeTeam?.name}
-                            open={tooltip === match.homeTeam?.name}
-                            onClose={handleTooltipClose}
-                            onClick={() =>
-                              handleTooltipOpen(match.homeTeam?.name)
-                            }
-                            arrow
-                          >
-                            <span className="font-semibold text-sm text-gray-800 overflow-hidden text-ellipsis whitespace-nowrap max-w-[50px] text-center cursor-pointer">
-                              {match.homeTeam?.name}
-                            </span>
-                          </Tooltip>
-                        </div>
-                        <div className="text-center space-y-0.5">
-                          <div className="font-bold text-gray-800 text-lg">
-                            {match.homeGoals} VS {match.awayGoals}
-                          </div>
-                          <div className="text-red-500 text-xs">
-                            {match.time}
-                          </div>
-                        </div>
-                        <div className="flex flex-col items-center">
-                          <Image
-                            src={match.awayTeam?.logo}
-                            alt={`${match.awayTeam?.name} logo`}
-                            width={32}
-                            height={32}
-                            className="mb-1"
-                          />
-                          <Tooltip
-                            title={match.awayTeam?.name}
-                            open={tooltip === match.awayTeam?.name}
-                            onClose={handleTooltipClose}
-                            onClick={() =>
-                              handleTooltipOpen(match.awayTeam?.name)
-                            }
-                            arrow
-                          >
-                            <span className="font-semibold text-sm text-gray-800 overflow-hidden text-ellipsis whitespace-nowrap max-w-[50px] text-center cursor-pointer">
-                              {match.awayTeam?.name}
-                            </span>
-                          </Tooltip>
-                        </div>
-                      </div>
-                      <div className="text-center">
-                        <button
-                          onClick={() => handleApostar(match.id)}
-                          style={{ fontSize: "11px" }}
-                          className="px-4 py-2 bg-[#8E2BFF] btn-box-shadow text-white font-bold rounded transition duration-200"
-                        >
-                          Apostar
-                        </button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))
-              )}
-            </div>
-          </div>
+    <div className={`max-w-md mx-auto mt-10 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-lg overflow-hidden`}>
+  {leagues.map((league) => (
+    <div key={league.id} className="rounded-md">
+      <button
+        onClick={() => toggleDropdown(league.id)}
+        className={`flex items-center justify-between w-full px-4 py-3 text-left rounded-md transition duration-200 ease-in-out ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-white hover:bg-gray-200 text-gray-800'}`}
+      >
+        <div className="flex items-center">
+          <Image
+            src={league.logo || logoPL}
+            alt="Liga logo"
+            width={24}
+            height={24}
+            className="rounded-full mr-2"
+          />
+          <span className={`text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+            {league.name}
+          </span>
         </div>
-      ))}
+
+        <div className="ml-4">
+          {openStates[league.id] ? (
+            <FaChevronUp className={isDarkMode ? "text-blue-400" : "text-blue-600"} />
+          ) : (
+            <FaChevronDown className={isDarkMode ? "text-blue-400" : "text-blue-600"} />
+          )}
+        </div>
+      </button>
+
+      <div className={`overflow-hidden transition-all duration-300 ${openStates[league.id] ? "max-h-screen" : "max-h-0"}`}>
+        <div className={`p-4 max-h-60 overflow-y-auto rounded-b-md ${isDarkMode ? 'bg-gray-700' : 'bg-[#F0F4FF]'}`}>
+          {loading ? (
+            <div className="loader-container">
+              <ClipLoader color={"#123abc"} loading={loading} size={50} />
+            </div>
+          ) : matches.length === 0 ? (
+            <div className="no-partidos-container">
+              <div className={`no-matches-message ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+                No hay partidos por jugar
+              </div>
+            </div>
+          ) : (
+            matches.map((match, index) => (
+              <Card
+                key={index}
+                className={`my-5 mx-4 ${isDarkMode ? 'bg-gray-800' : 'bg-[#F0F4FF]'}`}
+                sx={{
+                  boxShadow: "none",
+                  border: "none",
+                  backgroundColor: isDarkMode ? '#2D3748' : '#F0F4FF', // Cambiar color de fondo
+                }}
+              >
+                <CardHeader
+                  sx={{ borderBottom: "none", backgroundColor: isDarkMode ? '#2D3748' : '#F0F4FF' }}
+                />
+                <CardContent
+                  sx={{ border: "none", backgroundColor: isDarkMode ? '#2D3748' : '#F0F4FF' }}
+                >
+                  <div className="flex justify-between items-center mb-3">
+                    <div className="flex flex-col items-center">
+                      <Image
+                        src={match.homeTeam?.logo}
+                        alt={`${match.homeTeam?.name} logo`}
+                        width={32}
+                        height={32}
+                        className="mb-1"
+                      />
+                      <Tooltip
+                        title={match.homeTeam?.name}
+                        open={tooltip === match.homeTeam?.name}
+                        onClose={handleTooltipClose}
+                        onClick={() => handleTooltipOpen(match.homeTeam?.name)}
+                        arrow
+                      >
+                        <span className={`font-semibold text-sm overflow-hidden text-ellipsis whitespace-nowrap max-w-[50px] text-center cursor-pointer ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+                          {match.homeTeam?.name}
+                        </span>
+                      </Tooltip>
+                    </div>
+                    <div className="text-center space-y-0.5">
+                      <div className={`font-bold text-lg ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+                        {match.homeGoals} VS {match.awayGoals}
+                      </div>
+                      <div className={`text-xs ${isDarkMode ? 'text-red-400' : 'text-red-500'}`}>
+                        {match.time}
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-center">
+                      <Image
+                        src={match.awayTeam?.logo}
+                        alt={`${match.awayTeam?.name} logo`}
+                        width={32}
+                        height={32}
+                        className="mb-1"
+                      />
+                      <Tooltip
+                        title={match.awayTeam?.name}
+                        open={tooltip === match.awayTeam?.name}
+                        onClose={handleTooltipClose}
+                        onClick={() => handleTooltipOpen(match.awayTeam?.name)}
+                        arrow
+                      >
+                        <span className={`font-semibold text-sm overflow-hidden text-ellipsis whitespace-nowrap max-w-[50px] text-center cursor-pointer ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+                          {match.awayTeam?.name}
+                        </span>
+                      </Tooltip>
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <button
+                      onClick={() => handleApostar(match.id)}
+                      style={{ fontSize: "11px" }}
+                      className="px-4 py-2 bg-[#8E2BFF] btn-box-shadow text-white font-bold rounded transition duration-200"
+                    >
+                      Apostar
+                    </button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))
+          )}
+        </div>
+      </div>
     </div>
+  ))}
+</div>
+
   );
 }

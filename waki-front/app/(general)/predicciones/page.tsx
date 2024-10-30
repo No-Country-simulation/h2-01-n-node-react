@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client";
@@ -23,6 +24,7 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { Tooltip } from "@mui/material";
 import { ClipLoader } from "react-spinners";
+import { useTheme } from "@/app/components/context/ThemeContext";
 
 interface MatchStatistic {
   team: string;
@@ -127,10 +129,11 @@ export default function page() {
   const [loading, setLoading] = useState(true);
   const [matchStatistics, setMatchStatistics] = useState<MatchStatistic[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { isDarkMode, toggleDarkMode } = useTheme();
 
   const openModal = () => {
-    setShowResultadoPopup(false)
-    setIsOpen(false)
+    setShowResultadoPopup(false);
+    setIsOpen(false);
     setIsModalOpen(true);
   };
 
@@ -177,7 +180,6 @@ export default function page() {
     }
 
     try {
-      // Primero, obtendremos los detalles del fixture
       const fixtureResponse = await fetch(FIXTURE_URL, {
         method: "GET",
         headers: {
@@ -193,22 +195,32 @@ export default function page() {
       }
 
       const fixtureData = await fixtureResponse.json();
-      console.log(fixtureData);
-      const fixtureId = fixtureData.id;
 
-      // Ahora, construimos el payload con las predicciones
+      const fixtureBets = fixtureData.fixture.fixtureBets;
+
+      if (!fixtureBets || fixtureBets.length === 0) {
+        console.error("No hay datos en fixtureBets");
+        return;
+      }
+
+      const fixtureId = fixtureData.fixture.id;
+
+      const fixtureBetOdds = fixtureBets[0].fixtureBetOdds;
+      if (!fixtureBetOdds || fixtureBetOdds.length < 3) {
+        console.error("No hay suficientes datos en fixtureBetOdds");
+        return;
+      }
+
       const payload = {
         predictions: [
           {
-            value: fixtureData.fixtureBets[0].fixtureBetOdds[0].value,
-            odd: fixtureData.fixtureBets[0].fixtureBetOdds[0].odd,
-            betId: fixtureData.fixtureBets[0].betId,
+            value: fixtureBetOdds[0].value,
+            betId: fixtureBets[0].betId,
             fixtureId: fixtureId,
           },
           {
-            value: fixtureData.fixtureBets[0].fixtureBetOdds[2].value,
-            odd: fixtureData.fixtureBets[0].fixtureBetOdds[2].odd,
-            betId: fixtureData.fixtureBets[0].betId,
+            value: fixtureBetOdds[2].value,
+            betId: fixtureBets[0].betId,
             fixtureId: fixtureId,
           },
         ],
@@ -228,11 +240,15 @@ export default function page() {
 
         setShowConfirmationPopup(false);
         setShowSuccessMessage(true);
-        // Verifica si la respuesta contiene predicciones válidas
-        if (data && data.predictions && data.predictions.length > 0) {
+
+        if (
+          data &&
+          data.data &&
+          data.data.predictions &&
+          data.data.predictions.length > 0
+        ) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const formattedPredictions = data.predictions.map(
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const formattedPredictions = data.data.predictions.map(
             (prediction: any) => ({
               value: prediction.value,
               odd: prediction.odd,
@@ -281,16 +297,16 @@ export default function page() {
   const fixtureId = Cookies.get("fixture");
   const API_BASE_URL = "https://waki.onrender.com/api";
   const FIXTURE_URL = `${API_BASE_URL}/fixtures/${fixtureId}`;
-  
+
   useEffect(() => {
     const fetchMatches = async () => {
       const token = Cookies.get("authToken");
-  
+
       if (!token) {
         router.push("/auth");
         return;
       }
-  
+
       try {
         const response = await fetch(FIXTURE_URL, {
           method: "GET",
@@ -299,14 +315,13 @@ export default function page() {
             "Content-Type": "application/json",
           },
         });
-  
+
         if (response.ok) {
           const data = await response.json();
-  
-          if (data && data.fixture) { // Asegúrate de que 'fixture' existe
+
+          if (data && data.fixture) {
             const fixture = data.fixture;
-  
-            // Formateo de estadísticas
+
             const fixtureBets = fixture.fixtureBets[0]?.fixtureBetOdds || [];
             const newStatistics: MatchStatistic[] = [
               {
@@ -323,8 +338,7 @@ export default function page() {
               },
             ];
             setMatchStatistics(newStatistics);
-  
-            // Formateo de fecha y hora del partido
+
             const matchDate = new Date(fixture.date);
             const date = matchDate.toLocaleDateString("es-ES", {
               day: "2-digit",
@@ -334,8 +348,7 @@ export default function page() {
               hour: "2-digit",
               minute: "2-digit",
             });
-  
-            // Formateo del objeto del partido
+
             const formattedMatch = {
               id: fixture.id,
               date: date,
@@ -347,11 +360,13 @@ export default function page() {
               venue: fixture.venue,
               league: fixture.league,
             };
-  
-            setMatches([formattedMatch]); 
 
+            setMatches([formattedMatch]);
           } else {
-            console.error("Error: La respuesta no contiene un fixture válido", data);
+            console.error(
+              "Error: La respuesta no contiene un fixture válido",
+              data
+            );
           }
         } else {
           const errorData = await response.json();
@@ -363,13 +378,11 @@ export default function page() {
         setLoading(false);
       }
     };
-  
+
     fetchMatches();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [FIXTURE_URL, router]);
-  
-  
-  
+
   return (
     <>
       <div>
@@ -480,7 +493,11 @@ export default function page() {
 
           {isOpen && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-              <div className="bg-white rounded-lg p-6 w-80 relative">
+              <div
+                className={`rounded-lg p-6 w-80 relative ${
+                  isDarkMode ? "bg-gray-800" : "bg-white"
+                }`}
+              >
                 <button
                   className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
                   onClick={() => setIsOpen(false)}
@@ -500,7 +517,11 @@ export default function page() {
                     ></path>
                   </svg>
                 </button>
-                <h2 className="text-xl font-bold mb-4">
+                <h2
+                  className={`text-xl font-bold mb-4 ${
+                    isDarkMode ? "text-white" : "text-black"
+                  }`}
+                >
                   ¿En que vas a apostar?
                 </h2>
                 <div className="grid grid-cols-2 gap-4">
@@ -508,6 +529,8 @@ export default function page() {
                     className={`p-4 rounded-lg flex flex-col items-center ${
                       selectedOption === "Resultado"
                         ? "bg-blue-500"
+                        : isDarkMode
+                        ? "bg-gray-800"
                         : "bg-gray-200"
                     }`}
                     onClick={() => handleOptionClick("Resultado")}
@@ -519,12 +542,16 @@ export default function page() {
                       height={32}
                       className="mb-2"
                     />
-                    Resultado
+                    <span className={isDarkMode ? "text-white" : "text-black"}>
+                      Resultado
+                    </span>
                   </button>
                   <button
                     className={`p-4 rounded-lg flex flex-col items-center ${
                       selectedOption === "Gol por jugador"
                         ? "bg-blue-500"
+                        : isDarkMode
+                        ? "bg-gray-800"
                         : "bg-gray-200"
                     }`}
                     onClick={() => setSelectedOption("Gol por jugador")}
@@ -536,7 +563,9 @@ export default function page() {
                       height={32}
                       className="mb-2"
                     />
-                    Gol por jugador
+                    <span className={isDarkMode ? "text-white" : "text-black"}>
+                      Gol por jugador
+                    </span>
                   </button>
                 </div>
               </div>
@@ -545,7 +574,11 @@ export default function page() {
 
           {showResultadoPopup && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-              <div className="bg-white rounded-lg p-6 w-80 relative">
+              <div
+                className={`rounded-lg p-6 w-80 relative ${
+                  isDarkMode ? "bg-gray-800" : "bg-white"
+                }`}
+              >
                 <button
                   className="absolute top-2 left-2 text-purple-500 hover:text-purple-700"
                   onClick={() => setShowResultadoPopup(false)}
@@ -692,7 +725,11 @@ export default function page() {
 
           {showConfirmationPopup && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-              <div className="bg-white rounded-lg p-6 w-80 relative">
+              <div
+                className={`rounded-lg p-6 w-80 relative ${
+                  isDarkMode ? "bg-gray-800" : "bg-white"
+                }`}
+              >
                 <button
                   className="absolute top-2 left-2 text-purple-500 hover:text-purple-700"
                   onClick={() => setShowConfirmationPopup(false)}
@@ -722,11 +759,19 @@ export default function page() {
                     ></path>
                   </svg>
                 </button>
-                <h2 className="text-xl font-bold mb-6 text-center">
+                <h2
+                  className={`text-xl font-bold mb-6 text-center ${
+                    isDarkMode ? "text-white" : "text-black"
+                  }`}
+                >
                   ¿Estás seguro de tu predicción?
                 </h2>
                 {selectedTeam && (
-                  <div className="bg-blue-100 rounded-lg p-4 flex items-center mb-6">
+                  <div
+                    className={`rounded-lg p-4 flex items-center mb-6 ${
+                      isDarkMode ? "bg-gray-700" : "bg-blue-100"
+                    }`}
+                  >
                     {selectedTeam.name !== "Empate" && (
                       <Image
                         src={selectedTeam.logo}
@@ -737,8 +782,18 @@ export default function page() {
                       />
                     )}
                     <div>
-                      <p className="font-bold">{selectedTeam.name}</p>
-                      <p className="text-sm">
+                      <p
+                        className={`font-bold ${
+                          isDarkMode ? "text-white" : "text-black"
+                        }`}
+                      >
+                        {selectedTeam.name}
+                      </p>
+                      <p
+                        className={`text-sm ${
+                          isDarkMode ? "text-gray-300" : "text-black"
+                        }`}
+                      >
                         <Image
                           src={IconCopa}
                           alt="Trophy"
@@ -753,19 +808,31 @@ export default function page() {
                 )}
 
                 <button
-                  className="w-full py-3 bg-purple-500 rounded-lg font-bold"
+                  className={`w-full py-3 rounded-lg font-bold ${
+                    isDarkMode ? "bg-purple-600" : "bg-purple-500"
+                  }`}
                   onClick={handleConfirm}
                 >
                   Sí, predecir
                 </button>
                 <div className="mt-6 flex items-center justify-between">
-                  <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                  <div
+                    className={`w-full rounded-full h-2.5 ${
+                      isDarkMode ? "bg-gray-700" : "bg-gray-200"
+                    }`}
+                  >
                     <div
                       className="bg-purple-600 h-2.5 rounded-full"
                       style={{ width: "20%" }}
                     ></div>
                   </div>
-                  <span className="text-sm text-purple-600 ml-2">1/5</span>
+                  <span
+                    className={`text-sm text-purple-600 ml-2 ${
+                      isDarkMode ? "text-gray-300" : "text-black"
+                    }`}
+                  >
+                    1/5
+                  </span>
                 </div>
                 <div className="mt-2 flex justify-end">
                   <Image
@@ -782,7 +849,11 @@ export default function page() {
 
           {showSuccessMessage && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-              <div className="bg-white rounded-lg p-6 w-80 flex flex-col items-center">
+              <div
+                className={`rounded-lg p-6 w-80 flex flex-col items-center ${
+                  isDarkMode ? "bg-gray-800" : "bg-white"
+                }`}
+              >
                 <Image
                   src={IconCheck}
                   alt="Checkmark"
@@ -790,7 +861,11 @@ export default function page() {
                   height={64}
                   className="mb-4"
                 />
-                <h2 className="text-xl font-bold text-center">
+                <h2
+                  className={`text-xl font-bold text-center ${
+                    isDarkMode ? "text-white" : "text-black"
+                  }`}
+                >
                   Se ha añadido tu predicción
                 </h2>
               </div>

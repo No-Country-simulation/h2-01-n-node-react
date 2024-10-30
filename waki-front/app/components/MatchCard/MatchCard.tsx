@@ -7,6 +7,7 @@ import { FaChevronUp, FaChevronDown } from "react-icons/fa";
 import { Card, CardContent, CardHeader, Tooltip } from "@mui/material";
 import logoPL from "@/app/assets/ligas/logo-le.png";
 import { ClipLoader } from "react-spinners";
+import { useTheme } from "@/app/components/context/ThemeContext";
 
 interface Venue {
   id: number;
@@ -112,6 +113,8 @@ export default function MatchCard({ activeTab }: { activeTab: string }) {
     return date.toISOString().split("T")[0];
   };
 
+  const { isDarkMode, toggleDarkMode } = useTheme();
+
   const today = new Date();
   const yesterday = new Date(today);
   const tomorrow = new Date(today);
@@ -142,12 +145,12 @@ export default function MatchCard({ activeTab }: { activeTab: string }) {
     const API_BASE_URL = "https://waki.onrender.com/api";
     const FIXTURE_URL = `${API_BASE_URL}/fixtures/${fixtureId}`;
     const token = Cookies.get("authToken");
-  
+
     if (!token) {
       router.push("/auth");
       return;
     }
-  
+
     try {
       const response = await fetch(FIXTURE_URL, {
         method: "GET",
@@ -156,10 +159,10 @@ export default function MatchCard({ activeTab }: { activeTab: string }) {
           "Content-Type": "application/json",
         },
       });
-  
+
       if (response.ok) {
         const data = await response.json();
-        const fixtureData = data.fixture; 
+        const fixtureData = data.fixture;
         router.push(`/predicciones?fixtureId=${fixtureId}`);
       } else {
         const errorData = await response.json();
@@ -169,7 +172,6 @@ export default function MatchCard({ activeTab }: { activeTab: string }) {
       console.error("Error en la solicitud:", error);
     }
   };
-  
 
   const API_BASE_URL = "https://waki.onrender.com/api";
   const FIXTURES_API_URL = `${API_BASE_URL}/fixtures?date=${dateParam}`;
@@ -177,12 +179,12 @@ export default function MatchCard({ activeTab }: { activeTab: string }) {
   useEffect(() => {
     const fetchMatches = async () => {
       const token = Cookies.get("authToken");
-  
+
       if (!token) {
         router.push("/auth");
         return;
       }
-  
+
       try {
         const response = await fetch(FIXTURES_API_URL, {
           method: "GET",
@@ -191,17 +193,19 @@ export default function MatchCard({ activeTab }: { activeTab: string }) {
             "Content-Type": "application/json",
           },
         });
-  
+
         if (response.ok) {
           const data: FixturesResponse = await response.json();
-  
+
           if (data.fixtures.length === 0 && data.nextDate) {
             Cookies.set("nextDate", data.nextDate, { expires: 7 });
           }
-  
+
           if (Array.isArray(data.fixtures)) {
             const formattedMatches = data.fixtures
-              .filter((match) => match.homeGoals !== null || match.awayGoals !== null)
+              .filter(
+                (match) => match.homeGoals !== null || match.awayGoals !== null
+              )
               .map((match) => {
                 const matchDate = new Date(match?.date);
                 const date = matchDate.toLocaleDateString("es-ES", {
@@ -212,7 +216,7 @@ export default function MatchCard({ activeTab }: { activeTab: string }) {
                   hour: "2-digit",
                   minute: "2-digit",
                 });
-  
+
                 return {
                   id: match.id,
                   date: date,
@@ -238,15 +242,14 @@ export default function MatchCard({ activeTab }: { activeTab: string }) {
         console.error("Error en la solicitud:", error);
       }
     };
-  
+
     fetchMatches();
   }, [router, FIXTURES_API_URL]);
-  
 
   useEffect(() => {
     const API_BASE_URL = "https://waki.onrender.com/api";
     const LEAGUES_API_URL = `${API_BASE_URL}/leagues/current`;
-  
+
     const fetchLeagues = async () => {
       const token = Cookies.get("authToken");
       if (!token) {
@@ -254,7 +257,7 @@ export default function MatchCard({ activeTab }: { activeTab: string }) {
       } else {
         setIsAuthenticated(true);
       }
-  
+
       try {
         const response = await fetch(LEAGUES_API_URL, {
           method: "GET",
@@ -263,7 +266,7 @@ export default function MatchCard({ activeTab }: { activeTab: string }) {
             "Content-Type": "application/json",
           },
         });
-  
+
         if (response.ok) {
           const data = await response.json();
           const leaguesArray = Array.isArray(data.leagues) ? data.leagues : [];
@@ -278,18 +281,17 @@ export default function MatchCard({ activeTab }: { activeTab: string }) {
         setLoading(false);
       }
     };
-  
+
     fetchLeagues();
   }, [router]);
-  
 
   return (
-    <div className="max-w-md mx-auto mt-10 bg-white shadow-lg overflow-hidden rounded-lg">
+    <div className="max-w-md mx-auto mt-10 bg-white shadow-lg overflow-hidden rounded-lg dark:bg-gray-800">
       {leagues.map((league) => (
         <div key={league.id} className="rounded-md">
           <button
             onClick={() => toggleDropdown(league.id)}
-            className="flex items-center justify-between w-full px-4 py-3 text-left bg-white rounded-md hover:bg-gray-200 transition duration-200 ease-in-out"
+            className="flex items-center justify-between w-full px-4 py-3 text-left bg-white rounded-md hover:bg-gray-200 transition duration-200 ease-in-out dark:bg-gray-700 dark:hover:bg-gray-600"
           >
             <div className="flex items-center">
               <Image
@@ -299,16 +301,16 @@ export default function MatchCard({ activeTab }: { activeTab: string }) {
                 height={24}
                 className="rounded-full mr-2"
               />
-              <span className="text-gray-800 text-sm font-medium">
+              <span className="text-gray-800 text-sm font-medium dark:text-white">
                 {league.name}
               </span>
             </div>
 
             <div className="ml-4">
               {openStates[league.id] ? (
-                <FaChevronUp className="text-blue-600" />
+                <FaChevronUp className="text-blue-600 dark:text-blue-400" />
               ) : (
-                <FaChevronDown className="text-blue-600" />
+                <FaChevronDown className="text-blue-600 dark:text-blue-400" />
               )}
             </div>
           </button>
@@ -318,14 +320,14 @@ export default function MatchCard({ activeTab }: { activeTab: string }) {
               openStates[league.id] ? "max-h-screen" : "max-h-0"
             }`}
           >
-            <div className="p-4 bg-[#F0F4FF] max-h-60 overflow-y-auto rounded-b-md">
+            <div className="p-4 bg-[#F0F4FF] max-h-60 overflow-y-auto rounded-b-md dark:bg-gray-700">
               {loading ? (
                 <div className="loader-container">
                   <ClipLoader color={"#123abc"} loading={loading} size={50} />
                 </div>
               ) : matches.length === 0 ? (
                 <div className="no-partidos-container">
-                  <div className="no-matches-message ">
+                  <div className="no-matches-message dark:text-white">
                     No hay partidos en vivo
                   </div>
                 </div>
@@ -337,14 +339,20 @@ export default function MatchCard({ activeTab }: { activeTab: string }) {
                     sx={{
                       boxShadow: "none",
                       border: "none",
-                      backgroundColor: "#F0F4FF",
+                      backgroundColor: isDarkMode ? "#1F2937" : "#F0F4FF", // Cambia el color de fondo según el modo
                     }}
                   >
                     <CardHeader
-                      sx={{ borderBottom: "none", backgroundColor: "#F0F4FF" }}
+                      sx={{
+                        borderBottom: "none",
+                        backgroundColor: isDarkMode ? "#1F2937" : "#F0F4FF",
+                      }} // Cambia el fondo del encabezado
                     />
                     <CardContent
-                      sx={{ border: "none", backgroundColor: "#F0F4FF" }}
+                      sx={{
+                        border: "none",
+                        backgroundColor: isDarkMode ? "#1F2937" : "#F0F4FF",
+                      }} // Cambia el fondo del contenido
                     >
                       <div className="flex justify-between items-center mb-3">
                         <div className="flex flex-col items-center">
@@ -364,16 +372,28 @@ export default function MatchCard({ activeTab }: { activeTab: string }) {
                             }
                             arrow
                           >
-                            <span className="font-semibold text-sm text-gray-800 overflow-hidden text-ellipsis whitespace-nowrap max-w-[50px] text-center cursor-pointer">
+                            <span
+                              className={`font-semibold text-sm overflow-hidden text-ellipsis whitespace-nowrap max-w-[50px] text-center cursor-pointer ${
+                                isDarkMode ? "text-white" : "text-gray-800"
+                              }`}
+                            >
                               {match.homeTeam?.name}
                             </span>
                           </Tooltip>
                         </div>
                         <div className="text-center space-y-0.5">
-                          <div className="font-bold text-gray-800 text-lg">
+                          <div
+                            className={`font-bold text-lg ${
+                              isDarkMode ? "text-white" : "text-gray-800"
+                            }`}
+                          >
                             {match.homeGoals} - {match.awayGoals}
                           </div>
-                          <div className="text-red-500 text-xs">
+                          <div
+                            className={`text-xs ${
+                              isDarkMode ? "text-red-400" : "text-red-500"
+                            }`}
+                          >
                             {match.time}
                           </div>
                         </div>
@@ -394,7 +414,11 @@ export default function MatchCard({ activeTab }: { activeTab: string }) {
                             }
                             arrow
                           >
-                            <span className="font-semibold text-sm text-gray-800 overflow-hidden text-ellipsis whitespace-nowrap max-w-[50px] text-center cursor-pointer">
+                            <span
+                              className={`font-semibold text-sm overflow-hidden text-ellipsis whitespace-nowrap max-w-[50px] text-center cursor-pointer ${
+                                isDarkMode ? "text-white" : "text-gray-800"
+                              }`}
+                            >
                               {match.awayTeam?.name}
                             </span>
                           </Tooltip>
