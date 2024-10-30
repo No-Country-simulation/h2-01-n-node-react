@@ -1,5 +1,9 @@
 "use client"
 import { useState } from "react";
+import Image from "next/image";
+import Jugador from '@/app/assets/jugador.png'
+import BanderaPais from '@/app/assets/argentina.png'
+import escudoClub from '@/app/assets/escudos/fc-barcelona.svg'
 import MenuInferior from "@/app/components/MenuInferior/MenuInferior";
 import './jugadoresestadistica.css'
 import TopView from "@/app/components/TopView/TopView";
@@ -91,8 +95,42 @@ export default function page() {
     <div>
         <TopView />
         <div className="jugadorPerfil">
+        <div className="InfoGeneral">
+            <h1 className="nombreJugador">Nombre del Jugador</h1>
+            <div className="containerInfo">
+            <p className="tituloInfo">Edad</p>
+            <p className="info">37</p>
+            <p className="tituloInfo">Posición</p>
+            <p className="info">Delantero</p>
+            </div>
+            
+        </div>
 
-    
+            <div className="containerJugador">
+            <Image
+          priority={true}
+          alt="Imagen del jugador"
+          className="jugadorImg"
+          src={Jugador}
+        />
+            </div>
+
+        <div className="banderaEscudo">
+        
+        <Image
+          priority={true}
+          alt="Bandera del pais"
+          className="escudoClub"
+          src={escudoClub}
+        />
+        <Image
+          priority={true}
+          alt="Bandera del pais"
+          className="banderapais"
+          src={BanderaPais}
+        />
+        </div>
+
         </div>
         <Header tabs={tabs} onTabChange={handleTabChange} activeTab={activeTab} />
         {activeTab === "Detalles" && (

@@ -1,3 +1,48 @@
 .container-footer{
     margin-top: 100px;
 }
+
+.jugadorPerfil{
+    display: flex;
+    margin-top: 20px;
+}
+
+.banderaEscudo{
+    position: absolute;
+    right: 0;
+    margin-right: 5px;
+}
+
+.banderapais{
+    width: 40px;
+    height: 40px;
+    margin-top: 5px;
+}
+.escudoClub{
+    width: 40px;
+    height: 40px;
+    margin-top: 10px;
+}
+
+.InfoGeneral{
+    width: 30%;
+}
+
+.containerInfo{
+    margin-top: 60px;   
+}
+
+.nombreJugador{
+    font-size: 25px;
+    justify-content: center;
+}
+
+.tituloInfo{
+    color: gray;
+    margin-left: 10px;
+}
+
+.info{
+    color: black;
+    margin-left: 10px;
+}
