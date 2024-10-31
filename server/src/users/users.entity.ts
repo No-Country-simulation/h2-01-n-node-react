@@ -1,6 +1,5 @@
-import { Exclude } from 'class-transformer';
 import Ranks from 'src/ranks/ranks.entities';
-import { USER_RANK, USER_ROLE } from 'src/types';
+import { USER_ROLE } from 'src/types';
 import {
   Column,
   Entity,
@@ -20,8 +19,7 @@ export class Users {
   @Column({ unique: true })
   email: string;
 
-  @Column({ nullable: false })
-  @Exclude()
+  @Column({ nullable: false, select: false })
   password: string;
 
   @Column({
