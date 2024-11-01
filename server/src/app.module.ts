@@ -24,6 +24,7 @@ import { HttpModule } from '@nestjs/axios';
 import { PredictionsModule } from './predictions/predictions.module';
 import { AggregatePredictionsModule } from './aggregate-predictions/aggregate-predictions.module';
 import { RanksModule } from './ranks/ranks.module';
+import { PricesModule } from './prices/prices.module';
 
 @Module({
   imports: [
@@ -76,6 +77,7 @@ import { RanksModule } from './ranks/ranks.module';
     PredictionsModule,
     AggregatePredictionsModule,
     RanksModule,
+    PricesModule,
   ],
   controllers: [AppController],
 })

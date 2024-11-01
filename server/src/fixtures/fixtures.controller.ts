@@ -1,12 +1,12 @@
 import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { FixturesService } from './fixtures.service';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { FixturesPaginationDTO } from './dtos/pagination.dto';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 @ApiTags('Fixtures')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(RolesGuard)
 @Controller('fixtures')
 export class FixturesController {
   constructor(private fixturesService: FixturesService) {}

@@ -8,7 +8,6 @@ import { Repository } from 'typeorm';
 import { Users } from './users.entity';
 import { RegisterUserDTO } from 'src/auth/dtos/register.dto';
 import * as bcrypt from 'bcrypt';
-import { plainToInstance } from 'class-transformer';
 import { DateTime } from 'luxon';
 import Ranks from 'src/ranks/ranks.entities';
 import { USER_ROLE } from 'src/types';
@@ -44,7 +43,7 @@ export class UsersService {
       createdAt,
     });
 
-    return plainToInstance(Users, user);
+    return { user };
   }
 
   async findOneByEmail(email: string) {
@@ -106,6 +105,14 @@ export class UsersService {
     delete updatedUser.password;
 
     return { user: updatedUser };
+  }
+
+  async findAllPremiumUsers() {
+    const users = await this.usersRepository.find({
+      where: { role: USER_ROLE.PREMIUM },
+    });
+
+    return { users };
   }
 
   @Cron('5 0 * * *')

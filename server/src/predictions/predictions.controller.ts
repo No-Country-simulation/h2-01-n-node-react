@@ -10,14 +10,14 @@ import {
 } from '@nestjs/common';
 import { PredictionsService } from './predictions.service';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { CreatePredictionDTO } from './dtos/create-prediction.dto';
 import { PredictionsPaginationDTO } from './dtos/pagination.dto';
 import { CreateAggregatePredictionDTO } from './dtos/create-aggregate.dto';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 @ApiTags('Predictions')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(RolesGuard)
 @Controller('predictions')
 export class PredictionsController {
   constructor(private predictionsService: PredictionsService) {}
