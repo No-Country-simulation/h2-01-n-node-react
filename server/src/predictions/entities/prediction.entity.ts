@@ -2,12 +2,10 @@ import { IsEnum } from 'class-validator';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum PREDICTION_STATUS {
-    ACCEPTED = 'ACCEPTED',
-    IN_PROGRESS = 'IN PROGRESS',
-    SUCCESS = 'SUCCESS',
-    FAILURE = 'FAILURE',
-    CANCELLED = 'CANCELLED',
-    PENDING = 'PENDING',
+  ACCEPTED = 'ACCEPTED',
+  SUCCESS = 'SUCCESS',
+  FAILURE = 'FAILURE',
+  CANCELLED = 'CANCELLED'
 }
 
 @Entity('predictions')
