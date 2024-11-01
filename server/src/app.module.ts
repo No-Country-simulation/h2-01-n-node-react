@@ -25,6 +25,7 @@ import { PredictionsModule } from './predictions/predictions.module';
 import { AggregatePredictionsModule } from './aggregate-predictions/aggregate-predictions.module';
 import { RanksModule } from './ranks/ranks.module';
 import { PricesModule } from './prices/prices.module';
+import { OtpModule } from './otp/otp.module';
 
 @Module({
   imports: [
@@ -78,6 +79,7 @@ import { PricesModule } from './prices/prices.module';
     AggregatePredictionsModule,
     RanksModule,
     PricesModule,
+    OtpModule,
   ],
   controllers: [AppController],
 })

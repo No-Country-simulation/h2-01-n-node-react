@@ -1,3 +1,4 @@
+import { OTP } from 'src/otp/otp.entity';
 import Ranks from 'src/ranks/ranks.entities';
 import { USER_ROLE } from 'src/types';
 import {
@@ -5,6 +6,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -44,6 +46,15 @@ export class Users {
 
   @Column({ nullable: true })
   premiumExpireDate: Date;
+
+  @Column({ default: false })
+  isActive: boolean;
+
+  @Column({ default: false })
+  isVerified: boolean;
+
+  @OneToMany(() => OTP, otp => otp.user)
+  otps: OTP[];
 
   @Column({
     type: 'timestamp',

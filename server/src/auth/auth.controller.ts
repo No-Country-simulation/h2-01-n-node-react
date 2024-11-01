@@ -45,4 +45,9 @@ export class AuthController {
 
     return res.json({ token: user.accessToken });
   }
+
+  @Post('verify')
+  async verifyEmail(@Body() verifyDto: { email: string; code: string }) {
+    
+  }
 }
