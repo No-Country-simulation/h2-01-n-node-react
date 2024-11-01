@@ -260,7 +260,6 @@ export default function AuthTabs() {
         const token = data.token;
   
         if (token) {
-          // Guardar el token en localStorage
           router.push("/partidos"); 
         } else {
           console.error("No se recibió token en la respuesta.");
@@ -314,10 +313,8 @@ export default function AuthTabs() {
   
         if (token) {
           
-          // Guarda el token en una cookie con js-cookie
-          Cookies.set("authToken", token, { expires: 7 }); // El token expira en 7 días
+          Cookies.set("authToken", token, { expires: 7 }); 
           
-          // Redirige al usuario a la página protegida
           router.push("/partidos");
         } else {
           console.error("No se recibió token en la respuesta.");

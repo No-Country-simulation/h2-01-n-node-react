@@ -20,7 +20,7 @@
 .container-curve {
   display: flex;
   margin-top: 0px;
-  margin-left: -5px;
+ 
 }
 
 .date-curve {
@@ -91,7 +91,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: -20px;
+  margin-left: 10px;
 }
 
 .team-span{
@@ -216,7 +216,7 @@
   font-family: "Poppins", sans-serif;
   font-size: 20px;
   margin-top: 30px;
-  margin-left: 20px;
+  margin-left: 25px;
   font-weight: 500;
 }
 

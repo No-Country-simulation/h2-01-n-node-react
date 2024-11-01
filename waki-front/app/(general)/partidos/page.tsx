@@ -9,10 +9,8 @@ import ChipsFilter from "@/app/components/ChipsFilter/ChipsFilter";
 import MatchCard from "@/app/components/MatchCard/MatchCard";
 import "./partidos.css";
 import Header from "@/app/components/Navbar/Navbar";
-
 import BotomChat from '@/app/components/BotomChat/BotomChat'
 import MatchCardLive from "@/app/components/MatchCardLive/MatchCardLive";
-
 
 export default function Page() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -55,7 +53,6 @@ export default function Page() {
     setActiveTab(tabId);
   };
 
- 
   return (
     <>
       <TopView />
@@ -77,7 +74,7 @@ export default function Page() {
       <div className="match-card-container">
         <MatchCard activeTab={activeTab}  />
       </div>
-      <div className="section-header-match">
+      <div className="section-header">
         <h1 className="statePartido">Por Jugar</h1>
         <div className="divider"></div>
       </div>

@@ -9,8 +9,9 @@ import ChipsFilter from "@/app/components/ChipsFilter/ChipsFilter";
 import MatchCard from "@/app/components/MatchCard/MatchCard";
 import "../partidos/partidos.css";
 import Header from "@/app/components/Navbar/Navbar";
-import BotomChat from '@/app/components/BotomChat/BotomChat';
+import BotomChat from "@/app/components/BotomChat/BotomChat";
 import MatchCardLive from "@/app/components/MatchCardLive/MatchCardLive";
+import CryptoJS from "crypto-js"; 
 
 const API_BASE_URL = "https://waki.onrender.com/api";
 
@@ -41,13 +42,26 @@ export default function Page() {
       router.push("/auth");
       return;
     }
-  
-    const nextDateFromCookie = Cookies.get("nextDate");
-  
+
+    const SECRET_KEY = process.env.NEXT_PUBLIC_SECRET_KEY as string;
+    // Función para leer y desencriptar desde la cookie
+    const getDecryptedDateFromCookie = (): string | null => {
+      const encryptedDate = Cookies.get("nextDate");
+      if (encryptedDate) {
+        const bytes = CryptoJS.AES.decrypt(encryptedDate, SECRET_KEY);
+        return bytes.toString(CryptoJS.enc.Utf8);
+      }
+      return null;
+    };
+
+
     const fetchMatches = async () => {
-      const dateParam = nextDateFromCookie || afterTomorrow.toISOString().split("T")[0];
+      // const dateParam = nextDateFromCookie || afterTomorrow.toISOString().split("T")[0];
+      const dateParam =
+        getDecryptedDateFromCookie() ||
+        afterTomorrow.toISOString().split("T")[0];
       const FIXTURES_API_URL = `${API_BASE_URL}/fixtures?date=${dateParam}`;
-  
+
       try {
         const response = await fetch(FIXTURES_API_URL, {
           method: "GET",
@@ -56,15 +70,15 @@ export default function Page() {
             "Content-Type": "application/json",
           },
         });
-  
+
         if (!response.ok) {
           const errorData = await response.json();
           console.error("Error al obtener los datos:", errorData);
           return;
         }
-  
+
         const data = await response.json();
-  
+
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const formattedMatches = data.fixtures.map((match: any) => {
           const matchDate = new Date(match.date);
@@ -87,7 +101,7 @@ export default function Page() {
             isCardVisible: true,
           };
         });
-  
+
         setMatches(formattedMatches);
       } catch (error) {
         console.error("Error en la solicitud:", error);
@@ -95,11 +109,10 @@ export default function Page() {
         setLoading(false);
       }
     };
-  
+
     fetchMatches();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
-  
 
   const formatDate = (date: Date) => {
     const day = date.getDate();
@@ -110,12 +123,14 @@ export default function Page() {
   const today = new Date();
   const afterTomorrow = new Date(today);
 
-  const tabs = [{ id: "Siguiente Fecha", label: `${formatDate(afterTomorrow)}` }];
+  const tabs = [
+    { id: "Siguiente Fecha", label: `${formatDate(afterTomorrow)}` },
+  ];
 
   const handleTabChange = (tabId: string) => {
     setActiveTab(tabId);
   };
-  
+
   return (
     <>
       <TopView />
@@ -123,12 +138,11 @@ export default function Page() {
       <Carrusel activeTab={activeTab} />
       <div className="flex items-center justify-between title-container">
         <h1 className="partidosTitle">Partidos</h1>
-        {/* <Filter /> */}
       </div>
       <div>
         <ChipsFilter />
       </div>
-      <Header tabs={tabs} onTabChange={handleTabChange} activeTab={activeTab}  />
+      <Header tabs={tabs} onTabChange={handleTabChange} activeTab={activeTab} />
 
       <div className="section-header">
         <h1 className="statePartido">En vivo</h1>
