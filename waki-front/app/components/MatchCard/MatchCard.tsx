@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useEffect, ReactNode } from "react";
 import Image from "next/image";
@@ -8,6 +9,7 @@ import { Card, CardContent, CardHeader, Tooltip } from "@mui/material";
 import logoPL from "@/app/assets/ligas/logo-le.png";
 import { ClipLoader } from "react-spinners";
 import { useTheme } from "@/app/components/context/ThemeContext";
+import CryptoJS from "crypto-js";
 
 interface Venue {
   id: number;
@@ -40,14 +42,12 @@ interface FixtureBetOdds {
   value: string;
   odd: string;
 }
-
 interface FixtureBet {
   id: number;
   leagueId: number;
   fixtureId: number;
   fixtureBetOdds: FixtureBetOdds[];
 }
-
 interface Fixture {
   time: ReactNode;
   id: number;
@@ -122,6 +122,18 @@ export default function MatchCard({ activeTab }: { activeTab: string }) {
 
   yesterday.setDate(today.getDate() - 1);
   tomorrow.setDate(today.getDate() + 1);
+
+  const SECRET_KEY = process.env.NEXT_PUBLIC_SECRET_KEY as string;
+  // Función para encriptar y guardar en cookie
+  const setEncryptedDateCookie = (date: string) => {
+    if (!SECRET_KEY) {
+      console.error("La clave secreta no está definida");
+      return;
+    }
+
+    const encryptedDate = CryptoJS.AES.encrypt(date, SECRET_KEY).toString();
+    Cookies.set("nextDate", encryptedDate, { expires: 7 });
+  };
 
   let dateParam;
   switch (activeTab) {
@@ -198,7 +210,7 @@ export default function MatchCard({ activeTab }: { activeTab: string }) {
           const data: FixturesResponse = await response.json();
 
           if (data.fixtures.length === 0 && data.nextDate) {
-            Cookies.set("nextDate", data.nextDate, { expires: 7 });
+            setEncryptedDateCookie(data.nextDate);
           }
 
           if (Array.isArray(data.fixtures)) {
@@ -346,7 +358,7 @@ export default function MatchCard({ activeTab }: { activeTab: string }) {
                       sx={{
                         borderBottom: "none",
                         backgroundColor: isDarkMode ? "#1F2937" : "#F0F4FF",
-                      }} // Cambia el fondo del encabezado
+                      }}
                     />
                     <CardContent
                       sx={{

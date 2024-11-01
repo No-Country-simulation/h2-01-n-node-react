@@ -25,12 +25,11 @@ import { useRouter } from "next/navigation";
 import { Tooltip } from "@mui/material";
 import { ClipLoader } from "react-spinners";
 import { useTheme } from "@/app/components/context/ThemeContext";
-
+import CryptoJS from "crypto-js"; 
 interface MatchStatistic {
   team: string;
   percentage: number;
 }
-
 interface MatchStatisticsCardProps {
   statistics: MatchStatistic[];
 }
@@ -131,14 +130,22 @@ export default function page() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { isDarkMode, toggleDarkMode } = useTheme();
 
+  // Función para encriptar y guardar en cookie
+  const setEncryptedDateCookie = (date: string) => {
+    const SECRET_KEY = process.env.NEXT_PUBLIC_SECRET_KEY as string;
+    if (!SECRET_KEY) {
+      console.error("La clave secreta no está definida");
+      return;
+    }
+
+    const encryptedDate = CryptoJS.AES.encrypt(date, SECRET_KEY).toString();
+    Cookies.set("prediction", encryptedDate, { expires: 7 });
+  };
+
   const openModal = () => {
     setShowResultadoPopup(false);
     setIsOpen(false);
     setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
   };
 
   const router = useRouter();
@@ -162,6 +169,7 @@ export default function page() {
 
   const handleTeamSelect = (team: { name: string; logo: string }) => {
     setSelectedTeam(team);
+    setEncryptedDateCookie(team.name)
   };
 
   const handleContinue = () => {
@@ -171,14 +179,14 @@ export default function page() {
   };
 
   const handleConfirm = async () => {
-    const AGGREGATE_URL = `${API_BASE_URL}/predictions/aggregate`;
+    const AGGREGATE_URL = `${API_BASE_URL}/predictions`;
     const token = Cookies.get("authToken");
-
+  
     if (!token) {
       router.push("/auth");
       return;
     }
-
+  
     try {
       const fixtureResponse = await fetch(FIXTURE_URL, {
         method: "GET",
@@ -187,45 +195,34 @@ export default function page() {
           "Content-Type": "application/json",
         },
       });
-
+  
       if (!fixtureResponse.ok) {
         const errorData = await fixtureResponse.json();
         console.error("Error al obtener los detalles del fixture:", errorData);
         return;
       }
-
+  
       const fixtureData = await fixtureResponse.json();
-
       const fixtureBets = fixtureData.fixture.fixtureBets;
-
+  
       if (!fixtureBets || fixtureBets.length === 0) {
         console.error("No hay datos en fixtureBets");
         return;
       }
-
+  
       const fixtureId = fixtureData.fixture.id;
-
       const fixtureBetOdds = fixtureBets[0].fixtureBetOdds;
-      if (!fixtureBetOdds || fixtureBetOdds.length < 3) {
+      if (!fixtureBetOdds || fixtureBetOdds.length < 1) {
         console.error("No hay suficientes datos en fixtureBetOdds");
         return;
       }
-
+  
       const payload = {
-        predictions: [
-          {
-            value: fixtureBetOdds[0].value,
-            betId: fixtureBets[0].betId,
-            fixtureId: fixtureId,
-          },
-          {
-            value: fixtureBetOdds[2].value,
-            betId: fixtureBets[0].betId,
-            fixtureId: fixtureId,
-          },
-        ],
+        value: fixtureBetOdds[0].value, // puedes ajustar el índice según el valor que necesites
+        betId: fixtureBets[0].betId,
+        fixtureId: fixtureId,
       };
-
+  
       const response = await fetch(AGGREGATE_URL, {
         method: "POST",
         headers: {
@@ -234,33 +231,22 @@ export default function page() {
         },
         body: JSON.stringify(payload),
       });
-
+  
       if (response.ok) {
         const data = await response.json();
-
+  
         setShowConfirmationPopup(false);
         setShowSuccessMessage(true);
-
-        if (
-          data &&
-          data.data &&
-          data.data.predictions &&
-          data.data.predictions.length > 0
-        ) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const formattedPredictions = data.data.predictions.map(
-            (prediction: any) => ({
-              value: prediction.value,
-              odd: prediction.odd,
-              betId: prediction.betId,
-              fixtureId: prediction.fixtureId,
-            })
-          );
+  
+        if (data && data.data && data.data.predictions && data.data.predictions.length > 0) {
+          const formattedPredictions = data.data.predictions.map((prediction: any) => ({
+            value: prediction.value,
+            odd: prediction.odd,
+            betId: prediction.betId,
+            fixtureId: prediction.fixtureId,
+          }));
         } else {
-          console.error(
-            "Error: La respuesta no contiene predicciones válidas",
-            data
-          );
+          console.error("Error: La respuesta no contiene predicciones válidas", data);
         }
       } else {
         const errorData = await response.json();
@@ -270,6 +256,7 @@ export default function page() {
       console.error("Error en la solicitud:", error);
     }
   };
+  
 
   const [tooltip, setTooltip] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -281,6 +268,17 @@ export default function page() {
   const handleTooltipClose = () => {
     setTooltip(null);
   };
+
+  const SECRET_KEY = process.env.NEXT_PUBLIC_SECRET_KEY as string;
+  // Función para leer y desencriptar desde la cookie
+  const getDecryptedDateFromCookie = (): string | null => {
+    const encryptedDate = Cookies.get("fixture");
+    if (encryptedDate) {
+      const bytes = CryptoJS.AES.decrypt(encryptedDate, SECRET_KEY);
+      return bytes.toString(CryptoJS.enc.Utf8);
+    }
+    return null;
+  }
 
   useEffect(() => {
     if (showSuccessMessage) {
@@ -294,7 +292,7 @@ export default function page() {
     }
   }, [showSuccessMessage]);
 
-  const fixtureId = Cookies.get("fixture");
+  const fixtureId = getDecryptedDateFromCookie()
   const API_BASE_URL = "https://waki.onrender.com/api";
   const FIXTURE_URL = `${API_BASE_URL}/fixtures/${fixtureId}`;
 
@@ -395,20 +393,6 @@ export default function page() {
             />
             <span className="partidosAtras">Partidos</span>
           </Link>
-          <div className="icon-ball-container">
-            <Image
-              priority={true}
-              alt="Icono de balón"
-              className="icon-ball"
-              src={IconBall}
-              width={35}
-              height={35}
-            />
-
-            <h1 className="counter-life">5</h1>
-
-            <button className="buy-button">+</button>
-          </div>
         </div>
         {/*TOP CURVE VERDE CON ESCUDOS*/}
         <div className="top-curve">
@@ -874,7 +858,7 @@ export default function page() {
         </div>
 
         <h1 className="title-section2">Pronóstico general</h1>
-        <div>
+        <div className="p-3">
           <CardStatis statistics={matchStatistics} />
         </div>
       </div>

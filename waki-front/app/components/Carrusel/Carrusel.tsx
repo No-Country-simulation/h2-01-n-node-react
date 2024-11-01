@@ -7,6 +7,7 @@ import Image from "next/image";
 import { ClipLoader } from "react-spinners";
 import vsImage from "@/app/assets/VS.png";
 import "./carrusel.css";
+import CryptoJS from "crypto-js"; 
 
 const API_BASE_URL = "https://waki.onrender.com/api";
 
@@ -95,6 +96,19 @@ export default function Carrusel({ activeTab }: { activeTab: string }) {
     return date.toISOString().split("T")[0];
   };
 
+const SECRET_KEY = process.env.NEXT_PUBLIC_SECRET_KEY as string;
+
+// Función para encriptar y guardar en cookie
+const setEncryptedDateCookie = (date: string) =>{
+  if (!SECRET_KEY) {
+    console.error("La clave secreta no está definida");
+    return;
+  }
+
+  const encryptedDate = CryptoJS.AES.encrypt(date, SECRET_KEY).toString();
+  Cookies.set("nextDate", encryptedDate, { expires: 7 });
+}
+
   const today = new Date();
   const yesterday = new Date(today);
   const tomorrow = new Date(today);
@@ -155,7 +169,7 @@ export default function Carrusel({ activeTab }: { activeTab: string }) {
         }
 
         if (data.fixtures.length === 0 && data.nextDate) {
-          Cookies.set("nextDate", data.nextDate, { expires: 7 });
+          setEncryptedDateCookie(data.nextDate)
         }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -191,6 +205,7 @@ export default function Carrusel({ activeTab }: { activeTab: string }) {
     };
 
     fetchMatches();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router, FIXTURES_API_URL]);
 
   const handleImageError = (index: number) => {
