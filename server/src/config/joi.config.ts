@@ -14,4 +14,7 @@ export const configSchema = Joi.object({
   POSTGRES_DB: Joi.string().required(),
   POSTGRES_PORT: Joi.number().integer().required(),
   DB_HOST: Joi.string().required(),
+  CLOUDINARY_NAME: Joi.string().optional(),
+  CLOUDINARY_API_KEY: Joi.string().optional(),
+  CLOUDINARY_API_API: Joi.string().optional(),
 });
