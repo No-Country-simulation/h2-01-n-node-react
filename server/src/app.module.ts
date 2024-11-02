@@ -25,6 +25,7 @@ import { PredictionsModule } from './predictions/predictions.module';
 import { AggregatePredictionsModule } from './aggregate-predictions/aggregate-predictions.module';
 import { RanksModule } from './ranks/ranks.module';
 import { PricesModule } from './prices/prices.module';
+import { RankResetModule } from './rank-reset/rank-reset.module';
 
 @Module({
   imports: [
@@ -78,6 +79,7 @@ import { PricesModule } from './prices/prices.module';
     AggregatePredictionsModule,
     RanksModule,
     PricesModule,
+    RankResetModule,
   ],
   controllers: [AppController],
 })
