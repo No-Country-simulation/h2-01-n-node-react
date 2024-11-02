@@ -329,18 +329,57 @@ export class PredictionsService {
     let predictions = [];
     let aggregatePredictions = [];
     if (type === 'SINGLE' || type !== 'AGGREGATE') {
-      const p = await this.predictionsRepository.find({
-        where: { userId, aggregatePrediction: null },
-        relations: ['fixture'],
-      });
-      predictions = [...p];
+      const p = await this.predictionsRepository
+        .createQueryBuilder('prediction')
+        .leftJoinAndSelect('prediction.fixture', 'fixture')
+        .leftJoinAndSelect('fixture.homeTeam', 'homeTeam')
+        .leftJoinAndSelect('fixture.awayTeam', 'awayTeam')
+        .where('prediction.userId = :userId', { userId })
+        .andWhere('prediction.aggregatePredictionId IS NULL')
+        .getMany();
+      predictions = [
+        ...p.map((prediction) => {
+          return {
+            predictionTeam:
+              prediction.value === 'Draw'
+                ? 'Draw'
+                : prediction.value === 'Home'
+                  ? prediction.fixture.homeTeam.name
+                  : prediction.fixture.awayTeam.name,
+            ...prediction,
+          };
+        }),
+      ];
     }
     if (type === 'AGGREGATE' || type !== 'SINGLE') {
       const a = await this.aggregatePredictionsRepository.find({
         where: { userId },
-        relations: ['predictions', 'predictions.fixture'],
+        relations: [
+          'predictions',
+          'predictions.fixture',
+          'predictions.fixture.homeTeam',
+          'predictions.fixture.awayTeam',
+        ],
       });
-      aggregatePredictions = [...a];
+      aggregatePredictions = [
+        ...a.map((aggregate) => {
+          aggregate.predictions = [
+            ...aggregate.predictions.map((prediction) => {
+              return {
+                predictionTeam:
+                  prediction.value === 'Draw'
+                    ? 'Draw'
+                    : prediction.value === 'Home'
+                      ? prediction.fixture.homeTeam.name
+                      : prediction.fixture.awayTeam.name,
+                ...prediction,
+              };
+            }),
+          ];
+
+          return aggregate;
+        }),
+      ];
     }
 
     return { predictions, aggregatePredictions };
