@@ -8,9 +8,9 @@ import { FaChevronUp, FaChevronDown } from "react-icons/fa";
 import { Card, CardContent, CardHeader, Tooltip } from "@mui/material";
 import logoPL from "@/app/assets/ligas/logo-le.png";
 import { ClipLoader } from "react-spinners";
+import IconCopa from "@/app/assets/iconCopa.png";
 import { useTheme } from "@/app/components/context/ThemeContext";
 import CryptoJS from "crypto-js";
-
 interface Venue {
   id: number;
   name: string;
@@ -36,7 +36,6 @@ interface Team {
   national?: boolean;
   logo: string;
 }
-
 interface FixtureBetOdds {
   fixtureBetId: number;
   value: string;
@@ -272,20 +271,11 @@ export default function PredictionCard({ activeTab }: { activeTab: string }) {
             predictionData.predictions &&
             predictionData.predictions.length > 0
           ) {
-            const prediction = predictionData.predictions[0];
-            const fixture = prediction;
+            const prediction = predictionData.predictions;
+           
 
-            if (fixture.value === "Home") {
-              setSelectedTeam({
-                name: fixture.homeTeam?.name,
-                logo: fixture.homeTeam?.logo,
-              });
-            } else if (fixture.value === "Away") {
-              setSelectedTeam({
-                name: fixture.awayTeam?.name,
-                logo: fixture.awayTeam?.logo,
-              });
-            }
+            console.log(prediction)
+
           }
         } else {
           const predictionErrorData = await predictionResponse.json();
@@ -500,6 +490,23 @@ export default function PredictionCard({ activeTab }: { activeTab: string }) {
                             </Tooltip>
                           </div>
                         </div>
+                      </div>
+                      {/* Contenedor centrado para el trofeo y "x10" */}
+                      <div className="flex justify-center items-center mt-8">
+                        <Image
+                          src={IconCopa}
+                          alt="Trophy"
+                          width={16}
+                          height={16}
+                          className="inline mr-1"
+                        />
+                        <span
+                          className={`font-medium text-xxl ${
+                            isDarkMode ? "text-white" : "text-gray-800"
+                          }`}
+                        >
+                          x 10
+                        </span>
                       </div>
                     </CardContent>
                   </Card>

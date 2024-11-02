@@ -3,7 +3,6 @@ import React from 'react'
 import './notificaciones.css'
 import Flecha from '@/app/assets/flecha.png'
 import AjusteIcon from '@/app/assets/ajusteIcon.svg'
-import { useState, useEffect } from "react";
 import Image from "next/image";
 
 export default function page() {

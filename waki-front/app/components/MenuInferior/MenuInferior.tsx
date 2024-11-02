@@ -17,8 +17,8 @@ const MenuInferior = () => {
   useEffect(() => {
     if (pathname.includes('/divisiones')) {
       setActiveIcon("divisiones");
-    } else if (pathname.includes('/predicciones')) {
-      setActiveIcon("predicciones");
+    } else if (pathname.includes('/prediccionesPerfil')) {
+      setActiveIcon("prediccionesPerfil");
     } else if (pathname.includes('/jugadores')) {
       setActiveIcon("jugadores");
     } else if (pathname.includes('/partidos')) {
@@ -33,8 +33,8 @@ const MenuInferior = () => {
       router.push('/divisiones');
     } else if (icon === "partidos") {
       router.push('/partidos');
-    } else if (icon === 'predicciones'){
-      router.push('/predicciones');
+    } else if (icon === 'prediccionesPerfil'){
+      router.push('/prediccionesPerfil');
     }else if (icon === 'jugadores'){
       router.push('/jugadores')
 
@@ -142,12 +142,12 @@ const MenuInferior = () => {
         <button
           type="button"
           className="inline-flex flex-col items-center justify-center px-5 group"
-          onClick={() => handleIconClick("predicciones")}
+          onClick={() => handleIconClick("prediccionesPerfil")}
           style={{
-            backgroundColor: isActive("predicciones") ? "#317EF4" : "transparent",
-            transform: isActive("predicciones") ? "scale(1.1)" : "scale(1)",
-            boxShadow: isActive("predicciones") ? "0 4px 10px rgba(0, 0, 0, 0.3)" : "none",
-            borderRadius: isActive("predicciones") ? "5px" : "0px", 
+            backgroundColor: isActive("prediccionesPerfil") ? "#317EF4" : "transparent",
+            transform: isActive("prediccionesPerfil") ? "scale(1.1)" : "scale(1)",
+            boxShadow: isActive("prediccionesPerfil") ? "0 4px 10px rgba(0, 0, 0, 0.3)" : "none",
+            borderRadius: isActive("prediccionesPerfil") ? "5px" : "0px", 
             transition: "all 0.3s ease",
           }}
         >
@@ -158,11 +158,11 @@ const MenuInferior = () => {
             alt="Predicciones"
             className="w-5 h-5 mb-2"
             style={{
-              filter: isActive("predicciones") ? "brightness(0) invert(1)" : "none",
+              filter: isActive("prediccionesPerfil") ? "brightness(0) invert(1)" : "none",
             }}
           />
           <span
-            className={`text-[10px] ${isActive("predicciones") ? "text-white" : "text-white opacity-30"}`}
+            className={`text-[10px] ${isActive("prediccionesPerfil") ? "text-white" : "text-white opacity-30"}`}
           >
             Predicciones
           </span>

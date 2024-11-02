@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 "use client"
 import { useState } from "react";
 import Image from "next/image";
@@ -24,9 +25,6 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts"
-import { Square, AlertTriangle } from "lucide-react"
-
-
 
 export default function page() {
 

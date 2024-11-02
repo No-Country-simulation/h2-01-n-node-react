@@ -42,9 +42,7 @@ export default function PrediccionesPerfil() {
   tomorrow.setDate(today.getDate() + 1);
 
   const tabs = [
-    { id: "Ayer", label: `${formatDate(yesterday)}` },
-    { id: "Hoy", label: `Hoy` },
-    { id: "Manana", label: `${formatDate(tomorrow)}` },
+    { id: "Hoy", label: `${formatDate(today)}` },
   ];
 
   const handleTabChange = (tabId: string) => {
