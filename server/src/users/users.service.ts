@@ -1,6 +1,7 @@
 import {
   ConflictException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,6 +13,7 @@ import { DateTime } from 'luxon';
 import Ranks from 'src/ranks/ranks.entities';
 import { USER_ROLE } from 'src/types';
 import { Cron } from '@nestjs/schedule';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
 export class UsersService {
@@ -20,6 +22,7 @@ export class UsersService {
     private usersRepository: Repository<Users>,
     @InjectRepository(Ranks)
     private ranksRepository: Repository<Ranks>,
+    private cloudinaryService: CloudinaryService,
   ) {}
   async create(registerUserDto: RegisterUserDTO) {
     const userExists = await this.usersRepository.findOneBy({
@@ -44,6 +47,26 @@ export class UsersService {
     });
 
     return { user };
+  }
+
+  async update(userId: number, image: Express.Multer.File) {
+    if (!image) {
+      throw new ConflictException('File is required');
+    }
+
+    const user = await this.usersRepository.findOne({ where: { id: userId } });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const result = await this.cloudinaryService.uploadFile(image);
+
+    user.image = result.url;
+
+    const updatedUser = await this.usersRepository.save(user);
+
+    return { updatedUser };
   }
 
   async findOneByEmail(email: string) {
