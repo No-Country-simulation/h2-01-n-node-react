@@ -144,4 +144,11 @@ export class UsersService {
       );
     }
   }
+
+  async verifyUser(userId: number){
+    await this.usersRepository.update(userId, {
+      isVerified: true,
+      isActive: true,
+    });
+  }
 }

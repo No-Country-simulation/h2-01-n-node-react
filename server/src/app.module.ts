@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-
+import { MailerModule } from '@nestjs-modules/mailer';
 import { envConfig } from './config';
 import { configSchema } from './config/joi.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -25,7 +25,7 @@ import { PredictionsModule } from './predictions/predictions.module';
 import { AggregatePredictionsModule } from './aggregate-predictions/aggregate-predictions.module';
 import { RanksModule } from './ranks/ranks.module';
 import { PricesModule } from './prices/prices.module';
-import { OtpModule } from './otp/otp.module';
+import { OTPModule } from './otp/otp.module';
 
 @Module({
   imports: [
@@ -46,6 +46,7 @@ import { OtpModule } from './otp/otp.module';
         password: configService.get<string>('postgresPassword'),
         database: configService.get<string>('postgresDb'),
         autoLoadEntities: true,
+        ssl: true,
         synchronize: configService.get<string>('environment') !== 'prod', // synchronize se establece en true solo si NODE_ENV no es 'prod'
       }),
     }),
@@ -60,6 +61,22 @@ import { OtpModule } from './otp/otp.module';
             configService.get<string>('apiKey'),
         },
       }),
+    }),
+    MailerModule.forRoot({
+      transport: {
+        host: process.env.MAIL_HOST,
+        port: Number(process.env.MAIL_PORT),
+        auth: {
+          user: process.env.MAIL_USER,
+          pass: process.env.MAIL_PASSWORD,
+        },
+        tls: {
+          rejectUnauthorized: false
+        }    
+      },
+      defaults: {
+        from: process.env.MAIL_FROM,
+      }
     }),
     UsersModule,
     AuthModule,
@@ -79,7 +96,7 @@ import { OtpModule } from './otp/otp.module';
     AggregatePredictionsModule,
     RanksModule,
     PricesModule,
-    OtpModule,
+    OTPModule
   ],
   controllers: [AppController],
 })

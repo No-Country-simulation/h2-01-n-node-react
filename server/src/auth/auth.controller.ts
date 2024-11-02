@@ -4,8 +4,10 @@ import { UsersService } from 'src/users/users.service';
 import { LoginUserDTO } from './dtos/login.dto';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
-import { ConfigService } from '@nestjs/config';
 import { ApiTags } from '@nestjs/swagger';
+import { VerifyOtpDto } from 'src/otp/dtos/verify-otp.dto';
+import { OTPService } from 'src/otp/otp.service';
+import { EmailService } from 'src/services/email.service';
 
 // TODO: move logic to auth.service.ts
 @ApiTags('Auth')
@@ -14,7 +16,8 @@ export class AuthController {
   constructor(
     private authService: AuthService,
     private usersService: UsersService,
-    private configService: ConfigService,
+    private otpService: OTPService,
+    private emailService: EmailService
   ) {}
 
   @Post('register')
@@ -23,13 +26,15 @@ export class AuthController {
     @Res() res: Response,
   ) {
     const { password } = registerUserDto;
-    await this.usersService.create(registerUserDto);
+    const myUser = await this.usersService.create(registerUserDto);
 
     const user = await this.authService.login({
       email: registerUserDto.email,
       password,
     });
 
+    const otpCode = await this.otpService.generateOTP(myUser.user.id);
+    await this.emailService.sendVerificationEmail(registerUserDto.email, otpCode);
     return res.json({ token: user.accessToken });
   }
 
@@ -47,7 +52,8 @@ export class AuthController {
   }
 
   @Post('verify')
-  async verifyEmail(@Body() verifyDto: { email: string; code: string }) {
-    
+  async verifyOTP(@Body() body: { email: string } & VerifyOtpDto) {
+    await this.authService.verifyOTP(body.email, body.code);
+    return { message: 'Usuario verificado exitosamente' };
   }
 }

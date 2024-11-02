@@ -7,10 +7,14 @@ import { ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Users } from 'src/users/users.entity';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { OTPService } from 'src/otp/otp.service';
+import { OTP } from 'src/otp/otp.entity';
+import { EmailService } from 'src/services/email.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Users]),
+    TypeOrmModule.forFeature([Users, OTP]),
     UsersModule,
     JwtModule.registerAsync({
       useFactory: async (configService: ConfigService) => ({
@@ -23,7 +27,7 @@ import { Users } from 'src/users/users.entity';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, OTPService, EmailService],
   exports: [AuthService],
 })
 export class AuthModule {}

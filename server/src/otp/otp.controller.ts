@@ -10,7 +10,6 @@ export class OTPController {
   @Post('generate')
   async generateOTP(@Request() req) {
     const code = await this.otpService.generateOTP(req.user.id);
-    // Aquí podrías enviar el código por email o SMS
     return { message: 'Código OTP generado exitosamente' };
   }
 
