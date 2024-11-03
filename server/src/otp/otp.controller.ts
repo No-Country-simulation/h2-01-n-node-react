@@ -1,7 +1,9 @@
 import { Controller, Post, Body, UseGuards, Request } from '@nestjs/common';
 import { OTPService } from './otp.service';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('OTP Verification')
 @Controller('otp')
 export class OTPController {
   constructor(private readonly otpService: OTPService) {}
@@ -10,7 +12,7 @@ export class OTPController {
   @Post('generate')
   async generateOTP(@Request() req) {
     const code = await this.otpService.generateOTP(req.user.id);
-    return { message: 'Código OTP generado exitosamente' };
+    return { message: 'OTP code generated successfully. Check your email' };
   }
 
   @UseGuards(JwtAuthGuard)

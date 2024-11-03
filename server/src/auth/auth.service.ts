@@ -8,6 +8,7 @@ import { Users } from 'src/users/users.entity';
 import { Repository } from 'typeorm';
 import { OTPService } from 'src/otp/otp.service';
 import { UsersService } from 'src/users/users.service';
+import { VerifyOtpDto } from 'src/otp/dtos/verify-otp.dto';
 
 export interface Payload {
   email: string;
@@ -52,12 +53,12 @@ export class AuthService {
     };
   }
 
-  async verifyOTP(email: string, code: string): Promise<void> {
-    const user = await this.userService.findOneByEmail(email);
+  async verifyOTP(verifyOTPDto: VerifyOtpDto): Promise<void> {
+    const user = await this.userService.findOneByEmail(verifyOTPDto.email);
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    const isValid = await this.otpService.verifyOTP(user.user.id, code);
+    const isValid = await this.otpService.verifyOTP(user.user.id, verifyOTPDto.code);
     if (isValid) {
       await this.userService.verifyUser(user.user.id);
     }

@@ -52,8 +52,8 @@ export class AuthController {
   }
 
   @Post('verify')
-  async verifyOTP(@Body() body: { email: string } & VerifyOtpDto) {
-    await this.authService.verifyOTP(body.email, body.code);
+  async verifyOTP(@Body() verifyOTPDto: VerifyOtpDto) {
+    await this.authService.verifyOTP(verifyOTPDto);
     return { message: 'Usuario verificado exitosamente' };
   }
 }
