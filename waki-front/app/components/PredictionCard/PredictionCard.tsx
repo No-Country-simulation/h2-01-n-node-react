@@ -1,25 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useState, useEffect, ReactNode } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
-import { FaChevronUp, FaChevronDown } from "react-icons/fa";
+import { FaChevronUp, FaChevronDown, FaCheck, FaTimes } from "react-icons/fa";
 import { Card, CardContent, CardHeader, Tooltip } from "@mui/material";
 import logoPL from "@/app/assets/ligas/logo-le.png";
 import { ClipLoader } from "react-spinners";
 import IconCopa from "@/app/assets/iconCopa.png";
 import { useTheme } from "@/app/components/context/ThemeContext";
-import CryptoJS from "crypto-js";
-interface Venue {
-  id: number;
-  name: string;
-  address: string;
-  city: string;
-  capacity: number;
-  surface: string;
-  image: string;
-}
+import "./PredictionCard.css";
 
 interface League {
   id: number;
@@ -27,7 +18,6 @@ interface League {
   type: string;
   logo: string;
 }
-
 interface Team {
   id?: number;
   name: string;
@@ -36,64 +26,20 @@ interface Team {
   national?: boolean;
   logo: string;
 }
-interface FixtureBetOdds {
-  fixtureBetId: number;
-  value: string;
-  odd: string;
+interface FormattedPrediction {
+  predictionTeam: string;
+  homeTeam: Team;
+  awayTeam: Team;
+  points: number;
+  status: string;
 }
-
-interface FixtureBet {
-  id: number;
-  leagueId: number;
-  fixtureId: number;
-  fixtureBetOdds: FixtureBetOdds[];
-}
-
-interface Fixture {
-  time?: ReactNode;
-  id?: number;
-  referee?: string;
-  timezone?: string;
-  date?: string;
-  timestamp?: number;
-  firstPeriod?: number;
-  secondPeriod?: number;
-  statusLong?: string;
-  statusShort?: string;
-  statusElapsed?: number;
-  statusExtra?: number;
-  season?: number;
-  round?: string;
-  homeTeamWinner?: boolean;
-  awayTeamWinner?: boolean;
-  homeGoals?: number;
-  awayGoals?: number;
-  homeScoreHalftime?: number;
-  awayScoreHalftime?: number;
-  homeScoreFulltime?: number;
-  awayScoreFulltime?: number;
-  homeScoreExtratime?: number | null;
-  awayScoreExtratime?: number | null;
-  homeScorePenalty?: number | null;
-  awayScorePenalty?: number | null;
-  venue?: Venue;
-  league?: League;
-  homeTeam?: Team;
-  awayTeam?: Team;
-  fixtureBets?: FixtureBet[];
-}
-interface FixturesResponse {
-  fixtures: Fixture[];
-  nextDate: string;
-}
-
 interface MatchStatistic {
   team: string;
   percentage: number;
 }
 
 export default function PredictionCard({ activeTab }: { activeTab: string }) {
-  const [matches, setMatches] = useState<Fixture[]>([]);
+  const [matches, setMatches] = useState<FormattedPrediction[]>([]);
   const [openStates, setOpenStates] = useState<Record<number, boolean>>({});
   const [leagues, setLeagues] = useState<
     { id: number; logo: string; name: string }[]
@@ -102,8 +48,6 @@ export default function PredictionCard({ activeTab }: { activeTab: string }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [matchStatistics, setMatchStatistics] = useState<MatchStatistic[]>([]);
-  const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
-  const [decryptedDate, setDecryptedDate] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const router = useRouter();
@@ -122,6 +66,20 @@ export default function PredictionCard({ activeTab }: { activeTab: string }) {
 
   const getFormattedDate = (date: Date) => {
     return date.toISOString().split("T")[0];
+  };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const translateStatus = (status: string) => {
+    const translations: Record<string, string> = {
+      PENDING: "Pendiente",
+      WON: "Ganaste",
+      LOST: "Perdiste",
+    };
+
+    return (
+      translations[status] ||
+      status.charAt(0).toUpperCase() + status.slice(1).toLowerCase()
+    );
   };
 
   const { isDarkMode, toggleDarkMode } = useTheme();
@@ -152,145 +110,44 @@ export default function PredictionCard({ activeTab }: { activeTab: string }) {
       dateParam = getFormattedDate(today);
   }
 
-  const SECRET_KEY = process.env.NEXT_PUBLIC_SECRET_KEY as string;
-  // Función para leer y desencriptar desde la cookie
-  const getDecryptedDateFromCookie = (): string | null => {
-    const encryptedDate = Cookies.get("fixture");
-
-    if (encryptedDate) {
-      const bytes = CryptoJS.AES.decrypt(encryptedDate, SECRET_KEY);
-      return bytes.toString(CryptoJS.enc.Utf8);
-    }
-    return null;
-  };
-  // Función para leer y desencriptar desde la cookie
-  const getDecryptedDateFromCookiePrediction = (): string | null => {
-    const encryptedDatePrediction = Cookies.get("prediction");
-    if (encryptedDatePrediction) {
-      try {
-        const bytes = CryptoJS.AES.decrypt(encryptedDatePrediction, SECRET_KEY);
-        const decrypted = bytes.toString(CryptoJS.enc.Utf8);
-        if (decrypted) {
-          return decrypted;
-        } else {
-          setError("Error: Valor desencriptado vacío.");
-          return null;
-        }
-      } catch (e) {
-        console.error("Error al desencriptar:", e);
-        setError("Error al desencriptar el valor.");
-      }
-    } else {
-      setError("Error: La cookie 'prediction' no existe.");
-    }
-    return null;
-  };
-
   useEffect(() => {
-    const date = getDecryptedDateFromCookiePrediction();
-    setDecryptedDate(date);
-  }, []);
-
-  const fixtureId = getDecryptedDateFromCookie();
-  const API_BASE_URL = "https://waki.onrender.com/api";
-  const FIXTURE_URL = `${API_BASE_URL}/fixtures/${fixtureId}`;
-
-  useEffect(() => {
-    const fetchMatchesAndPredictions = async () => {
+    const API_BASE_URL = "https://waki.onrender.com/api";
+    const PREDICTION_API_URL = `${API_BASE_URL}/predictions/user?type=single`;
+    const fetchPredictions = async () => {
       const token = Cookies.get("authToken");
-
-      if (!token) {
-        router.push("/auth");
-        return;
-      }
+      setLoading(true);
 
       try {
-        const fixtureResponse = await fetch(FIXTURE_URL, {
+        const response = await fetch(PREDICTION_API_URL, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         });
+        const data = await response.json();
 
-        if (fixtureResponse.ok) {
-          const fixtureData = await fixtureResponse.json();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const formattedPredictions: FormattedPrediction[] =
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          data.predictions.map((prediction: any) => ({
+            predictionTeam: prediction.predictionTeam,
+            homeTeam: prediction.fixture.homeTeam,
+            awayTeam: prediction.fixture.awayTeam,
+            points: prediction.points ?? 10,
+            status: prediction.status,
+          }));
 
-          if (fixtureData && fixtureData.fixture) {
-            const fixture = fixtureData.fixture;
-
-            const fixtureBets = fixture.fixtureBets[0]?.fixtureBetOdds || [];
-            const newStatistics = [
-              {
-                team: fixture.homeTeam.name,
-                percentage: fixtureBets[0]?.odd || 0,
-              },
-              {
-                team: "Empate",
-                percentage: fixtureBets[1]?.odd || 0,
-              },
-              {
-                team: fixture.awayTeam.name,
-                percentage: fixtureBets[2]?.odd || 0,
-              },
-            ];
-            setMatchStatistics(newStatistics);
-
-            const formattedMatch = {
-              id: fixture.id,
-              homeTeam: fixture.homeTeam,
-              awayTeam: fixture.awayTeam,
-            };
-
-            setMatches([formattedMatch]);
-          } else {
-            console.error(
-              "Error: La respuesta no contiene un fixture válido",
-              fixtureData
-            );
-          }
-        } else {
-          const errorData = await fixtureResponse.json();
-          console.error("Error al obtener los datos del fixture:", errorData);
-        }
-
-        const GET_URL =
-          "https://waki.onrender.com/api/predictions/user?type=single";
-        const predictionResponse = await fetch(GET_URL, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (predictionResponse.ok) {
-          const predictionData = await predictionResponse.json();
-
-          if (
-            predictionData.predictions &&
-            predictionData.predictions.length > 0
-          ) {
-            const prediction = predictionData.predictions;
-           
-
-            console.log(prediction)
-
-          }
-        } else {
-          const predictionErrorData = await predictionResponse.json();
-          console.error(
-            "Error al obtener los datos de predicción:",
-            predictionErrorData
-          );
-        }
+        setMatches(formattedPredictions);
       } catch (error) {
-        console.error("Error en la solicitud:", error);
+        console.error("Error fetching predictions:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchMatchesAndPredictions();
-  }, [FIXTURE_URL, router]);
+    fetchPredictions();
+  }, []);
 
   useEffect(() => {
     const API_BASE_URL = "https://waki.onrender.com/api";
@@ -332,7 +189,7 @@ export default function PredictionCard({ activeTab }: { activeTab: string }) {
   }, [router]);
 
   return (
-    <div className="max-w-md mx-auto mt-10 bg-white shadow-lg overflow-hidden rounded-lg dark:bg-gray-800">
+    <div className="max-w-md mx-auto bg-white shadow-lg overflow-hidden rounded-lg dark:bg-gray-800">
       {leagues.map((league) => (
         <div key={league.id} className="rounded-md">
           <button
@@ -366,10 +223,14 @@ export default function PredictionCard({ activeTab }: { activeTab: string }) {
               openStates[league.id] ? "max-h-screen" : "max-h-0"
             }`}
           >
-            <div className="p-4 bg-[#F0F4FF] max-h-60 overflow-y-auto rounded-b-md dark:bg-gray-700">
+            <div className="p-4 bg-[#F0F4FF] max-h-60 max-w-100 overflow-y-auto rounded-b-md dark:bg-gray-700">
               {loading ? (
                 <div className="loader-container">
                   <ClipLoader color={"#123abc"} loading={loading} size={50} />
+                </div>
+              ) : matches.length === 0 ? (
+                <div className="text-center text-gray-500">
+                  No tienes predicciones.
                 </div>
               ) : (
                 matches.map((match, index) => (
@@ -394,9 +255,9 @@ export default function PredictionCard({ activeTab }: { activeTab: string }) {
                         backgroundColor: isDarkMode ? "#1F2937" : "#F0F4FF",
                       }}
                     >
-                      <div className="flex justify-between items-center mb-3">
-                        {/* Columna 1: "Tu predicción" en la misma línea */}
-                        <div className="flex flex-col items-start space-y-1 mr-5">
+                      {/* Bloque "Tu predicción" */}
+                      <div className="flex justify-center items-center">
+                        <div className="flex flex-col items-center space-y-1">
                           <div className="flex items-center space-x-1">
                             <span
                               className={`font-semibold text-sm ${
@@ -413,92 +274,109 @@ export default function PredictionCard({ activeTab }: { activeTab: string }) {
                               predicción
                             </span>
                           </div>
-                          <span
-                            className={`font-medium text-xs ${
-                              isDarkMode ? "text-gray-400" : "text-gray-600"
-                            }`}
-                          >
-                            {decryptedDate}
-                          </span>
-                        </div>
-
-                        {/* Columna 2: Equipos */}
-                        <div className="flex flex-col items-center space-y-2">
-                          {/* Equipo Local */}
-                          <div className="flex items-center space-x-2">
-                            {match.homeTeam?.logo ? (
-                              <Image
-                                src={match.homeTeam.logo}
-                                alt={`${match.homeTeam?.name} logo`}
-                                width={25}
-                                height={25}
-                              />
-                            ) : (
-                              <div className="w-8 h-8 bg-gray-200 flex items-center justify-center rounded-full">
-                                <span className="text-gray-600">N/A</span>
-                              </div>
-                            )}
-                            <Tooltip
-                              title={match.homeTeam?.name}
-                              open={tooltip === match.homeTeam?.name}
-                              onClose={handleTooltipClose}
-                              onClick={() =>
-                                handleTooltipOpen(match.homeTeam?.name ?? "")
-                              }
-                              arrow
-                            >
-                              <span
-                                className={`font-semibold text-sm truncate max-w-[100px] ${
-                                  isDarkMode ? "text-white" : "text-gray-800"
-                                }`}
-                              >
-                                {match.homeTeam?.name}
-                              </span>
-                            </Tooltip>
-                          </div>
-
-                          {/* Equipo Visitante */}
-                          <div className="flex items-center space-x-2">
-                            {match.awayTeam?.logo ? (
-                              <Image
-                                src={match.awayTeam.logo}
-                                alt={`${match.awayTeam?.name} logo`}
-                                width={25}
-                                height={25}
-                              />
-                            ) : (
-                              <div className="w-8 h-8 bg-gray-200 flex items-center justify-center rounded-full">
-                                <span className="text-gray-600">N/A</span>
-                              </div>
-                            )}
-                            <Tooltip
-                              title={match.awayTeam?.name}
-                              open={tooltip === match.awayTeam?.name}
-                              onClose={handleTooltipClose}
-                              onClick={() =>
-                                handleTooltipOpen(match.awayTeam?.name ?? "")
-                              }
-                              arrow
-                            >
-                              <span
-                                className={`font-semibold text-sm truncate max-w-[100px] ${
-                                  isDarkMode ? "text-white" : "text-gray-800"
-                                }`}
-                              >
-                                {match.awayTeam?.name}
-                              </span>
-                            </Tooltip>
-                          </div>
                         </div>
                       </div>
-                      {/* Contenedor centrado para el trofeo y "x10" */}
+
+                      {/* Columna 1: Prediction Team sin Tooltip */}
+                      <div className="flex flex-col items-center space-y-1 mt-4">
+                        <span
+                          className={`font-medium text-sm max-w-[100px] mb-5 ${
+                            isDarkMode ? "text-white" : "text-gray-800"
+                          }`}
+                        >
+                          {match.predictionTeam}
+                        </span>
+                      </div>
+
+                      {/* Encabezado "Equipos" */}
+                      <div
+                        className={`font-semibold text-center text-md ${
+                          isDarkMode ? "text-white" : "text-gray-800"
+                        } mt-5 mb-2`}
+                      >
+                        Equipos
+                      </div>
+
+                      {/* Columna 2: Equipos con Tooltip */}
+                      <div className="flex justify-center items-center p-5">
+                        <div className="flex flex-col items-center mr-10">
+                          <Image
+                            src={match.homeTeam?.logo}
+                            alt={`${match.homeTeam?.name} logo`}
+                            width={32}
+                            height={32}
+                            className="mb-1"
+                          />
+                          <Tooltip
+                            title={match.homeTeam?.name}
+                            open={tooltip === match.homeTeam?.name}
+                            onClose={handleTooltipClose}
+                            onClick={() =>
+                              handleTooltipOpen(match.homeTeam?.name)
+                            }
+                            arrow
+                          >
+                            <span
+                              className={`font-semibold text-sm overflow-hidden text-ellipsis whitespace-nowrap max-w-[50px] text-center cursor-pointer ${
+                                isDarkMode ? "text-white" : "text-gray-800"
+                              }`}
+                            >
+                              {match.homeTeam?.name}
+                            </span>
+                          </Tooltip>
+                        </div>
+
+                        <div className="flex flex-col items-center mx-4">
+                          <span
+                            className={`font-bold text-lg ${
+                              isDarkMode ? "text-white" : "text-gray-800"
+                            }`}
+                          ></span>
+                        </div>
+
+                        <div className="flex flex-col items-center ml-10">
+                          <Image
+                            src={match.awayTeam?.logo}
+                            alt={`${match.awayTeam?.name} logo`}
+                            width={32}
+                            height={32}
+                            className="mb-1"
+                          />
+                          <Tooltip
+                            title={match.awayTeam?.name}
+                            open={tooltip === match.awayTeam?.name}
+                            onClose={handleTooltipClose}
+                            onClick={() =>
+                              handleTooltipOpen(match.awayTeam?.name)
+                            }
+                            arrow
+                          >
+                            <span
+                              className={`font-semibold text-sm overflow-hidden text-ellipsis whitespace-nowrap max-w-[50px] text-center cursor-pointer ${
+                                isDarkMode ? "text-white" : "text-gray-800"
+                              }`}
+                            >
+                              {match.awayTeam?.name}
+                            </span>
+                          </Tooltip>
+                        </div>
+                      </div>
+
+                      {/* Línea de puntos y trofeo */}
                       <div className="flex justify-center items-center mt-8">
+                        <span
+                          className={`font-medium text-xxl ${
+                            isDarkMode ? "text-white" : "text-gray-800"
+                          }`}
+                        >
+                          Puntos:
+                        </span>
                         <Image
                           src={IconCopa}
                           alt="Trophy"
                           width={16}
                           height={16}
-                          className="inline mr-1"
+                          className="inline mr-1 ml-2"
                         />
                         <span
                           className={`font-medium text-xxl ${
@@ -507,6 +385,48 @@ export default function PredictionCard({ activeTab }: { activeTab: string }) {
                         >
                           x 10
                         </span>
+                      </div>
+                      <div className="flex flex-col justify-center items-center mt-8">
+                        <span
+                          className={`flex items-center font-medium text-xxl ${
+                            isDarkMode ? "text-white" : "text-gray-800"
+                          }`}
+                        >
+                          {/* Muestra el icono o loader dependiendo del estado */}
+                          {match.status === "PENDING" ? (
+                            <ClipLoader
+                              className="mr-2"
+                              color={"#123abc"}
+                              size={20}
+                            />
+                          ) : match.status === "WON" ? (
+                            <FaCheck className="text-green-500 mr-2" />
+                          ) : match.status === "LOST" ? (
+                            <FaTimes className="text-red-500 mr-2" />
+                          ) : null}
+                          {/* Texto traducido */}
+                          Estado: {translateStatus(match.status)}
+                        </span>
+
+                        {match.status === "LOST" && (
+                          <div
+                            className={`mt-2 text-center text-sm ${
+                              isDarkMode ? "text-gray-400" : "text-gray-600"
+                            }`}
+                          >
+                            Perdiste 10 puntos en esta predicción
+                          </div>
+                        )}
+
+                        {match.status === "WON" && (
+                          <div
+                            className={`mt-2 text-center text-sm ${
+                              isDarkMode ? "text-gray-400" : "text-gray-600"
+                            }`}
+                          >
+                            Ganaste 10 puntos en esta predicción
+                          </div>
+                        )}
                       </div>
                     </CardContent>
                   </Card>
