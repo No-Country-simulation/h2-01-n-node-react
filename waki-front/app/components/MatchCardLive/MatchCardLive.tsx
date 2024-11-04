@@ -464,7 +464,7 @@ export default function MatchCardLive({ activeTab }: { activeTab: string }) {
                           style={{ fontSize: "11px" }}
                           className="px-4 py-2 bg-[#8E2BFF] btn-box-shadow text-white font-bold rounded transition duration-200"
                         >
-                          Apostar
+                          Predecir
                         </button>
                       </div>
                     </CardContent>

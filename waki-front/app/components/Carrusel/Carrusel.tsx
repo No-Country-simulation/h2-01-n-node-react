@@ -282,7 +282,7 @@ const setEncryptedDateCookie = (date: string) =>{
                 No hay partidos para esta fecha
               </div>
               
-              {activeTab == "Manana" && loading && (
+              {activeTab == "Manana" && (
               <button
                 className="ver-proximos-btn mt-5 ml-12 {`bg-[#8E2BFF] btn-box-shadow hover:bg-[#6c22cc] text-white py-2 px-4 border-box w-full focus:outline-none focus:shadow-outline"
                 onClick={() => router.push("/proximos-partidos")}

@@ -1,0 +1,11 @@
+.teams-container{
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   align-content: center
+}
+
+.teams-container img{
+   margin: 6px;
+   vertical-align: auto;
+}

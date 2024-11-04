@@ -41,7 +41,7 @@ export default function page() {
             </div>
 
              <div className="space-y-4">
-              {/*<div className="flex items-center justify-between">
+              <div className="flex items-center justify-between">
                 <label htmlFor="language" className="font-medium">
                   Idioma
                 </label>
@@ -55,7 +55,7 @@ export default function page() {
                   <option value="en">English</option>
                   <option value="fr">Français</option>
                 </select>
-              </div>*/}
+              </div>
 
               <div className="flex items-center justify-between">
                 <span className="font-medium">Modo Oscuro</span>

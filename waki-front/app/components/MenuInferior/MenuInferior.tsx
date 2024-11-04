@@ -5,9 +5,9 @@ import Partidos from "../../assets/Vector-1.png";
 import Divisiones from "../../assets/Vector1.png";
 import Predicciones from "../../assets/predicciones.png";
 import PartidosActive from "../../assets/Vector12.png";
-import DivisionesActive from "../../assets/Vector.png"; 
+import DivisionesActive from "../../assets/Vector.png";
 import Image from "next/image";
-import { usePathname, useRouter } from 'next/navigation'; 
+import { usePathname, useRouter } from "next/navigation";
 
 const MenuInferior = () => {
   const [activeIcon, setActiveIcon] = useState<string>("partidos");
@@ -15,13 +15,13 @@ const MenuInferior = () => {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (pathname.includes('/divisiones')) {
+    if (pathname.includes("/divisiones")) {
       setActiveIcon("divisiones");
-    } else if (pathname.includes('/prediccionesPerfil')) {
+    } else if (pathname.includes("/prediccionesPerfil")) {
       setActiveIcon("prediccionesPerfil");
-    } else if (pathname.includes('/jugadores')) {
+    } else if (pathname.includes("/jugadores")) {
       setActiveIcon("jugadores");
-    } else if (pathname.includes('/partidos')) {
+    } else if (pathname.includes("/partidos")) {
       setActiveIcon("partidos");
     } else {
       setActiveIcon("jugadores");
@@ -30,15 +30,15 @@ const MenuInferior = () => {
 
   const handleIconClick = (icon: string) => {
     if (icon === "divisiones") {
-      router.push('/divisiones');
+      router.push("/divisiones");
     } else if (icon === "partidos") {
-      router.push('/partidos');
-    } else if (icon === 'prediccionesPerfil'){
-      router.push('/prediccionesPerfil');
-    }else if (icon === 'jugadores'){
-      router.push('/jugadores')
-
-    } setActiveIcon(icon); 
+      router.push("/partidos");
+    } else if (icon === "prediccionesPerfil") {
+      router.push("/prediccionesPerfil");
+    } else if (icon === "jugadores") {
+      router.push("/jugadores");
+    }
+    setActiveIcon(icon);
   };
   const isActive = (icon: string) => activeIcon === icon;
 
@@ -56,23 +56,27 @@ const MenuInferior = () => {
           style={{
             backgroundColor: isActive("partidos") ? "#317EF4" : "transparent",
             transform: isActive("partidos") ? "scale(1.1)" : "scale(1)",
-            boxShadow: isActive("partidos") ? "0 4px 10px rgba(0, 0, 0, 0.3)" : "none",
-            borderRadius: isActive("partidos") ? "5px" : "0px", 
+            boxShadow: isActive("partidos")
+              ? "0 6px 12px rgba(0, 0, 0, 0.2), 0 8px 20px rgba(0, 0, 0, 0.15), 0 12px 25px rgba(0, 0, 0, 0.1)"
+              : "none",
+            borderRadius: isActive("partidos") ? "10px" : "0px",
             transition: "all 0.3s ease",
           }}
         >
           <Image
-            src={isActive("partidos") ? PartidosActive : Partidos} 
+            src={isActive("partidos") ? PartidosActive : Partidos}
             width={20}
             height={20}
             alt="Partidos"
             className="w-5 h-5 mb-2"
             style={{
-              filter: isActive("partidos") ? "brightness(0) invert(1)" : "none", 
+              filter: isActive("partidos") ? "brightness(0) invert(1)" : "none",
             }}
           />
           <span
-            className={`text-[10px] ${isActive("partidos") ? "text-white" : "text-white opacity-30"}`}
+            className={`text-[10px] ${
+              isActive("partidos") ? "text-white" : "text-white opacity-30"
+            }`}
           >
             Partidos
           </span>
@@ -86,8 +90,10 @@ const MenuInferior = () => {
           style={{
             backgroundColor: isActive("jugadores") ? "#317EF4" : "transparent",
             transform: isActive("jugadores") ? "scale(1.1)" : "scale(1)",
-            boxShadow: isActive("jugadores") ? "0 4px 10px rgba(0, 0, 0, 0.3)" : "none",
-            borderRadius: isActive("jugadores") ? "5px" : "0px", 
+            boxShadow: isActive("jugadores")
+              ? "0 6px 12px rgba(0, 0, 0, 0.2), 0 8px 20px rgba(0, 0, 0, 0.15), 0 12px 25px rgba(0, 0, 0, 0.1)"
+              : "none",
+            borderRadius: isActive("jugadores") ? "10px" : "0px",
             transition: "all 0.3s ease",
           }}
         >
@@ -95,14 +101,16 @@ const MenuInferior = () => {
             src={jugadoresPlayers}
             width={20}
             height={20}
-            alt="jugadores Players"
+            alt="Jugadores"
             className="w-5 h-5 mb-2"
             style={{
               filter: isActive("jugadores") ? "brightness(0) invert(1)" : "none",
             }}
           />
           <span
-            className={`text-[10px] ${isActive("jugadores") ? "text-white" : "text-white opacity-30"}`}
+            className={`text-[10px] ${
+              isActive("jugadores") ? "text-white" : "text-white opacity-30"
+            }`}
           >
             Jugadores
           </span>
@@ -116,8 +124,10 @@ const MenuInferior = () => {
           style={{
             backgroundColor: isActive("divisiones") ? "#317EF4" : "transparent",
             transform: isActive("divisiones") ? "scale(1.1)" : "scale(1)",
-            boxShadow: isActive("divisiones") ? "0 4px 10px rgba(0, 0, 0, 0.3)" : "none",
-            borderRadius: isActive("divisiones") ? "5px" : "0px", 
+            boxShadow: isActive("divisiones")
+              ? "0 6px 12px rgba(0, 0, 0, 0.2), 0 8px 20px rgba(0, 0, 0, 0.15), 0 12px 25px rgba(0, 0, 0, 0.1)"
+              : "none",
+            borderRadius: isActive("divisiones") ? "10px" : "0px",
             transition: "all 0.3s ease",
           }}
         >
@@ -132,7 +142,9 @@ const MenuInferior = () => {
             }}
           />
           <span
-            className={`text-[10px] ${isActive("divisiones") ? "text-white" : "text-white opacity-30"}`}
+            className={`text-[10px] ${
+              isActive("divisiones") ? "text-white" : "text-white opacity-30"
+            }`}
           >
             Divisiones
           </span>
@@ -146,8 +158,10 @@ const MenuInferior = () => {
           style={{
             backgroundColor: isActive("prediccionesPerfil") ? "#317EF4" : "transparent",
             transform: isActive("prediccionesPerfil") ? "scale(1.1)" : "scale(1)",
-            boxShadow: isActive("prediccionesPerfil") ? "0 4px 10px rgba(0, 0, 0, 0.3)" : "none",
-            borderRadius: isActive("prediccionesPerfil") ? "5px" : "0px", 
+            boxShadow: isActive("prediccionesPerfil")
+              ? "0 6px 12px rgba(0, 0, 0, 0.2), 0 8px 20px rgba(0, 0, 0, 0.15), 0 12px 25px rgba(0, 0, 0, 0.1)"
+              : "none",
+            borderRadius: isActive("prediccionesPerfil") ? "10px" : "0px",
             transition: "all 0.3s ease",
           }}
         >
@@ -162,7 +176,9 @@ const MenuInferior = () => {
             }}
           />
           <span
-            className={`text-[10px] ${isActive("prediccionesPerfil") ? "text-white" : "text-white opacity-30"}`}
+            className={`text-[10px] ${
+              isActive("prediccionesPerfil") ? "text-white" : "text-white opacity-30"
+            }`}
           >
             Predicciones
           </span>
