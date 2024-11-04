@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useEffect } from "react";
@@ -32,6 +34,7 @@ interface FormattedPrediction {
   awayTeam: Team;
   points: number;
   status: string;
+  fixtureDate: string; // Añadir fecha del fixture
 }
 interface MatchStatistic {
   team: string;
@@ -47,8 +50,9 @@ export default function PredictionCard({ activeTab }: { activeTab: string }) {
   const [tooltip, setTooltip] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [matchStatistics, setMatchStatistics] = useState<MatchStatistic[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [filteredMatches, setFilteredMatches] = useState<FormattedPrediction[]>(
+    []
+  );
 
   const router = useRouter();
 
@@ -84,39 +88,13 @@ export default function PredictionCard({ activeTab }: { activeTab: string }) {
 
   const { isDarkMode, toggleDarkMode } = useTheme();
 
-  const today = new Date();
-  const yesterday = new Date(today);
-  const tomorrow = new Date(today);
-  const afterTomorrow = new Date(today);
-
-  yesterday.setDate(today.getDate() - 1);
-  tomorrow.setDate(today.getDate() + 1);
-
-  let dateParam;
-  switch (activeTab) {
-    case "Hoy":
-      dateParam = getFormattedDate(today);
-      break;
-    case "Ayer":
-      dateParam = getFormattedDate(yesterday);
-      break;
-    case "Manana":
-      dateParam = getFormattedDate(tomorrow);
-      break;
-    case "Siguiente Fecha":
-      dateParam = getFormattedDate(afterTomorrow);
-      break;
-    default:
-      dateParam = getFormattedDate(today);
-  }
-
   useEffect(() => {
     const API_BASE_URL = "https://waki.onrender.com/api";
     const PREDICTION_API_URL = `${API_BASE_URL}/predictions/user?type=single`;
+
     const fetchPredictions = async () => {
       const token = Cookies.get("authToken");
       setLoading(true);
-
       try {
         const response = await fetch(PREDICTION_API_URL, {
           method: "GET",
@@ -129,13 +107,13 @@ export default function PredictionCard({ activeTab }: { activeTab: string }) {
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const formattedPredictions: FormattedPrediction[] =
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           data.predictions.map((prediction: any) => ({
             predictionTeam: prediction.predictionTeam,
             homeTeam: prediction.fixture.homeTeam,
             awayTeam: prediction.fixture.awayTeam,
             points: prediction.points ?? 10,
             status: prediction.status,
+            fixtureDate: prediction.fixture.date,
           }));
 
         setMatches(formattedPredictions);
@@ -148,6 +126,54 @@ export default function PredictionCard({ activeTab }: { activeTab: string }) {
 
     fetchPredictions();
   }, []);
+
+  useEffect(() => {
+    const filtered = matches.filter((match) => {
+      const fixtureDate = new Date(match.fixtureDate);
+      return fixtureDate.toISOString().split("T")[0] === dateParam;
+    });
+  
+    setFilteredMatches(filtered);
+  }, [activeTab, matches]);
+
+  const getDateParam = (tab: string, today: Date) => {
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    const dateMap: Record<string, string> = {
+        Hoy: today.toISOString().split("T")[0],
+        Ayer: yesterday.toISOString().split("T")[0],
+        Manana: tomorrow.toISOString().split("T")[0],
+    };
+
+    return dateMap[tab] || today.toISOString().split("T")[0];
+};
+
+  const today = new Date();
+  const yesterday = new Date(today);
+  const tomorrow = new Date(today);
+
+  yesterday.setDate(today.getDate() - 1);
+  tomorrow.setDate(today.getDate() + 1);
+
+  let dateParam: string;
+  switch (activeTab) {
+    case "Hoy":
+      dateParam = getFormattedDate(today);
+      getDateParam(activeTab, today)
+      break;
+    case "Ayer":
+      dateParam = getFormattedDate(yesterday);
+      break;
+    case "Manana":
+      dateParam = getFormattedDate(tomorrow);
+      break;
+    default:
+      dateParam = getFormattedDate(today);
+  }
 
   useEffect(() => {
     const API_BASE_URL = "https://waki.onrender.com/api";
@@ -233,7 +259,7 @@ export default function PredictionCard({ activeTab }: { activeTab: string }) {
                   No tienes predicciones.
                 </div>
               ) : (
-                matches.map((match, index) => (
+                filteredMatches.map((match, index) => (
                   <Card
                     key={index}
                     className="my-5 mx-4"
@@ -438,4 +464,4 @@ export default function PredictionCard({ activeTab }: { activeTab: string }) {
       ))}
     </div>
   );
-}
+};
