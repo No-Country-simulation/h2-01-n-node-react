@@ -28,12 +28,6 @@ export default function PrediccionesPerfil() {
     }
   }, [router]);
 
-  const formatDate = (date: Date) => {
-    const day = date.getDate();
-    const month = date.toLocaleString("default", { month: "short" });
-    return `${day} ${month}`;
-  };
-
   const today = new Date();
   const yesterday = new Date(today);
   const tomorrow = new Date(today);
