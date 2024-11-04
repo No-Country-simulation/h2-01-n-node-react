@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-
 import { envConfig } from './config';
 import { configSchema } from './config/joi.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -27,6 +26,7 @@ import { RanksModule } from './ranks/ranks.module';
 import { PricesModule } from './prices/prices.module';
 import { RankResetModule } from './rank-reset/rank-reset.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -82,6 +82,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     PricesModule,
     RankResetModule,
     CloudinaryModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
 })
