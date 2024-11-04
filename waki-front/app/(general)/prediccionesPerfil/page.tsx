@@ -14,7 +14,7 @@ import PredictionCard from "@/app/components/PredictionCard/PredictionCard";
 export default function PrediccionesPerfil() {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [activeTab, setActiveTab] = useState("Hoy");
+  const [activeTab, setActiveTab] = useState("Mis Predicciones");
   const router = useRouter();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -28,12 +28,6 @@ export default function PrediccionesPerfil() {
     }
   }, [router]);
 
-  const formatDate = (date: Date) => {
-    const day = date.getDate();
-    const month = date.toLocaleString("default", { month: "short" });
-    return `${day} ${month}`;
-  };
-
   const today = new Date();
   const yesterday = new Date(today);
   const tomorrow = new Date(today);
@@ -42,7 +36,7 @@ export default function PrediccionesPerfil() {
   tomorrow.setDate(today.getDate() + 1);
 
   const tabs = [
-    { id: "Hoy", label: `${formatDate(today)}` },
+    { id: "Mis Predicciones", label: 'Mis Predicciones' },
   ];
 
   const handleTabChange = (tabId: string) => {
