@@ -15,3 +15,11 @@ export enum PREDICTION_STATUS {
   WON = 'WON',
   LOST = 'LOST',
 }
+
+export interface NotificationToSave {
+  userId: number;
+  message: string;
+  fixtureId?: number;
+  predictionId?: number;
+  aggregatePredictionId?: number;
+}

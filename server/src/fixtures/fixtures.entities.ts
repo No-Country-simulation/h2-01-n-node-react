@@ -10,6 +10,7 @@ import {
   OneToMany,
   PrimaryColumn,
 } from 'typeorm';
+import { Notifications } from 'src/notifications/notifications.entity';
 
 @Entity('fixtures')
 export class Fixtures {
@@ -108,4 +109,7 @@ export class Fixtures {
 
   @OneToMany(() => FixtureBets, (fixtureBets) => fixtureBets.fixture)
   fixtureBets: FixtureBets[];
+
+  @OneToMany(() => Notifications, (notification) => notification.fixture)
+  notifications: Notifications[];
 }

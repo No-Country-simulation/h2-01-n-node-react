@@ -19,8 +19,10 @@ import { catchError, firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import { AxiosError } from 'axios';
 import { formatFixtures } from 'src/util/format';
-import { PREDICTION_STATUS, USER_ROLE } from 'src/types';
+import { NotificationToSave, PREDICTION_STATUS, USER_ROLE } from 'src/types';
 import { Users } from 'src/users/users.entity';
+import { NotificationsGateway } from 'src/notifications/notifications.gateway';
+import { Notifications } from 'src/notifications/notifications.entity';
 
 @Injectable()
 export class PredictionsService {
@@ -35,6 +37,7 @@ export class PredictionsService {
     private usersRepository: Repository<Users>,
     private configService: ConfigService,
     private httpService: HttpService,
+    private notificationsGateway: NotificationsGateway,
     @InjectEntityManager() private readonly entityManager: EntityManager,
   ) {}
 
@@ -525,6 +528,8 @@ export class PredictionsService {
 
       // save to db
       const usersPoints = new Map<number, number>();
+      // save to db
+      const notificationsToSave: NotificationToSave[] = [];
 
       for (const eFixture of formattedExternalFixtures) {
         const fixtureToBeCompleted = fixtures.find((f) => f.id === eFixture.id);
@@ -555,6 +560,13 @@ export class PredictionsService {
             // solve predictions
             predictions.forEach((prediction) => {
               const isPredictionCorrect = prediction.value === winningValue;
+              let notificationToSave = {
+                userId: prediction.userId,
+                fixtureId: eFixture.id,
+                predictionId: prediction.id,
+                message: '',
+              };
+
               if (isPredictionCorrect) {
                 prediction.status = PREDICTION_STATUS.WON;
                 const predictionPoints = parseFloat(prediction.odd) * 10;
@@ -567,9 +579,17 @@ export class PredictionsService {
                     usersPoints.get(prediction.userId) + predictionPoints,
                   );
                 }
+
+                notificationToSave.message = `¡Tu predicción para el partido ${eFixture.id} fue correcta! Has ganado ${predictionPoints} puntos.`;
               } else {
+                notificationToSave.message = `Lo sentimos, tu predicción para el fixture ${eFixture.id} fue incorrecta.`;
                 prediction.status = PREDICTION_STATUS.LOST;
               }
+              notificationsToSave.push(notificationToSave);
+              this.notificationsGateway.addNotification(
+                notificationToSave.userId,
+                notificationToSave,
+              );
             });
 
             // save to db
@@ -577,6 +597,12 @@ export class PredictionsService {
 
             aggregatePredictions.forEach((aggregate) => {
               let predictionOddsResult = 1;
+
+              let notificationToSave = {
+                userId: aggregate.userId,
+                aggregatePredictionId: aggregate.id,
+                message: '',
+              };
               aggregate.predictions.forEach((prediction) => {
                 predictionOddsResult =
                   predictionOddsResult * parseFloat(prediction.odd);
@@ -596,6 +622,7 @@ export class PredictionsService {
                 )
               ) {
                 aggregate.status = PREDICTION_STATUS.LOST;
+                notificationToSave.message = `Tu predicción combinada ${aggregate.id} fue incorrecta. Mejor suerte la próxima vez.`;
               } else if (
                 aggregate.predictions.every(
                   (prediction) => prediction.status === PREDICTION_STATUS.WON,
@@ -613,8 +640,13 @@ export class PredictionsService {
                     usersPoints.get(aggregate.userId) + aggregatePoints,
                   );
                 }
+                notificationToSave.message = `¡Tu predicción combinada ${aggregate.id} fue correcta! Has ganado ${aggregatePoints} puntos.`;
               }
               delete aggregate.predictions;
+              this.notificationsGateway.addNotification(
+                notificationToSave.userId,
+                notificationToSave,
+              );
             });
 
             await this.entityManager.transaction(
@@ -636,6 +668,7 @@ export class PredictionsService {
         }
         await this.entityManager.transaction(
           async (transactionManager: EntityManager) => {
+            await transactionManager.save(Notifications, notificationsToSave);
             if (usersPoints.size > 0) {
               const updates = Array.from(usersPoints.entries())
                 .map(([userId, points]) => {
@@ -658,6 +691,8 @@ export class PredictionsService {
           },
         );
       }
+
+      this.notificationsGateway.sendAllNotifications();
     } catch (error: any) {
       console.log(
         `Error when solving predictions of recently completed fixtures: ${error}`,

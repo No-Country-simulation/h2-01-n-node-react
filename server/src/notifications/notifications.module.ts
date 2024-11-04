@@ -8,5 +8,6 @@ import { Notifications } from './notifications.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([Notifications]), JwtModule],
   providers: [NotificationsGateway, NotificationsService],
+  exports: [NotificationsGateway, NotificationsService],
 })
 export class NotificationsModule {}
