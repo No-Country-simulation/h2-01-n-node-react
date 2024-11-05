@@ -1,6 +1,7 @@
 import { AggregatePredictions } from 'src/aggregate-predictions/aggregate-predictions.entity';
 import { Bets } from 'src/bets/bets.entity';
 import { Fixtures } from 'src/fixtures/fixtures.entities';
+import { Notifications } from 'src/notifications/notifications.entity';
 import { PREDICTION_STATUS } from 'src/types';
 import { Users } from 'src/users/users.entity';
 import {
@@ -8,6 +9,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -66,4 +68,7 @@ export class Predictions {
     nullable: false,
   })
   createdAt: Date;
+
+  @OneToMany(() => Notifications, (notification) => notification.prediction)
+  notifications: Notifications[];
 }

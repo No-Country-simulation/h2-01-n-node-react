@@ -7,6 +7,7 @@ import { AggregatePredictions } from 'src/aggregate-predictions/aggregate-predic
 import { Bets } from 'src/bets/bets.entity';
 import { Fixtures } from 'src/fixtures/fixtures.entities';
 import { Users } from 'src/users/users.entity';
+import { NotificationsModule } from 'src/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { Users } from 'src/users/users.entity';
       Fixtures,
       Users,
     ]),
+    NotificationsModule,
   ],
   providers: [PredictionsService],
   controllers: [PredictionsController],
