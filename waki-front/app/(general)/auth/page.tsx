@@ -188,7 +188,10 @@ export default function AuthTabs() {
   const handleGoogleSignIn = async () => {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const result = await signInWithPopup(auth, googleProvider);
+
       router.push("/partidos");
     } catch (error) {
       console.error("Error durante la autenticación con Google:", error);

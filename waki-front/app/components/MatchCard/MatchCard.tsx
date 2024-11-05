@@ -132,7 +132,7 @@ export default function MatchCard({ activeTab }: { activeTab: string }) {
     }
 
     const encryptedDate = CryptoJS.AES.encrypt(date, SECRET_KEY).toString();
-    Cookies.set("nextDate", encryptedDate, { expires: 7 });
+    Cookies.set("nextDate", encryptedDate, { expires: 7, secure: true });
   };
 
   let dateParam;

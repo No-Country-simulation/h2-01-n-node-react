@@ -106,7 +106,7 @@ const setEncryptedDateCookie = (date: string) =>{
   }
 
   const encryptedDate = CryptoJS.AES.encrypt(date, SECRET_KEY).toString();
-  Cookies.set("nextDate", encryptedDate, { expires: 7 });
+  Cookies.set("nextDate", encryptedDate, { expires: 7, secure: true });
 }
 
   const today = new Date();
