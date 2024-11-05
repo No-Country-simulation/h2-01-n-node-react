@@ -200,53 +200,6 @@ export class PredictionsService {
         };
       }),
     );
-    // for (let prediction of predictions) {
-    //   const fixture = await this.fixturesRepository.findOne({
-    //     where: { id: prediction.fixtureId },
-    //   });
-    //   if (!fixture)
-    //     throw new NotFoundException(
-    //       `Fixture with id ${prediction.fixtureId} not found`,
-    //     );
-    //   if (notAllowedStatuses.includes(fixture.statusShort))
-    //     throw new BadRequestException(
-    //       `Predictions cannot be placed after the fixture with id ${fixture.id} has ended`,
-    //     );
-    //   const fixtureDate = DateTime.fromJSDate(fixture.date).setZone(
-    //     'America/Argentina/Buenos_Aires',
-    //   );
-
-    //   fixturesMap.set(fixture.id.toString(), fixtureDate);
-
-    //   const { data } = await firstValueFrom(
-    //     this.httpService
-    //       .get(
-    //         `odds?fixture=${prediction.fixtureId}&league=128&season=2024&bookmaker=8&bet=${prediction.betId}`,
-    //       )
-    //       .pipe(
-    //         catchError((error: AxiosError) => {
-    //           console.log(error);
-    //           throw new ConflictException(
-    //             'An error occurred while fetching odds',
-    //           );
-    //         }),
-    //       ),
-    //   );
-
-    //   if (data?.response.length === 0) {
-    //     throw new ConflictException('Bet does not exist');
-    //   }
-
-    //   const value = data.response[0].bookmakers[0].bets[0].values.find(
-    //     (obj) => obj.value === prediction.value,
-    //   );
-
-    //   if (!value) {
-    //     throw new ConflictException('Value not found');
-    //   }
-
-    //   (prediction as PredictionWithOdd).odd = value.odd;
-    // }
 
     const createdAt = DateTime.now().setZone('America/Argentina/Buenos_Aires');
 
@@ -569,7 +522,9 @@ export class PredictionsService {
 
               if (isPredictionCorrect) {
                 prediction.status = PREDICTION_STATUS.WON;
-                const predictionPoints = parseFloat(prediction.odd) * 10;
+                const predictionPoints = Math.ceil(
+                  parseFloat(prediction.odd) * 10,
+                );
                 prediction.points = predictionPoints;
                 if (!usersPoints.has(prediction.userId)) {
                   usersPoints.set(prediction.userId, predictionPoints);
@@ -629,8 +584,9 @@ export class PredictionsService {
                 )
               ) {
                 aggregate.status = PREDICTION_STATUS.WON;
-                const aggregatePoints =
-                  predictionOddsResult * (10 * aggregate.predictions.length);
+                const aggregatePoints = Math.ceil(
+                  predictionOddsResult * (10 * aggregate.predictions.length),
+                );
                 aggregate.points = aggregatePoints;
                 if (!usersPoints.has(aggregate.userId)) {
                   usersPoints.set(aggregate.userId, aggregatePoints);
@@ -648,7 +604,6 @@ export class PredictionsService {
                 notificationToSave,
               );
             });
-
             await this.entityManager.transaction(
               async (transactionManager: EntityManager) => {
                 await transactionManager.save(Predictions, predictionsToSave);

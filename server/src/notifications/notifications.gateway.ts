@@ -30,13 +30,13 @@ export class NotificationsGateway implements OnGatewayConnection {
   }
 
   sendAllNotifications() {
-    this.notificationsMap.forEach((messages, userId) => {
+    this.notificationsMap.forEach((notifications, userId) => {
       const userSocket = Array.from(this.server.sockets.sockets.values()).find(
         (socket) => socket.userId === userId,
       );
 
       if (userSocket) {
-        userSocket.emit('notifications', { messages });
+        userSocket.emit('notifications', { notifications });
       }
     });
 
