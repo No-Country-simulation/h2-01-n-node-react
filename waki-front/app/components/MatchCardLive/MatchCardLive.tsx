@@ -203,8 +203,7 @@ export default function MatchCardLive({ activeTab }: { activeTab: string }) {
           return;
         }
       
-        const encryptedDate = CryptoJS.AES.encrypt(JSON.stringify(fixtureData.fixture.id), SECRET_KEY).toString();
-        Cookies.set("fixture", encryptedDate, { expires: 7, secure: true });
+        Cookies.set("fixture", fixtureData.fixture.id, { expires: 7 });
       }
 
       setEncryptedDateCookie(fixtureData.fixture.id)
