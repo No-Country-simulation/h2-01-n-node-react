@@ -27,6 +27,7 @@ import { PricesModule } from './prices/prices.module';
 import { RankResetModule } from './rank-reset/rank-reset.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { OrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
@@ -83,6 +84,7 @@ import { NotificationsModule } from './notifications/notifications.module';
     RankResetModule,
     CloudinaryModule,
     NotificationsModule,
+    OrdersModule,
   ],
   controllers: [AppController],
 })
