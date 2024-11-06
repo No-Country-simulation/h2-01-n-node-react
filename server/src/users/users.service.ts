@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { Users } from './users.entity';
 import { RegisterUserDTO } from 'src/auth/dtos/register.dto';
 import * as bcrypt from 'bcrypt';
@@ -107,9 +107,12 @@ export class UsersService {
     return { rank };
   }
 
-  async upgradeUserToPremium(id: number) {
-    let user = await this.usersRepository.findOneBy({
-      id,
+  async upgradeUserToPremium(id: number, transactionManager?: EntityManager) {
+    const manager = transactionManager || this.usersRepository.manager;
+    let user = await manager.findOne(Users, {
+      where: {
+        id,
+      },
     });
 
     if (!user) throw new UnauthorizedException('User not found');
@@ -123,7 +126,7 @@ export class UsersService {
       .plus({ month: 1 })
       .toJSDate();
 
-    const updatedUser = await this.usersRepository.save(user);
+    const updatedUser = await manager.save(user);
 
     delete updatedUser.password;
 

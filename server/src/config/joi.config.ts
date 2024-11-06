@@ -16,5 +16,5 @@ export const configSchema = Joi.object({
   DB_HOST: Joi.string().required(),
   CLOUDINARY_NAME: Joi.string().optional(),
   CLOUDINARY_API_KEY: Joi.string().optional(),
-  CLOUDINARY_API_API: Joi.string().optional(),
+  MP_ACCESS_TOKEN: Joi.string().optional(),
 });
