@@ -61,8 +61,8 @@ export class UsersController {
     return this.usersService.findAllPremiumUsers();
   }
 
-  @Put('premium')
-  upgradeUserToPremium(@Request() req) {
-    return this.usersService.upgradeUserToPremium(req.user.userId);
-  }
+  // @Put('premium')
+  // upgradeUserToPremium(@Request() req) {
+  //   return this.usersService.upgradeUserToPremium(req.user.userId);
+  // }
 }

@@ -1,3 +1,4 @@
+import { Orders } from 'src/orders/orders.entity';
 import Ranks from 'src/ranks/ranks.entities';
 import { USER_ROLE } from 'src/types';
 import {
@@ -5,6 +6,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -51,4 +53,7 @@ export class Users {
     nullable: false,
   })
   createdAt: Date;
+
+  @OneToMany(() => Orders, (order) => order.user)
+  orders: Orders[];
 }

@@ -28,6 +28,7 @@ import { RankResetModule } from './rank-reset/rank-reset.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { OrdersModule } from './orders/orders.module';
+import { MercadopagoModule } from './mercadopago/mercadopago.module';
 
 @Module({
   imports: [
@@ -85,6 +86,7 @@ import { OrdersModule } from './orders/orders.module';
     CloudinaryModule,
     NotificationsModule,
     OrdersModule,
+    MercadopagoModule,
   ],
   controllers: [AppController],
 })
