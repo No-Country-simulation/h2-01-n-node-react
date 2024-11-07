@@ -18,7 +18,7 @@ import { ConfigService } from '@nestjs/config';
 import { catchError, firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import { AxiosError } from 'axios';
-import { formatFixtures } from 'src/util/format';
+import { formatFixtures, removeAccents } from 'src/util/format';
 import { NotificationToSave, PREDICTION_STATUS, USER_ROLE } from 'src/types';
 import { Users } from 'src/users/users.entity';
 import { NotificationsGateway } from 'src/notifications/notifications.gateway';
@@ -500,6 +500,22 @@ export class PredictionsService {
               await this.findAllPendingAggregatePredictionsByFixtureId(
                 fixtureToBeCompleted.id,
               );
+
+            const { data } = await firstValueFrom(
+              this.httpService
+                .get(
+                  `fixtures/events?fixture=${fixtureToBeCompleted.id}&type=Goal`,
+                )
+                .pipe(
+                  catchError((error: AxiosError) => {
+                    console.log(error);
+                    throw 'An error happened';
+                  }),
+                ),
+            );
+
+            const goals = data.response;
+
             // winning value
             let winningValue: string;
             if (eFixture.homeTeamWinner) {
@@ -510,9 +526,28 @@ export class PredictionsService {
               winningValue = 'Draw';
             }
 
+            const winningPlayers = goals.map((item: any) =>
+              removeAccents(item.player.name).toLowerCase(),
+            );
+
+            const solveValue = (value: string, betId: number): boolean => {
+              if (!value) return false;
+
+              if (betId === 1) {
+                return value === winningValue;
+              } else {
+                return winningPlayers.includes(
+                  removeAccents(value).toLowerCase(),
+                );
+              }
+            };
+
             // solve predictions
             predictions.forEach((prediction) => {
-              const isPredictionCorrect = prediction.value === winningValue;
+              const isPredictionCorrect = solveValue(
+                prediction.value,
+                prediction.betId,
+              );
               let notificationToSave = {
                 userId: prediction.userId,
                 fixtureId: eFixture.id,
@@ -562,7 +597,10 @@ export class PredictionsService {
                 predictionOddsResult =
                   predictionOddsResult * parseFloat(prediction.odd);
                 if (prediction.fixtureId === fixtureToBeCompleted.id) {
-                  const isPredictionCorrect = prediction.value === winningValue;
+                  const isPredictionCorrect = solveValue(
+                    prediction.value,
+                    prediction.betId,
+                  );
                   prediction.status = isPredictionCorrect
                     ? PREDICTION_STATUS.WON
                     : PREDICTION_STATUS.LOST;
@@ -621,6 +659,7 @@ export class PredictionsService {
             throw error;
           }
         }
+
         await this.entityManager.transaction(
           async (transactionManager: EntityManager) => {
             await transactionManager.save(Notifications, notificationsToSave);
