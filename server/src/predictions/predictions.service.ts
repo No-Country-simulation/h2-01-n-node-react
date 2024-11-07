@@ -535,11 +535,12 @@ export class PredictionsService {
 
               if (betId === 1) {
                 return value === winningValue;
-              } else {
+              } else if (betId === 92) {
                 return winningPlayers.includes(
                   removeAccents(value).toLowerCase(),
                 );
               }
+              return false;
             };
 
             // solve predictions
