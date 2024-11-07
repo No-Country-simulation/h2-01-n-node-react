@@ -29,6 +29,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { OrdersModule } from './orders/orders.module';
 import { MercadopagoModule } from './mercadopago/mercadopago.module';
+import { TokensModule } from './tokens/tokens.module';
 
 @Module({
   imports: [
@@ -87,6 +88,7 @@ import { MercadopagoModule } from './mercadopago/mercadopago.module';
     NotificationsModule,
     OrdersModule,
     MercadopagoModule,
+    TokensModule,
   ],
   controllers: [AppController],
 })
