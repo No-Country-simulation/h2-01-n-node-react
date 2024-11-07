@@ -1,3 +1,4 @@
+import { Tokens } from 'src/tokens/tokens.entity';
 import { Users } from 'src/users/users.entity';
 import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 
@@ -14,4 +15,7 @@ export default class Ranks {
 
   @OneToMany(() => Users, (user) => user.rankInfo)
   users: Users[];
+
+  @OneToMany(() => Tokens, (token) => token.rankInfo)
+  tokens: Tokens[];
 }
