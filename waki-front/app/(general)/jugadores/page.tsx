@@ -5,7 +5,7 @@ import TopView from "@/app/components/TopView/TopView";
 import { ChevronRight } from 'lucide-react'
 import divisionImg from '@/app/assets/divisiones/division-oro1.png'
 import Image from 'next/image'
-
+import Link from 'next/link'
 
 interface PlayerData {
   rank: number
@@ -13,12 +13,14 @@ interface PlayerData {
   division: string
   publications: number
   price: number
-}
+}   
+
+
 
 const PlayerRow = ({ player, isEven }: { player: PlayerData; isEven: boolean }) => (
-  <div className={`flex items-center justify-between p-3 ${isEven ? '' : ''}`}>
+  <Link href={player.rank === 1 ? "/jugadoresestadistica" : "#"} className={`flex items-center justify-between p-3 ${isEven ? '' : ''} hover:bg-gray-100 transition-colors`}>
     <div className="flex items-center space-x-3">
-      <span className=" w-6">{player.rank}</span>
+      <span className="w-6">{player.rank}</span>
       <span className="font-medium">{player.name}</span>
     </div>
     <div className="flex items-center space-x-4">
@@ -31,9 +33,9 @@ const PlayerRow = ({ player, isEven }: { player: PlayerData; isEven: boolean }) 
       />
       <span className="">{player.publications}k</span>
       <span className="font-medium">{player.price}</span>
-      <ChevronRight className="w-5 h-5 " />
+      <ChevronRight className="w-5 h-5" />
     </div>
-  </div>
+  </Link>
 )
 
 export default function page() {
