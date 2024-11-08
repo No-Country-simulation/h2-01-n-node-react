@@ -4,6 +4,8 @@ import Ranks from './ranks.entities';
 import { EntityManager, Repository } from 'typeorm';
 import { Users } from 'src/users/users.entity';
 import { Cron } from '@nestjs/schedule';
+import { RankReset } from 'src/rank-reset/rank-reset.entity';
+import { DateTime } from 'luxon';
 
 @Injectable()
 export class RanksService {
@@ -12,11 +14,15 @@ export class RanksService {
     private ranksRepository: Repository<Ranks>,
     @InjectRepository(Users)
     private usersRepository: Repository<Users>,
+    @InjectRepository(RankReset)
+    private rankResetRepository: Repository<RankReset>,
     @InjectEntityManager() private readonly entityManager: EntityManager,
   ) {}
 
   async findAll() {
-    return await this.ranksRepository.find();
+    const ranks = await this.ranksRepository.find();
+
+    return { ranks };
   }
 
   async findOneByName(name: string) {
@@ -30,7 +36,7 @@ export class RanksService {
       .orderBy('user.points', 'DESC')
       .getOne();
 
-    return rank;
+    return { rank };
   }
 
   @Cron('55 23 * * *', {
@@ -88,6 +94,58 @@ export class RanksService {
       console.log('User ranks updated successfully');
     } catch (error: any) {
       if (!highestScore) throw new Error(`Error updating user ranks: ${error}`);
+    }
+  }
+
+  @Cron('10 0 * * *', {
+    timeZone: 'America/Argentina/Buenos_Aires',
+  })
+  async resetRanks() {
+    const rankReset = await this.rankResetRepository.findOne({
+      where: { id: 1 },
+    });
+
+    if (
+      DateTime.now().setZone('America/Argentina/Buenos_Aires').toJSDate() >
+      DateTime.fromJSDate(rankReset.resetDate).startOf('day').toJSDate()
+    ) {
+      try {
+        await this.entityManager.transaction(
+          async (transactionManager: EntityManager) => {
+            await transactionManager
+              .createQueryBuilder()
+              .update(Users)
+              .set({
+                points: () => `CASE 
+                WHEN rank = 'Gold' THEN 200
+                WHEN rank = 'Silver' THEN 100
+                WHEN rank = 'Bronze' THEN 0
+              END`,
+              })
+              .execute();
+
+            await transactionManager.update(
+              Ranks,
+              { name: 'Bronze' },
+              { topLimit: 100 },
+            );
+            await transactionManager.update(
+              Ranks,
+              { name: 'Silver' },
+              { bottomLimit: 100, topLimit: 200 },
+            );
+            await transactionManager.update(
+              Ranks,
+              { name: 'Gold' },
+              { bottomLimit: 200 },
+            );
+          },
+        );
+
+        console.log('User points and ranks reset successfully');
+      } catch (error) {
+        console.error(`Error resetting user points: ${error}`);
+      }
     }
   }
 }

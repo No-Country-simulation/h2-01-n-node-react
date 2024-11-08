@@ -9,7 +9,7 @@ import { Request } from 'express';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
-    private readonly userService: UsersService,
+    private readonly usersService: UsersService,
     private configService: ConfigService,
   ) {
     super({
@@ -34,7 +34,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: Payload) {
-    await this.userService.findOneById(payload.userId);
+    await this.usersService.findOneById(payload.userId);
     return payload;
   }
 }

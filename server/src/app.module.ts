@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-
 import { envConfig } from './config';
 import { configSchema } from './config/joi.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -24,6 +23,13 @@ import { HttpModule } from '@nestjs/axios';
 import { PredictionsModule } from './predictions/predictions.module';
 import { AggregatePredictionsModule } from './aggregate-predictions/aggregate-predictions.module';
 import { RanksModule } from './ranks/ranks.module';
+import { PricesModule } from './prices/prices.module';
+import { RankResetModule } from './rank-reset/rank-reset.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { OrdersModule } from './orders/orders.module';
+import { MercadopagoModule } from './mercadopago/mercadopago.module';
+import { TokensModule } from './tokens/tokens.module';
 
 @Module({
   imports: [
@@ -76,6 +82,13 @@ import { RanksModule } from './ranks/ranks.module';
     PredictionsModule,
     AggregatePredictionsModule,
     RanksModule,
+    PricesModule,
+    RankResetModule,
+    CloudinaryModule,
+    NotificationsModule,
+    OrdersModule,
+    MercadopagoModule,
+    TokensModule,
   ],
   controllers: [AppController],
 })

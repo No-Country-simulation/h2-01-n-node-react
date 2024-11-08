@@ -1,11 +1,12 @@
-import { Exclude } from 'class-transformer';
+import { Orders } from 'src/orders/orders.entity';
 import Ranks from 'src/ranks/ranks.entities';
-import { USER_RANK, USER_ROLE } from 'src/types';
+import { USER_ROLE } from 'src/types';
 import {
   Column,
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -20,8 +21,7 @@ export class Users {
   @Column({ unique: true })
   email: string;
 
-  @Column({ nullable: false })
-  @Exclude()
+  @Column({ nullable: false, select: false })
   password: string;
 
   @Column({
@@ -44,10 +44,16 @@ export class Users {
   @Column({ nullable: true })
   image: string;
 
+  @Column({ nullable: true })
+  premiumExpireDate: Date;
+
   @Column({
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
     nullable: false,
   })
   createdAt: Date;
+
+  @OneToMany(() => Orders, (order) => order.user)
+  orders: Orders[];
 }

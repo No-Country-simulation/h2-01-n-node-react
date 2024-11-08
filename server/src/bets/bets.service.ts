@@ -11,6 +11,8 @@ export class BetsService {
   ) {}
 
   async findAll() {
-    return await this.betsRepository.find();
+    const bets = await this.betsRepository.find();
+
+    return { bets };
   }
 }

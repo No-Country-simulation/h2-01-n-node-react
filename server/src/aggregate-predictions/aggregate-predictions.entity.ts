@@ -1,3 +1,4 @@
+import { Notifications } from 'src/notifications/notifications.entity';
 import { Predictions } from 'src/predictions/predictions.entity';
 import { PREDICTION_STATUS } from 'src/types';
 import { Users } from 'src/users/users.entity';
@@ -41,4 +42,7 @@ export class AggregatePredictions {
     nullable: false,
   })
   createdAt: Date;
+
+  @OneToMany(() => Notifications, (notification) => notification.prediction)
+  notifications: Notifications[];
 }

@@ -12,4 +12,8 @@ export const envConfig = () => ({
   apiHeaderFieldName: process.env.API_HEADER_FIELD_NAME,
   apiKey: process.env.API_KEY,
   apiBaseUrl: process.env.API_BASE_URL,
+  cloudinaryName: process.env.CLOUDINARY_NAME,
+  cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
+  cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET,
+  mpAccessToken: process.env.MP_ACCESS_TOKEN,
 });

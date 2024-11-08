@@ -18,8 +18,11 @@ import { ConfigService } from '@nestjs/config';
 import { catchError, firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import { AxiosError } from 'axios';
-import { formatFixtures } from 'src/util/format';
-import { PREDICTION_STATUS } from 'src/types';
+import { formatFixtures, removeAccents } from 'src/util/format';
+import { NotificationToSave, PREDICTION_STATUS, USER_ROLE } from 'src/types';
+import { Users } from 'src/users/users.entity';
+import { NotificationsGateway } from 'src/notifications/notifications.gateway';
+import { Notifications } from 'src/notifications/notifications.entity';
 
 @Injectable()
 export class PredictionsService {
@@ -30,8 +33,11 @@ export class PredictionsService {
     private aggregatePredictionsRepository: Repository<AggregatePredictions>,
     @InjectRepository(Fixtures)
     private fixturesRepository: Repository<Fixtures>,
+    @InjectRepository(Users)
+    private usersRepository: Repository<Users>,
     private configService: ConfigService,
     private httpService: HttpService,
+    private notificationsGateway: NotificationsGateway,
     @InjectEntityManager() private readonly entityManager: EntityManager,
   ) {}
 
@@ -39,6 +45,17 @@ export class PredictionsService {
     createPredictionDto: CreatePredictionDTO,
     userId: number,
   ) {
+    let user = await this.usersRepository.findOneBy({
+      id: userId,
+    });
+
+    if (!user) throw new NotFoundException('User not found');
+
+    const predictionLimits = {
+      today: user.role === USER_ROLE.PREMIUM ? 10 : 5,
+      future: user.role === USER_ROLE.PREMIUM ? 4 : 2,
+    };
+
     const fixture = await this.fixturesRepository.findOne({
       where: { id: createPredictionDto.fixtureId },
     });
@@ -57,7 +74,9 @@ export class PredictionsService {
     );
 
     const isSameDay = createdAt.hasSame(fixtureDate, 'day');
-    const maxPredictions = isSameDay ? 5 : 2;
+    const maxPredictions = isSameDay
+      ? predictionLimits.today
+      : predictionLimits.future;
     const date = isSameDay ? createdAt : fixtureDate;
 
     const startOfDay = date.startOf('day').toJSDate();
@@ -101,18 +120,31 @@ export class PredictionsService {
 
     if (!value) throw new ConflictException('Value not found');
 
-    return await this.predictionsRepository.save({
+    const prediction = await this.predictionsRepository.save({
       ...createPredictionDto,
       odd: value.odd,
       userId,
       createdAt: createdAt.toISO(),
     });
+
+    return { prediction };
   }
 
   async createAggregatePrediction(
     createAggregatePredictionDto: CreateAggregatePredictionDTO,
     userId: number,
   ) {
+    let user = await this.usersRepository.findOneBy({
+      id: userId,
+    });
+
+    if (!user) throw new NotFoundException('User not found');
+
+    const predictionLimits = {
+      today: user.role === USER_ROLE.PREMIUM ? 10 : 5,
+      future: user.role === USER_ROLE.PREMIUM ? 4 : 2,
+    };
+
     const { predictions } = createAggregatePredictionDto;
     const notAllowedStatuses = ['FT', 'AET', 'PEN'];
     const fixturesMap = new Map<string, DateTime>();
@@ -168,53 +200,6 @@ export class PredictionsService {
         };
       }),
     );
-    // for (let prediction of predictions) {
-    //   const fixture = await this.fixturesRepository.findOne({
-    //     where: { id: prediction.fixtureId },
-    //   });
-    //   if (!fixture)
-    //     throw new NotFoundException(
-    //       `Fixture with id ${prediction.fixtureId} not found`,
-    //     );
-    //   if (notAllowedStatuses.includes(fixture.statusShort))
-    //     throw new BadRequestException(
-    //       `Predictions cannot be placed after the fixture with id ${fixture.id} has ended`,
-    //     );
-    //   const fixtureDate = DateTime.fromJSDate(fixture.date).setZone(
-    //     'America/Argentina/Buenos_Aires',
-    //   );
-
-    //   fixturesMap.set(fixture.id.toString(), fixtureDate);
-
-    //   const { data } = await firstValueFrom(
-    //     this.httpService
-    //       .get(
-    //         `odds?fixture=${prediction.fixtureId}&league=128&season=2024&bookmaker=8&bet=${prediction.betId}`,
-    //       )
-    //       .pipe(
-    //         catchError((error: AxiosError) => {
-    //           console.log(error);
-    //           throw new ConflictException(
-    //             'An error occurred while fetching odds',
-    //           );
-    //         }),
-    //       ),
-    //   );
-
-    //   if (data?.response.length === 0) {
-    //     throw new ConflictException('Bet does not exist');
-    //   }
-
-    //   const value = data.response[0].bookmakers[0].bets[0].values.find(
-    //     (obj) => obj.value === prediction.value,
-    //   );
-
-    //   if (!value) {
-    //     throw new ConflictException('Value not found');
-    //   }
-
-    //   (prediction as PredictionWithOdd).odd = value.odd;
-    // }
 
     const createdAt = DateTime.now().setZone('America/Argentina/Buenos_Aires');
 
@@ -242,11 +227,14 @@ export class PredictionsService {
       const totalCount = existingCount + newCount;
 
       const isSameDay = createdAt.hasSame(DateTime.fromISO(dateKey), 'day');
-      const maxPredictions = isSameDay ? 5 : 2;
+      const maxPredictions = isSameDay
+        ? predictionLimits.today
+        : predictionLimits.future;
 
       if (totalCount > maxPredictions) {
         throw new BadRequestException(
-          `Maximum ${maxPredictions} predictions reached for ${dateKey}. You already have ${existingCount} predictions plus ${newCount} being added.`,
+          `Maximum ${maxPredictions} predictions reached for ${dateKey}.`,
+          // `Maximum ${maxPredictions} predictions reached for ${dateKey}. You already have ${existingCount} predictions plus ${newCount} being added.`,
         );
       }
     }
@@ -255,7 +243,7 @@ export class PredictionsService {
       userId,
     });
 
-    return await this.predictionsRepository.save(
+    const _predictions = await this.predictionsRepository.save(
       predictionsWithOdds.map((prediction) => ({
         ...prediction,
         aggregatePredictionId: aggregatePrediction.id,
@@ -263,6 +251,9 @@ export class PredictionsService {
         createdAt: createdAt.toISO(),
       })),
     );
+
+    aggregatePrediction.predictions = _predictions;
+    return { aggregatePrediction };
   }
 
   async findSinglePredictionById(id: number) {
@@ -294,18 +285,57 @@ export class PredictionsService {
     let predictions = [];
     let aggregatePredictions = [];
     if (type === 'SINGLE' || type !== 'AGGREGATE') {
-      const p = await this.predictionsRepository.find({
-        where: { userId, aggregatePrediction: null },
-        relations: ['fixture'],
-      });
-      predictions = [...p];
+      const p = await this.predictionsRepository
+        .createQueryBuilder('prediction')
+        .leftJoinAndSelect('prediction.fixture', 'fixture')
+        .leftJoinAndSelect('fixture.homeTeam', 'homeTeam')
+        .leftJoinAndSelect('fixture.awayTeam', 'awayTeam')
+        .where('prediction.userId = :userId', { userId })
+        .andWhere('prediction.aggregatePredictionId IS NULL')
+        .getMany();
+      predictions = [
+        ...p.map((prediction) => {
+          return {
+            predictionTeam:
+              prediction.value === 'Draw'
+                ? 'Draw'
+                : prediction.value === 'Home'
+                  ? prediction.fixture.homeTeam.name
+                  : prediction.fixture.awayTeam.name,
+            ...prediction,
+          };
+        }),
+      ];
     }
     if (type === 'AGGREGATE' || type !== 'SINGLE') {
       const a = await this.aggregatePredictionsRepository.find({
         where: { userId },
-        relations: ['predictions', 'predictions.fixture'],
+        relations: [
+          'predictions',
+          'predictions.fixture',
+          'predictions.fixture.homeTeam',
+          'predictions.fixture.awayTeam',
+        ],
       });
-      aggregatePredictions = [...a];
+      aggregatePredictions = [
+        ...a.map((aggregate) => {
+          aggregate.predictions = [
+            ...aggregate.predictions.map((prediction) => {
+              return {
+                predictionTeam:
+                  prediction.value === 'Draw'
+                    ? 'Draw'
+                    : prediction.value === 'Home'
+                      ? prediction.fixture.homeTeam.name
+                      : prediction.fixture.awayTeam.name,
+                ...prediction,
+              };
+            }),
+          ];
+
+          return aggregate;
+        }),
+      ];
     }
 
     return { predictions, aggregatePredictions };
@@ -451,6 +481,8 @@ export class PredictionsService {
 
       // save to db
       const usersPoints = new Map<number, number>();
+      // save to db
+      const notificationsToSave: NotificationToSave[] = [];
 
       for (const eFixture of formattedExternalFixtures) {
         const fixtureToBeCompleted = fixtures.find((f) => f.id === eFixture.id);
@@ -468,6 +500,22 @@ export class PredictionsService {
               await this.findAllPendingAggregatePredictionsByFixtureId(
                 fixtureToBeCompleted.id,
               );
+
+            const { data } = await firstValueFrom(
+              this.httpService
+                .get(
+                  `fixtures/events?fixture=${fixtureToBeCompleted.id}&type=Goal`,
+                )
+                .pipe(
+                  catchError((error: AxiosError) => {
+                    console.log(error);
+                    throw 'An error happened';
+                  }),
+                ),
+            );
+
+            const goals = data.response;
+
             // winning value
             let winningValue: string;
             if (eFixture.homeTeamWinner) {
@@ -478,12 +526,41 @@ export class PredictionsService {
               winningValue = 'Draw';
             }
 
+            const winningPlayers = goals.map((item: any) =>
+              removeAccents(item.player.name).toLowerCase(),
+            );
+
+            const solveValue = (value: string, betId: number): boolean => {
+              if (!value) return false;
+
+              if (betId === 1) {
+                return value === winningValue;
+              } else if (betId === 92) {
+                return winningPlayers.includes(
+                  removeAccents(value).toLowerCase(),
+                );
+              }
+              return false;
+            };
+
             // solve predictions
             predictions.forEach((prediction) => {
-              const isPredictionCorrect = prediction.value === winningValue;
+              const isPredictionCorrect = solveValue(
+                prediction.value,
+                prediction.betId,
+              );
+              let notificationToSave = {
+                userId: prediction.userId,
+                fixtureId: eFixture.id,
+                predictionId: prediction.id,
+                message: '',
+              };
+
               if (isPredictionCorrect) {
                 prediction.status = PREDICTION_STATUS.WON;
-                const predictionPoints = parseFloat(prediction.odd) * 10;
+                const predictionPoints = Math.ceil(
+                  parseFloat(prediction.odd) * 10,
+                );
                 prediction.points = predictionPoints;
                 if (!usersPoints.has(prediction.userId)) {
                   usersPoints.set(prediction.userId, predictionPoints);
@@ -493,9 +570,17 @@ export class PredictionsService {
                     usersPoints.get(prediction.userId) + predictionPoints,
                   );
                 }
+
+                notificationToSave.message = `¡Tu predicción para el partido ${eFixture.id} fue correcta! Has ganado ${predictionPoints} puntos.`;
               } else {
+                notificationToSave.message = `Lo sentimos, tu predicción para el fixture ${eFixture.id} fue incorrecta.`;
                 prediction.status = PREDICTION_STATUS.LOST;
               }
+              notificationsToSave.push(notificationToSave);
+              this.notificationsGateway.addNotification(
+                notificationToSave.userId,
+                notificationToSave,
+              );
             });
 
             // save to db
@@ -503,11 +588,20 @@ export class PredictionsService {
 
             aggregatePredictions.forEach((aggregate) => {
               let predictionOddsResult = 1;
+
+              let notificationToSave = {
+                userId: aggregate.userId,
+                aggregatePredictionId: aggregate.id,
+                message: '',
+              };
               aggregate.predictions.forEach((prediction) => {
                 predictionOddsResult =
                   predictionOddsResult * parseFloat(prediction.odd);
                 if (prediction.fixtureId === fixtureToBeCompleted.id) {
-                  const isPredictionCorrect = prediction.value === winningValue;
+                  const isPredictionCorrect = solveValue(
+                    prediction.value,
+                    prediction.betId,
+                  );
                   prediction.status = isPredictionCorrect
                     ? PREDICTION_STATUS.WON
                     : PREDICTION_STATUS.LOST;
@@ -522,14 +616,16 @@ export class PredictionsService {
                 )
               ) {
                 aggregate.status = PREDICTION_STATUS.LOST;
+                notificationToSave.message = `Tu predicción combinada ${aggregate.id} fue incorrecta. Mejor suerte la próxima vez.`;
               } else if (
                 aggregate.predictions.every(
                   (prediction) => prediction.status === PREDICTION_STATUS.WON,
                 )
               ) {
                 aggregate.status = PREDICTION_STATUS.WON;
-                const aggregatePoints =
-                  predictionOddsResult * (10 * aggregate.predictions.length);
+                const aggregatePoints = Math.ceil(
+                  predictionOddsResult * (10 * aggregate.predictions.length),
+                );
                 aggregate.points = aggregatePoints;
                 if (!usersPoints.has(aggregate.userId)) {
                   usersPoints.set(aggregate.userId, aggregatePoints);
@@ -539,10 +635,14 @@ export class PredictionsService {
                     usersPoints.get(aggregate.userId) + aggregatePoints,
                   );
                 }
+                notificationToSave.message = `¡Tu predicción combinada ${aggregate.id} fue correcta! Has ganado ${aggregatePoints} puntos.`;
               }
               delete aggregate.predictions;
+              this.notificationsGateway.addNotification(
+                notificationToSave.userId,
+                notificationToSave,
+              );
             });
-
             await this.entityManager.transaction(
               async (transactionManager: EntityManager) => {
                 await transactionManager.save(Predictions, predictionsToSave);
@@ -560,8 +660,10 @@ export class PredictionsService {
             throw error;
           }
         }
+
         await this.entityManager.transaction(
           async (transactionManager: EntityManager) => {
+            await transactionManager.save(Notifications, notificationsToSave);
             if (usersPoints.size > 0) {
               const updates = Array.from(usersPoints.entries())
                 .map(([userId, points]) => {
@@ -584,6 +686,8 @@ export class PredictionsService {
           },
         );
       }
+
+      this.notificationsGateway.sendAllNotifications();
     } catch (error: any) {
       console.log(
         `Error when solving predictions of recently completed fixtures: ${error}`,

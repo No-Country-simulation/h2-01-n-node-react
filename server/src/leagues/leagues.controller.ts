@@ -8,13 +8,13 @@ import {
 } from '@nestjs/common';
 import { LeaguesService } from './leagues.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { CountryNameDTO } from 'src/dtos/country-name.dto';
 import { LeagueTypeDTO } from './dtos/type.dto';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 @ApiTags('Leagues')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(RolesGuard)
 @Controller('leagues')
 export class LeaguesController {
   constructor(private leaguesService: LeaguesService) {}

@@ -1,12 +1,12 @@
 import { Body, Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { VenuesService } from './venues.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { CountryNameDTO } from 'src/dtos/country-name.dto';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 @ApiTags('Venues')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(RolesGuard)
 @Controller('venues')
 export class VenuesController {
   constructor(private venuesService: VenuesService) {}
