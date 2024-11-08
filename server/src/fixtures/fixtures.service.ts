@@ -247,6 +247,8 @@ export class FixturesService {
           ),
       );
 
+      console.log({ dataForToday });
+
       const { data: dataForFiveDaysFromNow } = await firstValueFrom(
         this.httpService
           .get(
