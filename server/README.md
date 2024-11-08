@@ -2,7 +2,7 @@
 
 WAKI API es una plataforma para gestionar predicciones deportivas, con funcionalidades avanzadas de ranking, suscripción premium y autenticación. Los usuarios pueden realizar predicciones sobre partidos y goles de jugadores, participar en un sistema de divisiones con tres niveles (Gold, Silver y Bronze), y disfrutar de beneficios exclusivos como el doble de predicciones disponibles a través de una suscripción premium. Además, la API integra con MercadoPago para la gestión de pagos y suscripciones.
 
-Para explorar la documentación completa de la API, consulta nuestra documentación aquí.
+Para explorar la documentación completa de la API, consulta nuestra [documentación](https://waki.onrender.com/api/docs).
 
 # Funcionalidades
 
