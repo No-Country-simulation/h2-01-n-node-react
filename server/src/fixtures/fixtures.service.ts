@@ -162,7 +162,7 @@ export class FixturesService {
     return { fixture };
   }
 
-  @Cron('0 0 * * *', {
+  @Cron('*/1 0 * * *', {
     timeZone: 'America/Argentina/Buenos_Aires',
   })
   async updateFixtures(retryCount = 0) {
@@ -171,7 +171,7 @@ export class FixturesService {
     const today = DateTime.now()
       .setZone('America/Argentina/Buenos_Aires')
       .startOf('day');
-    const todayFormatted = today.toFormat('yyyy-MM-dd');
+    const todayFormatted = today.plus({ days: 1 }).toFormat('yyyy-MM-dd');
 
     const previousDay = today.minus({ days: 1 });
     const previousDayFormatted = previousDay.toFormat('yyyy-MM-dd');
